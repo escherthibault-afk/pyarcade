@@ -1,0 +1,325 @@
+id: boss-metro-guided
+world: 9
+type: boss
+variant: guided
+project: metro
+title: "🚇 Boss Métro (la carte du réseau)"
+concepts: [fichiers, csv, dict, folium, fonctions]
+difficulty: 4
+estimated_minutes: 60
+xp: 450
+min_stars: 28
+live_game: metro
+files:
+  stations.csv: "@data/metro_stations.csv"
+  connexions.csv: "@data/metro_connexions.csv"
+  mini_stations.csv: "id,name,lat,lon,line\n1,Nord,10.0,20.0,A\n2,Sud,12.0,22.0,B\n\n"
+statement_md: "Lire deux fichiers CSV, les ranger dans des dictionnaires, puis dessiner le réseau sur une vraie carte."
+intro_md: |
+  ## Le métro de Néo-Strasbourg (réseau imaginaire)
+
+  Deux fichiers (données **inventées**) :
+  - `stations.csv` : `id,name,lat,lon,line` — une station par ligne, avec sa ligne principale (`A`, `B` ou `C`) ;
+  - `connexions.csv` : `from,to,line,minutes` — un tronçon entre deux stations (dans les deux sens), sa ligne
+    (`T` = couloir de correspondance) et sa durée.
+
+  Les stations seront rangées dans un **dictionnaire de dictionnaires** `{id: {"name", "lat", "lon", "line"}}`.
+  La carte se dessine avec **folium** : sur le site, `import folium_lite as folium` (même API : `Map`, `CircleMarker`,
+  `PolyLine`, `.add_to(m)`) ; chez toi, `import folium` et `m.save("carte.html")` pour l'ouvrir dans un navigateur.
+header_code: |
+  import csv
+  import folium_lite as folium
+
+  LINE_COLORS = {"A": "red", "B": "blue", "C": "green", "T": "gray"}
+steps:
+  - fn: parse_station_line
+    title: "une ligne de texte → un tuple"
+    statement_md: "`\"4,Cathédrale,48.58,7.75,A\\n\"` → `(4, 'Cathédrale', 48.58, 7.75, 'A')` (à la main : `strip`, `split`, conversions)."
+    starter_code: |
+      def parse_station_line(line):
+          """Return (id, name, lat, lon, line) with the right types."""
+          pass
+    solution: |
+      def parse_station_line(line):
+          """Return (id, name, lat, lon, line) with the right types."""
+          sid, name, lat, lon, metro_line = line.strip().split(",")
+          return (int(sid), name, float(lat), float(lon), metro_line)
+    tests:
+      visible:
+        - call: parse_station_line("4,Cathédrale,48.58,7.75,A\n")
+          expected: "(4, 'Cathédrale', 48.58, 7.75, 'A')"
+      hidden:
+        - call: type(parse_station_line("1,X,1,2,B")[2]).__name__
+          expected: "'float'"
+    hints:
+      - "`strip()` puis `split(\",\")`."
+      - "Déballe en 5 variables."
+      - "`int`, `float` pour les nombres."
+    points: 1.5
+  - fn: read_stations
+    title: "lire les stations (à la main)"
+    statement_md: "Sans le module `csv` : saute l'en-tête, ignore les lignes vides, renvoie `{id: {\"name\", \"lat\", \"lon\", \"line\"}}`."
+    starter_code: |
+      def read_stations(file_path):
+          """Return {id: {"name", "lat", "lon", "line"}} read by hand."""
+          pass
+    solution: |
+      def read_stations(file_path):
+          """Return {id: {"name", "lat", "lon", "line"}} read by hand."""
+          stations = {}
+          with open(file_path, encoding="utf-8") as f:
+              f.readline()
+              for line in f:
+                  if line.strip() == "":
+                      continue
+                  sid, name, lat, lon, metro_line = parse_station_line(line)
+                  stations[sid] = {"name": name, "lat": lat, "lon": lon, "line": metro_line}
+          return stations
+    tests:
+      visible:
+        - call: read_stations("mini_stations.csv")
+          expected: "{1: {'name': 'Nord', 'lat': 10.0, 'lon': 20.0, 'line': 'A'}, 2: {'name': 'Sud', 'lat': 12.0, 'lon': 22.0, 'line': 'B'}}"
+      hidden:
+        - call: len(read_stations("stations.csv"))
+          expected: "18"
+        - call: read_stations("stations.csv")[17]["name"]
+          expected: "'Marché Neuf'"
+    constraints:
+      scope: read_stations
+      forbidden: ["name:csv"]
+    hints:
+      - "`f.readline()` saute l'en-tête."
+      - "Réutilise `parse_station_line`."
+      - "`stations[sid] = {...}`"
+    points: 2.5
+  - fn: read_connexions
+    title: "lire les connexions (module csv)"
+    statement_md: "Avec `csv.DictReader` : liste de dicts `{\"from\": int, \"to\": int, \"line\": str, \"minutes\": int}`."
+    starter_code: |
+      def read_connexions(file_path):
+          """Return the list of connexions read with csv.DictReader."""
+          pass
+    solution: |
+      def read_connexions(file_path):
+          """Return the list of connexions read with csv.DictReader."""
+          result = []
+          with open(file_path, encoding="utf-8") as f:
+              for row in csv.DictReader(f):
+                  result.append({"from": int(row["from"]), "to": int(row["to"]), "line": row["line"], "minutes": int(row["minutes"])})
+          return result
+    tests:
+      visible:
+        - call: read_connexions("connexions.csv")[-1]
+          expected: "{'from': 11, 'to': 5, 'line': 'T', 'minutes': 4}"
+      hidden:
+        - call: len(read_connexions("connexions.csv"))
+          expected: "19"
+    hints:
+      - "`for row in csv.DictReader(f):`"
+      - "Convertis les nombres."
+      - "Un dict par ligne."
+    points: 2
+  - fn: compute_center
+    title: "le centre de la carte"
+    statement_md: "Renvoie `(latitude moyenne, longitude moyenne)` des stations."
+    starter_code: |
+      def compute_center(stations):
+          """Return the mean (lat, lon) of the stations."""
+          pass
+    solution: |
+      def compute_center(stations):
+          """Return the mean (lat, lon) of the stations."""
+          total_lat = 0
+          total_lon = 0
+          for s in stations.values():
+              total_lat += s["lat"]
+              total_lon += s["lon"]
+          return (total_lat / len(stations), total_lon / len(stations))
+    tests:
+      visible:
+        - call: compute_center(read_stations("mini_stations.csv"))
+          expected: "(11.0, 21.0)"
+      hidden:
+        - call: compute_center(read_stations("stations.csv"))
+          expected: "(48.58256111111111, 7.7545777777777785)"
+          tol: 0.000001
+    hints:
+      - "Parcours `stations.values()`."
+      - "Deux accumulateurs."
+      - "Divise par le nombre de stations."
+    points: 1.5
+  - fn: line_color
+    title: "la couleur d'une ligne"
+    statement_md: "Couleur de `LINE_COLORS`, ou `\"black\"` pour une ligne inconnue (sans `if`)."
+    starter_code: |
+      def line_color(metro_line):
+          """Return the color of a metro line ("black" if unknown)."""
+          pass
+    solution: |
+      def line_color(metro_line):
+          """Return the color of a metro line ("black" if unknown)."""
+          return LINE_COLORS.get(metro_line, "black")
+    tests:
+      visible:
+        - call: line_color("A")
+          expected: "'red'"
+      hidden:
+        - call: line_color("Z")
+          expected: "'black'"
+    constraints:
+      max_count: {If: 0}
+    hints: ["`.get(clé, défaut)`.", "Pas de `if`.", "`LINE_COLORS.get(metro_line, \"black\")`"]
+    points: 0.5
+  - fn: add_marker
+    title: "un point sur la carte"
+    statement_md: "Ajoute à la carte `m` un `folium.CircleMarker` à la position de la station, avec `popup=` son nom, `radius=6` et `color=` la couleur de sa ligne. Renvoie le marqueur."
+    starter_code: |
+      def add_marker(m, station):
+          """Add a circle marker for the station on the map m and return it."""
+          pass
+    solution: |
+      def add_marker(m, station):
+          """Add a circle marker for the station on the map m and return it."""
+          marker = folium.CircleMarker(location=(station["lat"], station["lon"]), radius=6, popup=station["name"], color=line_color(station["line"]))
+          marker.add_to(m)
+          return marker
+    tests:
+      visible:
+        - setup: "m = folium.Map(location=(0, 0))\nmk = add_marker(m, {'name': 'Gare', 'lat': 48.5, 'lon': 7.7, 'line': 'A'})"
+          call: "(mk.location, mk.popup, mk.color, len(m.children))"
+          expected: "([48.5, 7.7], 'Gare', 'red', 1)"
+    hints:
+      - "`folium.CircleMarker(location=(lat, lon), radius=6, popup=..., color=...)`"
+      - "`.add_to(m)` l'ajoute à la carte."
+      - "Renvoie le marqueur."
+    points: 1.5
+  - fn: add_edge
+    title: "un trait entre deux stations"
+    statement_md: "Ajoute une `folium.PolyLine` entre les deux stations de la connexion, couleur de la ligne de la connexion, `weight=4`. Renvoie la ligne."
+    starter_code: |
+      def add_edge(m, stations, connexion):
+          """Add a polyline for the connexion on the map m and return it."""
+          pass
+    solution: |
+      def add_edge(m, stations, connexion):
+          """Add a polyline for the connexion on the map m and return it."""
+          a = stations[connexion["from"]]
+          b = stations[connexion["to"]]
+          edge = folium.PolyLine([(a["lat"], a["lon"]), (b["lat"], b["lon"])], color=line_color(connexion["line"]), weight=4)
+          edge.add_to(m)
+          return edge
+    tests:
+      visible:
+        - setup: "m = folium.Map(location=(0, 0))\nS = read_stations('mini_stations.csv')\ne = add_edge(m, S, {'from': 1, 'to': 2, 'line': 'T', 'minutes': 3})"
+          call: "(e.locations, e.color, len(m.children))"
+          expected: "([[10.0, 20.0], [12.0, 22.0]], 'gray', 1)"
+    hints:
+      - "Retrouve les deux stations dans le dict par leur id."
+      - "`folium.PolyLine([(lat1, lon1), (lat2, lon2)], color=..., weight=4)`"
+      - "`.add_to(m)`."
+    points: 1.5
+  - fn: create_complete_map
+    title: "la carte complète"
+    statement_md: "Lit les deux fichiers, crée une `folium.Map(location=centre, zoom_start=14)`, ajoute **d'abord tous les traits** puis tous les marqueurs. Renvoie la carte."
+    starter_code: |
+      def create_complete_map(stations_file, connexions_file):
+          """Build and return the whole map of the network."""
+          pass
+    solution: |
+      def create_complete_map(stations_file, connexions_file):
+          """Build and return the whole map of the network."""
+          stations = read_stations(stations_file)
+          connexions = read_connexions(connexions_file)
+          m = folium.Map(location=compute_center(stations), zoom_start=14)
+          for c in connexions:
+              add_edge(m, stations, c)
+          for s in stations.values():
+              add_marker(m, s)
+          return m
+    tests:
+      visible:
+        - call: "len(create_complete_map('stations.csv', 'connexions.csv').children)"
+          expected: "37"
+          label: "19 traits + 18 marqueurs"
+      hidden:
+        - call: "type(create_complete_map('stations.csv', 'connexions.csv').children[0]).__name__"
+          expected: "'PolyLine'"
+          label: "les traits d'abord"
+        - call: "create_complete_map('stations.csv', 'connexions.csv').zoom_start"
+          expected: "14"
+    hints:
+      - "Assemble les fonctions précédentes dans l'ordre."
+      - "`folium.Map(location=compute_center(stations), zoom_start=14)`"
+      - "Deux boucles : connexions puis stations."
+    points: 2.5
+  - fn: travel_time
+    title: "durée d'un trajet"
+    statement_md: "`path` est une liste d'ids de stations consécutives. Renvoie la somme des minutes des connexions (utilisables **dans les deux sens**), ou `None` si deux stations consécutives ne sont pas reliées."
+    starter_code: |
+      def travel_time(connexions, path):
+          """Return the total minutes along path, or None if a hop does not exist."""
+          pass
+    solution: |
+      def travel_time(connexions, path):
+          """Return the total minutes along path, or None if a hop does not exist."""
+          total = 0
+          for i in range(len(path) - 1):
+              a, b = path[i], path[i + 1]
+              found = None
+              for c in connexions:
+                  if (c["from"] == a and c["to"] == b) or (c["from"] == b and c["to"] == a):
+                      found = c["minutes"]
+              if found is None:
+                  return None
+              total += found
+          return total
+    tests:
+      visible:
+        - call: "travel_time(read_connexions('connexions.csv'), [1, 2, 3, 4])"
+          expected: "5"
+      hidden:
+        - call: "travel_time(read_connexions('connexions.csv'), [4, 3, 2])"
+          expected: "3"
+          label: "sens inverse"
+        - call: "travel_time(read_connexions('connexions.csv'), [1, 7])"
+          expected: "None"
+          label: "pas relié"
+        - call: "travel_time(read_connexions('connexions.csv'), [5])"
+          expected: "0"
+    hints:
+      - "Parcours les paires (path[i], path[i+1])."
+      - "Pour chaque paire, cherche une connexion dans un sens ou dans l'autre."
+      - "`None` dès qu'une paire n'est pas trouvée."
+    points: 2.5
+  - fn: busiest_station
+    title: "la station la plus connectée"
+    statement_md: "Id de la station qui apparaît dans le plus de connexions (le plus petit id en cas d'égalité). Utilise un dict de compteurs."
+    starter_code: |
+      def busiest_station(connexions):
+          """Return the id of the station with the most connexions (smallest id on ties)."""
+          pass
+    solution: |
+      def busiest_station(connexions):
+          """Return the id of the station with the most connexions (smallest id on ties)."""
+          counts = {}
+          for c in connexions:
+              for sid in (c["from"], c["to"]):
+                  counts[sid] = counts.get(sid, 0) + 1
+          best = None
+          for sid in sorted(counts):
+              if best is None or counts[sid] > counts[best]:
+                  best = sid
+          return best
+    tests:
+      visible:
+        - call: "busiest_station([{'from': 1, 'to': 2, 'line': 'A', 'minutes': 1}, {'from': 2, 'to': 3, 'line': 'A', 'minutes': 1}])"
+          expected: "2"
+      hidden:
+        - call: busiest_station(read_connexions("connexions.csv"))
+          expected: "2"
+          label: "égalité : plus petit id"
+    hints:
+      - "Compte chaque extrémité de chaque connexion."
+      - "Puis cherche le maximum en parcourant les ids triés."
+      - "Strictement supérieur pour garder le plus petit id."
+    points: 2

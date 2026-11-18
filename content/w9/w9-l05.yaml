@@ -1,0 +1,30 @@
+id: w9-l05
+world: 9
+type: parsons
+title: "Lire des nombres"
+concepts: [fichiers, int, strip]
+difficulty: 2
+estimated_minutes: 3
+xp: 30
+story: "Le fichier des meilleurs scores : un nombre par ligne."
+statement_md: "`read_numbers(file_path)` renvoie la liste des entiers du fichier, en ignorant les lignes vides. Une ligne est un leurre."
+files:
+  scores.txt: "120\n45\n\n300\n"
+lines:
+  - "def read_numbers(file_path):"
+  - "    numbers = []"
+  - "    with open(file_path, encoding=\"utf-8\") as f:"
+  - "        for line in f:"
+  - "            if line.strip() != \"\":"
+  - "                numbers.append(int(line))"
+  - "    return numbers"
+distractors:
+  - "                numbers.append(line)"
+tests:
+  visible:
+    - call: read_numbers("scores.txt")
+      expected: "[120, 45, 300]"
+hints:
+  - "`with open(...) as f:` puis une boucle sur les lignes."
+  - "On n'ajoute que les lignes non vides, converties en entiers."
+  - "`int(\" 45\\n\")` accepte les blancs autour."

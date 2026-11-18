@@ -1,0 +1,37 @@
+id: w9-l01
+world: 9
+type: lesson
+title: "Découper et recoller du texte"
+concepts: [split, strip, join]
+difficulty: 1
+estimated_minutes: 2
+xp: 15
+story: "Une ligne de fichier CSV, c'est du texte. Pour en tirer des données, il faut la découper."
+statement_md: |
+  ```python
+  line = "4,Cathédrale,48.58,7.75\n"
+  line.strip()              # enlève le \n (et les espaces) aux deux bouts
+  line.strip().split(",")   # ['4', 'Cathédrale', '48.58', '7.75']  (des CHAÎNES)
+  "-".join(["a", "b"])      # 'a-b'
+  "Gare Centrale".replace(" ", "_")   # 'Gare_Centrale'
+  ```
+example_code: |
+  line = "4,Cathédrale,48.58,7.75\n"
+  fields = line.strip().split(",")
+  print(fields)
+task_md: "Affiche seulement le **nom** de la station puis sa **latitude en float augmentée de 1**. Attendu : `Cathédrale` puis `49.58`."
+expected_output: "Cathédrale\n49.58\n"
+solution: |
+  line = "4,Cathédrale,48.58,7.75\n"
+  fields = line.strip().split(",")
+  print(fields[1])
+  print(float(fields[2]) + 1)
+hints:
+  - "Le nom est le champ d'indice 1, la latitude l'indice 2."
+  - "Les champs sont des chaînes : convertis avec `float`."
+  - "`print(fields[1])` puis `print(float(fields[2]) + 1)`."
+card:
+  title: "split / strip / join"
+  body_md: |
+    `s.strip()` enlève espaces et `\n` aux bords · `s.split(",")` → liste de chaînes · `sep.join(liste)` · `s.replace(a, b)`.
+    Après un `split`, tout est texte : `int(...)`, `float(...)`.

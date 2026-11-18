@@ -1,0 +1,47 @@
+id: w9-l08
+world: 9
+type: quiz
+title: "QCM éclair : fichiers et CSV"
+concepts: [fichiers, csv, str]
+difficulty: 2
+estimated_minutes: 2
+xp: 30
+story: "Les pièges de la lecture de fichiers, en 60 secondes."
+statement_md: "10 questions."
+time_limit: 60
+questions:
+  - q: "Que renvoie `f.readline()` sur la ligne `abc` d'un fichier ?"
+    choices: ["\"abc\\n\"", "\"abc\"", "[\"abc\"]", "None"]
+    answer: 0
+  - q: "Pourquoi `with open(...) as f:` ?"
+    choices: ["le fichier est fermé automatiquement", "c'est plus rapide", "c'est obligatoire pour lire", "pour écrire seulement"]
+    answer: 0
+  - q: "`\"48.58\" * 2` vaut…"
+    choices: ["\"48.5848.58\"", "97.16", "Erreur", "48.58"]
+    answer: 0
+  - q: "`csv.reader` donne chaque ligne sous forme de…"
+    choices: ["liste de chaînes", "dict", "tuple de nombres", "chaîne"]
+    answer: 0
+  - q: "`csv.DictReader` donne chaque ligne sous forme de…"
+    choices: ["dict {en-tête: valeur}", "liste", "chaîne", "tuple"]
+    answer: 0
+  - q: "Avec `DictReader`, la ligne d'en-tête…"
+    choices: ["sert de clés, elle n'est pas renvoyée comme donnée", "est renvoyée comme première donnée", "est ignorée sans servir"]
+    answer: 0
+  - q: "Mode pour écrire en écrasant un fichier ?"
+    choices: ["\"w\"", "\"r\"", "\"a\"", "\"x+\""]
+    answer: 0
+  - q: "`int(\"7.5\")` …"
+    choices: ["ValueError", "7", "8", "7.5"]
+    answer: 0
+  - q: "`\"a;b\".split(\",\")` vaut…"
+    choices: ["[\"a;b\"]", "[\"a\", \"b\"]", "Erreur", "[]"]
+    answer: 0
+  - q: "Pour un nombre écrit `\"48,58\"` (virgule décimale) …"
+    choices: ["float(s.replace(\",\", \".\"))", "float(s)", "int(s)", "s.split(\",\")"]
+    answer: 0
+card:
+  title: "Lire un CSV"
+  body_md: |
+    À la main : `f.readline()` (en-tête), puis `line.strip().split(",")`, types convertis, lignes vides ignorées.
+    Module : `for row in csv.DictReader(f):` → `row["lat"]` (toujours du texte !).

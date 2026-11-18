@@ -1,0 +1,31 @@
+id: w9-l06
+world: 9
+type: code_fill
+title: "Découper une ligne CSV"
+concepts: [split, strip, conversion]
+difficulty: 2
+estimated_minutes: 3
+xp: 35
+story: "Une station de métro, une ligne de texte. Transforme-la en tuple bien typé."
+statement_md: "La ligne a la forme `\"id,nom,lat,lon,ligne\\n\"`. Renvoie le tuple `(id: int, nom: str, lat: float, lon: float, ligne: str)`, champs nettoyés."
+starter_code: |
+  def parse_station_line(line):
+      """Return (id, name, lat, lon, line) with the right types."""
+      pass
+solution: |
+  def parse_station_line(line):
+      """Return (id, name, lat, lon, line) with the right types."""
+      fields = line.strip().split(",")
+      return (int(fields[0]), fields[1].strip(), float(fields[2]), float(fields[3]), fields[4].strip())
+tests:
+  visible:
+    - call: parse_station_line("4,Cathédrale,48.5815,7.7509,A\n")
+      expected: "(4, 'Cathédrale', 48.5815, 7.7509, 'A')"
+  hidden:
+    - call: parse_station_line("12, Neudorf ,48.57,7.758, B ")
+      expected: "(12, 'Neudorf', 48.57, 7.758, 'B')"
+      label: "espaces autour des champs"
+hints:
+  - "`strip()` puis `split(\",\")`."
+  - "Convertis chaque champ : `int`, `float`, et `strip()` pour le texte."
+  - "Renvoie un tuple de 5 éléments."

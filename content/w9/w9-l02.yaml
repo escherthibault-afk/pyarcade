@@ -1,0 +1,28 @@
+id: w9-l02
+world: 9
+type: predict_output
+title: "Les méthodes de chaînes"
+concepts: [str, split, join, replace]
+difficulty: 2
+estimated_minutes: 2
+xp: 25
+story: "Prédis chaque transformation."
+statement_md: "Qu'affiche ce programme ?"
+code: |
+  s = "  la  vie  est  belle "
+  print(s.split())
+  print(s.split(" ")[:4])
+  print("-".join(s.split()))
+  print(s.strip().upper().replace("E", "3"))
+  print("a,b,,c".split(","))
+answer: |
+  ['la', 'vie', 'est', 'belle']
+  ['', '', 'la', '']
+  la-vie-est-belle
+  LA  VI3  3ST  B3LL3
+  ['a', 'b', '', 'c']
+hints:
+  - "`split()` sans argument coupe sur tous les blancs et ignore les vides."
+  - "`split(\" \")` coupe à CHAQUE espace : des chaînes vides apparaissent."
+  - "Deux virgules qui se suivent donnent un champ vide."
+explanation_md: "`split()` et `split(\" \")` ne font pas la même chose : avec plusieurs espaces, la seconde produit des chaînes vides."

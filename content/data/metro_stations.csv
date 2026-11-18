@@ -1,0 +1,20 @@
+id,name,lat,lon,line
+1,Gare Centrale,48.5850,7.7350,A
+2,Faubourg,48.5832,7.7412,A
+3,Place des Arts,48.5818,7.7468,A
+4,Cathédrale,48.5815,7.7509,A
+5,Université,48.5799,7.7620,A
+6,Esplanade,48.5781,7.7702,A
+7,Port du Rhin,48.5730,7.7900,A
+8,Haute-Ville,48.5978,7.7302,B
+9,Halles,48.5893,7.7421,B
+10,Kanal,48.5855,7.7470,B
+11,Krutenau,48.5780,7.7560,B
+12,Neudorf,48.5700,7.7580,B
+13,Stade,48.5620,7.7600,B
+14,Orangerie,48.5930,7.7750,C
+15,Parlement,48.5970,7.7700,C
+16,Contades,48.5900,7.7560,C
+17,Marché Neuf,48.5840,7.7490,C
+18,Hôpital,48.5770,7.7430,C
+

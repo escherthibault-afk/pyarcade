@@ -1,0 +1,7 @@
+id,name,lat,lon,capacity,bikes
+1,Gare,48.5850,7.7350,20,12
+2,Cathédrale,48.5815,7.7509,15,0
+3,Université,48.5799,7.7620,25,25
+4,Esplanade,48.5781,7.7702,10,4
+5,Orangerie,48.5930,7.7750,12,7
+6,Neudorf,48.5700,7.7580,18,1

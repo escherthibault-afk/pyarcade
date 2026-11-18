@@ -1,0 +1,151 @@
+id: boss-metro-exam
+world: 9
+type: boss
+variant: exam
+project: "metro:exam"
+title: "🎓 Examen Métro : le fichier à la française (60 min)"
+concepts: [fichiers, csv, dict, conversion]
+difficulty: 5
+estimated_minutes: 60
+xp: 0
+time_limit_minutes: 60
+files:
+  stations_fr.csv: "@data/metro_fr.csv"
+statement_md: "Sujet en 60 minutes, sans indice. Le fichier n'a **pas** le même format qu'en cours : lis-le bien."
+intro_md: |
+  ## Sujet : un export « à la française »
+
+  `stations_fr.csv` utilise le **point-virgule** comme séparateur et la **virgule décimale** (`48,5850`).
+  En-tête : `identifiant;nom;latitude;longitude;ligne`. Une ligne vide termine le fichier.
+header_code: ""
+steps:
+  - fn: parse_fr_float
+    title: "nombre à virgule"
+    statement_md: "`\"48,5850\"` → `48.585` (et `\" 7,7 \"` → `7.7`)."
+    starter_code: |
+      def parse_fr_float(text):
+          """Convert a French decimal string to float."""
+          pass
+    solution: |
+      def parse_fr_float(text):
+          """Convert a French decimal string to float."""
+          return float(text.strip().replace(",", "."))
+    tests:
+      visible:
+        - call: parse_fr_float("48,5850")
+          expected: "48.585"
+      hidden:
+        - call: parse_fr_float(" 7,7 ")
+          expected: "7.7"
+        - call: parse_fr_float("12")
+          expected: "12.0"
+    points: 2
+  - fn: read_fr_stations
+    title: "lire le fichier"
+    statement_md: "Renvoie `{id: {\"name\", \"lat\", \"lon\", \"line\"}}` (à la main ou avec `csv.reader(f, delimiter=\";\")`)."
+    starter_code: |
+      def read_fr_stations(file_path):
+          """Return {id: {"name", "lat", "lon", "line"}} from the semicolon file."""
+          pass
+    solution: |
+      def read_fr_stations(file_path):
+          """Return {id: {"name", "lat", "lon", "line"}} from the semicolon file."""
+          stations = {}
+          with open(file_path, encoding="utf-8") as f:
+              f.readline()
+              for line in f:
+                  if line.strip() == "":
+                      continue
+                  sid, name, lat, lon, metro_line = line.strip().split(";")
+                  stations[int(sid)] = {"name": name, "lat": parse_fr_float(lat), "lon": parse_fr_float(lon), "line": metro_line}
+          return stations
+    tests:
+      visible:
+        - call: read_fr_stations("stations_fr.csv")[1]
+          expected: "{'name': 'Gare Centrale', 'lat': 48.585, 'lon': 7.735, 'line': 'A'}"
+      hidden:
+        - call: len(read_fr_stations("stations_fr.csv"))
+          expected: "8"
+        - call: sorted(read_fr_stations("stations_fr.csv"))[-1]
+          expected: "11"
+    points: 5
+  - fn: lines_summary
+    title: "résumé par ligne"
+    statement_md: "Renvoie `{ligne: nombre de stations}`."
+    starter_code: |
+      def lines_summary(stations):
+          """Return {line: number of stations}."""
+          pass
+    solution: |
+      def lines_summary(stations):
+          """Return {line: number of stations}."""
+          counts = {}
+          for s in stations.values():
+              counts[s["line"]] = counts.get(s["line"], 0) + 1
+          return counts
+    tests:
+      visible:
+        - call: lines_summary(read_fr_stations("stations_fr.csv"))
+          expected: "{'A': 5, 'B': 3}"
+    points: 3
+  - fn: northernmost
+    title: "la plus au nord"
+    statement_md: "Nom de la station de plus grande latitude."
+    starter_code: |
+      def northernmost(stations):
+          """Return the name of the station with the greatest latitude."""
+          pass
+    solution: |
+      def northernmost(stations):
+          """Return the name of the station with the greatest latitude."""
+          best = None
+          for s in stations.values():
+              if best is None or s["lat"] > best["lat"]:
+                  best = s
+          return best["name"]
+    tests:
+      visible:
+        - call: northernmost(read_fr_stations("stations_fr.csv"))
+          expected: "'Halles'"
+    points: 3
+  - fn: write_csv
+    title: "réécrire en format standard"
+    statement_md: "Écris un fichier `id,name,lat,lon,line` (virgules, points décimaux, en-tête, ids triés). Renvoie le nombre de lignes de données écrites."
+    starter_code: |
+      def write_csv(stations, file_path):
+          """Write the stations as a standard comma CSV and return the number of data rows."""
+          pass
+    solution: |
+      def write_csv(stations, file_path):
+          """Write the stations as a standard comma CSV and return the number of data rows."""
+          with open(file_path, "w", encoding="utf-8") as f:
+              f.write("id,name,lat,lon,line\n")
+              for sid in sorted(stations):
+                  s = stations[sid]
+                  f.write(f"{sid},{s['name']},{s['lat']},{s['lon']},{s['line']}\n")
+          return len(stations)
+    tests:
+      visible:
+        - call: write_csv(read_fr_stations("stations_fr.csv"), "out.csv")
+          expected: "8"
+      hidden:
+        - setup: "write_csv(read_fr_stations('stations_fr.csv'), 'out.csv')"
+          call: "open('out.csv', encoding='utf-8').read().splitlines()[:2]"
+          expected: "['id,name,lat,lon,line', '1,Gare Centrale,48.585,7.735,A']"
+    points: 4
+  - fn: stations_between
+    title: "dans une bande de latitude"
+    statement_md: "Noms (triés) des stations dont la latitude est entre `low` et `high` inclus."
+    starter_code: |
+      def stations_between(stations, low, high):
+          """Return the sorted names of the stations with low <= lat <= high."""
+          pass
+    solution: |
+      def stations_between(stations, low, high):
+          """Return the sorted names of the stations with low <= lat <= high."""
+          return sorted(s["name"] for s in stations.values() if low <= s["lat"] <= high)
+    tests:
+      visible:
+        - call: stations_between(read_fr_stations("stations_fr.csv"), 48.583, 48.586)
+          expected: "['Faubourg', 'Gare Centrale', 'Kanal']"
+    points: 3

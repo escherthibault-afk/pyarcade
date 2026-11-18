@@ -1,0 +1,37 @@
+id: w9-l03
+world: 9
+type: code_fill
+title: "Les initiales"
+concepts: [split, str, join]
+difficulty: 2
+estimated_minutes: 3
+xp: 30
+story: "Le tableau des records n'affiche que les initiales des joueurs."
+statement_md: "Renvoie les initiales en majuscules suivies de points : `\"ada lovelace\"` → `\"A.L.\"`. Les espaces en trop sont ignorés."
+starter_code: |
+  def initials(full_name):
+      """Return the initials of full_name, e.g. 'A.L.'."""
+      pass
+solution: |
+  def initials(full_name):
+      """Return the initials of full_name, e.g. 'A.L.'."""
+      result = ""
+      for word in full_name.split():
+          result = result + word[0].upper() + "."
+      return result
+tests:
+  visible:
+    - call: initials("ada lovelace")
+      expected: "'A.L.'"
+  hidden:
+    - call: initials("  grace   brewster  hopper ")
+      expected: "'G.B.H.'"
+      label: "espaces multiples"
+    - call: initials("")
+      expected: "''"
+    - call: initials("Linus")
+      expected: "'L.'"
+hints:
+  - "`split()` sans argument gère les espaces multiples."
+  - "Pour chaque mot : première lettre en majuscule + point."
+  - "`word[0].upper() + \".\"`"

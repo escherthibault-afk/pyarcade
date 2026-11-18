@@ -1,0 +1,50 @@
+id: w9-l09
+world: 9
+type: code_fill
+title: "Lire les stations à la main"
+concepts: [fichiers, csv, dict, conversion]
+difficulty: 3
+estimated_minutes: 6
+xp: 55
+story: "Le plan du métro arrive en CSV. Transforme-le en dictionnaire de dictionnaires."
+statement_md: |
+  Le fichier `stations.csv` a l'en-tête `id,name,lat,lon,line` (et une ligne vide finale).
+  Renvoie `{id (int): {"name": str, "lat": float, "lon": float, "line": str}}`, **sans** le module `csv`.
+files:
+  stations.csv: "@data/metro_stations.csv"
+  mini.csv: "id,name,lat,lon,line\n1,Gare,48.5,7.7,A\n\n"
+starter_code: |
+  def read_stations(file_path):
+      """Return a dict {id: {"name", "lat", "lon", "line"}} read by hand."""
+      pass
+solution: |
+  def read_stations(file_path):
+      """Return a dict {id: {"name", "lat", "lon", "line"}} read by hand."""
+      stations = {}
+      with open(file_path, encoding="utf-8") as f:
+          f.readline()
+          for line in f:
+              if line.strip() == "":
+                  continue
+              sid, name, lat, lon, metro_line = line.strip().split(",")
+              stations[int(sid)] = {"name": name, "lat": float(lat), "lon": float(lon), "line": metro_line}
+      return stations
+tests:
+  visible:
+    - call: read_stations("mini.csv")
+      expected: "{1: {'name': 'Gare', 'lat': 48.5, 'lon': 7.7, 'line': 'A'}}"
+  hidden:
+    - call: len(read_stations("stations.csv"))
+      expected: "18"
+    - call: read_stations("stations.csv")[4]["name"]
+      expected: "'Cathédrale'"
+    - call: type(read_stations("stations.csv")[1]["lat"]).__name__
+      expected: "'float'"
+      label: "latitude convertie"
+constraints:
+  forbidden: ["import:csv"]
+hints:
+  - "Saute l'en-tête, ignore les lignes vides."
+  - "Déballe les 5 champs : `sid, name, lat, lon, metro_line = ...split(\",\")`."
+  - "La clé est `int(sid)`, la valeur un dict avec les types convertis."
+exam_tip: "TP Métro : `read_stations` à la main est presque toujours demandé avant la version `csv`. Entraîne-toi aux deux."

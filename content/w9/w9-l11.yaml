@@ -1,0 +1,45 @@
+id: w9-l11
+world: 9
+type: code_fill
+title: "Lire les connexions avec csv"
+concepts: [csv, DictReader, conversion]
+difficulty: 3
+estimated_minutes: 4
+xp: 45
+story: "Les tronçons entre stations, avec leur durée."
+statement_md: "Avec `csv.DictReader`, renvoie la liste des connexions `{\"from\": int, \"to\": int, \"line\": str, \"minutes\": int}` (dans l'ordre du fichier)."
+files:
+  connexions.csv: "@data/metro_connexions.csv"
+starter_code: |
+  import csv
+
+
+  def read_connexions(file_path):
+      """Return the list of connexion dicts with int ids and minutes."""
+      pass
+solution: |
+  import csv
+
+
+  def read_connexions(file_path):
+      """Return the list of connexion dicts with int ids and minutes."""
+      result = []
+      with open(file_path, encoding="utf-8") as f:
+          for row in csv.DictReader(f):
+              result.append({"from": int(row["from"]), "to": int(row["to"]), "line": row["line"], "minutes": int(row["minutes"])})
+      return result
+tests:
+  visible:
+    - call: read_connexions("connexions.csv")[0]
+      expected: "{'from': 1, 'to': 2, 'line': 'A', 'minutes': 2}"
+  hidden:
+    - call: len(read_connexions("connexions.csv"))
+      expected: "19"
+    - call: sum(c["minutes"] for c in read_connexions("connexions.csv"))
+      expected: "50"
+constraints:
+  required: ["import:csv"]
+hints:
+  - "`for row in csv.DictReader(f):`"
+  - "Les valeurs sont des chaînes : convertis `from`, `to`, `minutes`."
+  - "Construis un nouveau dict par ligne."

@@ -77,7 +77,7 @@ worlds:
     emoji: "📜"
     color: "#4ade80"
     radar: fichiers
-    bosses: []
+    bosses: [boss-wordle-guided, boss-metro-guided, boss-metro-twin-bikes, boss-metro-exam]
   - id: 10
     title: Algorithmes classiques
     title_en: Classic algorithms

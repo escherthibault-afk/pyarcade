@@ -1,0 +1,44 @@
+id: w9-l13
+world: 9
+type: write_test
+title: "Démasque les faux compteurs de mots"
+concepts: [split, tests, cas_limites]
+difficulty: 3
+estimated_minutes: 4
+xp: 40
+story: "Compter les mots d'une phrase… avec des espaces en trop, c'est moins simple."
+statement_md: "Écris des `assert` qui gardent la bonne version de `count_words` et éliminent les autres."
+signature: |
+  def count_words(text):
+      """Return the number of words (separated by any amount of whitespace)."""
+implementations:
+  - label: A
+    correct: false
+    code: |
+      def count_words(text):
+          return len(text.split(" "))
+  - label: B
+    correct: true
+    code: |
+      def count_words(text):
+          return len(text.split())
+  - label: C
+    correct: false
+    code: |
+      def count_words(text):
+          return text.count(" ") + 1
+  - label: D
+    correct: false
+    code: |
+      def count_words(text):
+          return len(text.strip().split(" "))
+starter_code: |
+  assert count_words("le chat dort") == 3
+solution: |
+  assert count_words("le chat dort") == 3
+  assert count_words("") == 0
+  assert count_words("le  chat") == 2
+hints:
+  - "Que donnent les versions fausses sur une chaîne vide ? Et avec deux espaces d'affilée ?"
+  - "`\"\".split(\" \")` vaut `['']` : longueur 1 !"
+  - "`assert count_words(\"\") == 0` et `assert count_words(\"le  chat\") == 2`."

@@ -1,0 +1,38 @@
+id: w9-l12
+world: 9
+type: golf
+title: "Golf : palindrome"
+concepts: [str, slicing, golf]
+difficulty: 2
+estimated_minutes: 3
+xp: 35
+story: "« Kayak », « Été »… Lis-le à l'envers. En un minimum de caractères."
+statement_md: "Renvoie `True` si `s` est un palindrome en ignorant la casse et les espaces. Par : **70** caractères."
+starter_code: |
+  def is_palindrome(s):
+      s = s.lower().replace(" ", "")
+      for i in range(len(s)):
+          if s[i] != s[len(s) - 1 - i]:
+              return False
+      return True
+solution: |
+  def is_palindrome(s):
+   s=s.lower().replace(" ","");return s==s[::-1]
+par_chars: 70
+tests:
+  visible:
+    - call: is_palindrome("Kayak")
+      expected: "True"
+  hidden:
+    - call: is_palindrome("Esope reste ici et se repose")
+      expected: "True"
+    - call: is_palindrome("python")
+      expected: "False"
+    - call: is_palindrome("")
+      expected: "True"
+constraints:
+  forbidden: [For, While]
+hints:
+  - "`s[::-1]` est la chaîne à l'envers."
+  - "Normalise d'abord : minuscules, sans espaces."
+  - "Une ligne : `return s == s[::-1]`."

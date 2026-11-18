@@ -1,0 +1,22 @@
+id: w9-l07
+world: 9
+type: trace
+title: "Trace la construction d'une chaîne"
+concepts: [str, concatenation, trace]
+difficulty: 2
+estimated_minutes: 3
+xp: 30
+story: "Une chaîne se construit lettre par lettre (en créant une nouvelle chaîne à chaque fois)."
+statement_md: "Note `c` et `out` après chaque passage sur la ligne marquée."
+code: |
+  out = ""
+  for c in "a1b2":
+      if c.isdigit():
+          out = out + "#"
+      else:
+          out = c.upper() + out  # @snap
+watch: [c, out]
+hints:
+  - "La ligne marquée ne s'exécute que pour les lettres."
+  - "La lettre est ajoutée DEVANT."
+  - "Deuxième ligne : c = 'b', out = 'BA#'."

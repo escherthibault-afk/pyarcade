@@ -1,0 +1,46 @@
+id: w9-l04
+world: 9
+type: bug_hunt
+title: "Le CSV qui plante"
+concepts: [fichiers, csv, entete, bug]
+difficulty: 3
+estimated_minutes: 5
+xp: 45
+story: "« invalid literal for int() with base 10: 'age' ». L'en-tête a encore frappé."
+statement_md: |
+  `read_ages(file_path)` lit un fichier `name,age` et renvoie le dict `{nom: âge (int)}`.
+  Le fichier a une **ligne d'en-tête** et une **ligne vide à la fin**. **2 bugs**.
+files:
+  ages.csv: "name,age\nada,36\nalan,41\n\n"
+starter_code: |
+  def read_ages(file_path):
+      """Return a dict {name: age} read from a name,age CSV file."""
+      ages = {}
+      with open(file_path, encoding="utf-8") as f:
+          for line in f:
+              name, age = line.strip().split(",")
+              ages[name] = int(age)
+      return ages
+solution: |
+  def read_ages(file_path):
+      """Return a dict {name: age} read from a name,age CSV file."""
+      ages = {}
+      with open(file_path, encoding="utf-8") as f:
+          f.readline()
+          for line in f:
+              if line.strip() == "":
+                  continue
+              name, age = line.strip().split(",")
+              ages[name] = int(age)
+      return ages
+bugs: 2
+tests:
+  visible:
+    - call: read_ages("ages.csv")
+      expected: "{'ada': 36, 'alan': 41}"
+hints:
+  - "Quelle est la première ligne du fichier ? Et la dernière ?"
+  - "Il faut sauter l'en-tête (`f.readline()` une fois) et ignorer les lignes vides."
+  - "`if line.strip() == \"\": continue`"
+explanation_md: "Deux pièges classiques du CSV lu à la main : l'en-tête n'est pas une donnée, et une ligne vide ne se découpe pas en 2 champs (`ValueError: not enough values to unpack`)."
+exam_tip: "Pour un CSV lu à la main : saute l'en-tête, `strip()` chaque ligne, ignore les lignes vides, convertis les types."

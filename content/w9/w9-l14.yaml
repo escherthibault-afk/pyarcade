@@ -1,0 +1,33 @@
+id: w9-l14
+world: 9
+type: copy
+title: "Mode copie : nettoyer une liste de mots"
+concepts: [str, listes, strip, lower]
+difficulty: 2
+estimated_minutes: 3
+xp: 35
+story: "DS papier, fonction de nettoyage."
+statement_md: "Renvoie la liste des mots nettoyés (`strip`, minuscules), sans les chaînes vides, dans l'ordre."
+starter_code: |
+  def clean_words(words):
+      """Return the stripped lowercase non-empty words."""
+      pass
+solution: |
+  def clean_words(words):
+      """Return the stripped lowercase non-empty words."""
+      result = []
+      for w in words:
+          w = w.strip().lower()
+          if w != "":
+              result.append(w)
+      return result
+tests:
+  visible:
+    - call: clean_words([" Crane\n", "", "SLATE "])
+      expected: "['crane', 'slate']"
+  hidden:
+    - call: clean_words([])
+      expected: "[]"
+    - call: clean_words(["   "])
+      expected: "[]"
+hints: []

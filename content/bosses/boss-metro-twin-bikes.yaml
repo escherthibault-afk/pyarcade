@@ -1,0 +1,223 @@
+id: boss-metro-twin-bikes
+world: 9
+type: boss
+variant: twin
+project: "metro:bikes"
+title: "👯 Jumeau : vélos en libre-service"
+concepts: [fichiers, csv, dict, folium]
+difficulty: 4
+estimated_minutes: 45
+xp: 380
+files:
+  velos.csv: "@data/velo_stations.csv"
+statement_md: "Même démarche que le métro (CSV → dict → carte), autre réseau : des stations de vélos qui se remplissent et se vident."
+intro_md: |
+  ## Vélos en libre-service (données inventées)
+
+  `velos.csv` : `id,name,lat,lon,capacity,bikes` — capacité de la station et nombre de vélos présents.
+  Les stations sont rangées dans `{id: {"name", "lat", "lon", "capacity", "bikes"}}`.
+  Un trajet `(from, to)` retire un vélo à la station de départ et l'ajoute à l'arrivée (s'il y en a un, et s'il reste une place).
+header_code: |
+  import csv
+  import folium_lite as folium
+steps:
+  - fn: read_bike_stations
+    title: "lire les stations"
+    statement_md: "Avec `csv.DictReader`, renvoie le dict de stations avec `id`, `capacity`, `bikes` en `int` et `lat`, `lon` en `float`."
+    starter_code: |
+      def read_bike_stations(file_path):
+          """Return {id: {"name", "lat", "lon", "capacity", "bikes"}}."""
+          pass
+    solution: |
+      def read_bike_stations(file_path):
+          """Return {id: {"name", "lat", "lon", "capacity", "bikes"}}."""
+          stations = {}
+          with open(file_path, encoding="utf-8") as f:
+              for row in csv.DictReader(f):
+                  stations[int(row["id"])] = {"name": row["name"], "lat": float(row["lat"]), "lon": float(row["lon"]),
+                                              "capacity": int(row["capacity"]), "bikes": int(row["bikes"])}
+          return stations
+    tests:
+      visible:
+        - call: read_bike_stations("velos.csv")[2]
+          expected: "{'name': 'Cathédrale', 'lat': 48.5815, 'lon': 7.7509, 'capacity': 15, 'bikes': 0}"
+      hidden:
+        - call: len(read_bike_stations("velos.csv"))
+          expected: "6"
+    hints: ["`csv.DictReader`.", "Convertis chaque champ numérique.", "Clé : `int(row[\"id\"])`."]
+    points: 2.5
+  - fn: fill_rate
+    title: "taux de remplissage"
+    statement_md: "`bikes / capacity` (0 si la capacité est nulle)."
+    starter_code: |
+      def fill_rate(station):
+          """Return bikes / capacity (0 for a zero capacity)."""
+          pass
+    solution: |
+      def fill_rate(station):
+          """Return bikes / capacity (0 for a zero capacity)."""
+          if station["capacity"] == 0:
+              return 0
+          return station["bikes"] / station["capacity"]
+    tests:
+      visible:
+        - call: "fill_rate({'capacity': 20, 'bikes': 5})"
+          expected: "0.25"
+      hidden:
+        - call: "fill_rate({'capacity': 0, 'bikes': 0})"
+          expected: "0"
+    hints: ["Division.", "Cas capacité nulle.", "`station[\"bikes\"] / station[\"capacity\"]`"]
+    points: 1.5
+  - fn: empty_and_full
+    title: "stations vides et pleines"
+    statement_md: "Renvoie le tuple `(ids des stations vides, ids des stations pleines)`, chaque liste triée."
+    starter_code: |
+      def empty_and_full(stations):
+          """Return (sorted ids of empty stations, sorted ids of full stations)."""
+          pass
+    solution: |
+      def empty_and_full(stations):
+          """Return (sorted ids of empty stations, sorted ids of full stations)."""
+          empty = []
+          full = []
+          for sid in sorted(stations):
+              s = stations[sid]
+              if s["bikes"] == 0:
+                  empty.append(sid)
+              elif s["bikes"] == s["capacity"]:
+                  full.append(sid)
+          return (empty, full)
+    tests:
+      visible:
+        - call: empty_and_full(read_bike_stations("velos.csv"))
+          expected: "([2], [3])"
+    hints: ["Parcours les ids triés.", "Vide : 0 vélo ; pleine : bikes == capacity.", "Renvoie un tuple de deux listes."]
+    points: 2
+  - fn: distance2
+    title: "distance (au carré)"
+    statement_md: "`(lat1 - lat2)² + (lon1 - lon2)²` entre une station et un point `(lat, lon)` (approximation suffisante en ville)."
+    starter_code: |
+      def distance2(station, lat, lon):
+          """Return the squared flat distance between station and (lat, lon)."""
+          pass
+    solution: |
+      def distance2(station, lat, lon):
+          """Return the squared flat distance between station and (lat, lon)."""
+          return (station["lat"] - lat) ** 2 + (station["lon"] - lon) ** 2
+    tests:
+      visible:
+        - call: "distance2({'lat': 1, 'lon': 2}, 4, 6)"
+          expected: "25"
+    hints: ["Somme de deux carrés.", "Pas de racine.", "`(dlat) ** 2 + (dlon) ** 2`"]
+    points: 1
+  - fn: nearest_with_bike
+    title: "le vélo le plus proche"
+    statement_md: "Id de la station la plus proche de `(lat, lon)` **qui a au moins un vélo** (`None` s'il n'y en a aucune)."
+    starter_code: |
+      def nearest_with_bike(stations, lat, lon):
+          """Return the id of the nearest station with at least one bike, or None."""
+          pass
+    solution: |
+      def nearest_with_bike(stations, lat, lon):
+          """Return the id of the nearest station with at least one bike, or None."""
+          best = None
+          for sid in sorted(stations):
+              s = stations[sid]
+              if s["bikes"] > 0 and (best is None or distance2(s, lat, lon) < distance2(stations[best], lat, lon)):
+                  best = sid
+          return best
+    tests:
+      visible:
+        - call: nearest_with_bike(read_bike_stations("velos.csv"), 48.5815, 7.7509)
+          expected: "3"
+          label: "la Cathédrale est vide"
+      hidden:
+        - call: "nearest_with_bike({1: {'lat': 0, 'lon': 0, 'bikes': 0}}, 0, 0)"
+          expected: "None"
+        - call: nearest_with_bike(read_bike_stations("velos.csv"), 48.578, 7.770)
+          expected: "4"
+    hints: ["Motif du minimum, avec une condition en plus.", "On ignore les stations sans vélo.", "`None` au départ."]
+    points: 3
+  - fn: apply_trip
+    title: "un trajet"
+    statement_md: |
+      Renvoie une **nouvelle** version des stations après le trajet `(from_id, to_id)` : si le départ a un vélo **et** l'arrivée
+      a une place libre, un vélo passe de l'un à l'autre ; sinon rien ne change. Ne modifie pas `stations`.
+    starter_code: |
+      def apply_trip(stations, from_id, to_id):
+          """Return new stations after moving one bike from from_id to to_id (if possible)."""
+          pass
+    solution: |
+      def apply_trip(stations, from_id, to_id):
+          """Return new stations after moving one bike from from_id to to_id (if possible)."""
+          new = {sid: dict(s) for sid, s in stations.items()}
+          start = new[from_id]
+          end = new[to_id]
+          if start["bikes"] > 0 and end["bikes"] < end["capacity"]:
+              start["bikes"] -= 1
+              end["bikes"] += 1
+          return new
+    tests:
+      visible:
+        - call: "apply_trip(read_bike_stations('velos.csv'), 1, 2)[2]['bikes']"
+          expected: "1"
+      hidden:
+        - call: "apply_trip(read_bike_stations('velos.csv'), 2, 1)[1]['bikes']"
+          expected: "12"
+          label: "départ vide"
+        - call: "apply_trip(read_bike_stations('velos.csv'), 1, 3)[3]['bikes']"
+          expected: "25"
+          label: "arrivée pleine"
+        - setup: "S = read_bike_stations('velos.csv')"
+          call: "apply_trip(S, 1, 2)[1]['bikes']"
+          pure: true
+          expected: "11"
+          label: "pure"
+    hints: ["Copie chaque station : `{sid: dict(s) for ...}`.", "Deux conditions.", "Modifie la copie, renvoie-la."]
+    points: 3
+  - fn: simulate_trips
+    title: "une journée"
+    statement_md: "Applique les trajets `(from, to)` de la liste dans l'ordre et renvoie les stations finales."
+    starter_code: |
+      def simulate_trips(stations, trips):
+          """Apply every trip in order and return the final stations."""
+          pass
+    solution: |
+      def simulate_trips(stations, trips):
+          """Apply every trip in order and return the final stations."""
+          for a, b in trips:
+              stations = apply_trip(stations, a, b)
+          return stations
+    tests:
+      visible:
+        - call: "[s['bikes'] for s in simulate_trips(read_bike_stations('velos.csv'), [(1, 2), (1, 2), (2, 6)]).values()]"
+          expected: "[10, 1, 25, 4, 7, 2]"
+    hints: ["Boucle sur les trajets.", "Déballe `a, b`.", "`stations = apply_trip(...)`"]
+    points: 2
+  - fn: bike_map
+    title: "la carte"
+    statement_md: "Carte centrée sur la première station (zoom 14) avec un `CircleMarker` par station : rouge si vide, orange si pleine, vert sinon ; `popup` = nom."
+    starter_code: |
+      def bike_map(stations):
+          """Return a folium map of the stations colored by state."""
+          pass
+    solution: |
+      def bike_map(stations):
+          """Return a folium map of the stations colored by state."""
+          first = stations[sorted(stations)[0]]
+          m = folium.Map(location=(first["lat"], first["lon"]), zoom_start=14)
+          for s in stations.values():
+              if s["bikes"] == 0:
+                  color = "red"
+              elif s["bikes"] == s["capacity"]:
+                  color = "orange"
+              else:
+                  color = "green"
+              folium.CircleMarker(location=(s["lat"], s["lon"]), radius=7, popup=s["name"], color=color).add_to(m)
+          return m
+    tests:
+      visible:
+        - call: "[c.color for c in bike_map(read_bike_stations('velos.csv')).children]"
+          expected: "['green', 'red', 'orange', 'green', 'green', 'green']"
+    hints: ["Une carte, une boucle, un marqueur par station.", "Choisis la couleur avec un if/elif/else.", "`.add_to(m)`"]
+    points: 3

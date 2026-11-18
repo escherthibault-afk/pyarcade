@@ -1,0 +1,39 @@
+id: w9-l10
+world: 9
+type: lesson
+title: "Le module csv"
+concepts: [csv, DictReader]
+difficulty: 2
+estimated_minutes: 2
+xp: 20
+story: "Python sait déjà découper les CSV. Il suffit de lui demander."
+statement_md: |
+  ```python
+  import csv
+  with open("stations.csv", encoding="utf-8") as f:
+      for row in csv.DictReader(f):      # l'en-tête sert de clés
+          print(row["name"], float(row["lat"]))
+  ```
+  `csv.reader(f)` donne des listes ; `csv.DictReader(f)` donne des dicts. Les valeurs restent des **chaînes**.
+  Bonus : `csv` gère les virgules à l'intérieur de guillemets (`"Paris, France"`), ce que `split(",")` casse.
+files:
+  stations.csv: "@data/metro_stations.csv"
+example_code: |
+  import csv
+
+  with open("stations.csv", encoding="utf-8") as f:
+      rows = list(csv.DictReader(f))
+  print(len(rows))
+  print(rows[0]["name"])
+task_md: "Affiche le **nombre de stations de la ligne B**. Attendu : `6`."
+expected_output: "6\n"
+solution: |
+  import csv
+
+  with open("stations.csv", encoding="utf-8") as f:
+      rows = list(csv.DictReader(f))
+  print(sum(1 for r in rows if r["line"] == "B"))
+hints:
+  - "Filtre les lignes dont `row[\"line\"] == \"B\"`."
+  - "Un compteur, ou `sum(1 for r in rows if ...)`."
+  - "Remplace les deux `print` par un seul."
