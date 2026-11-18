@@ -96,6 +96,8 @@ body::before {
 }
 #root { position: relative; z-index: 1; }
 
+/* Component classes live in a cascade layer: Tailwind utilities (bg-ok/20, border-ko…) must be able to override them */
+@layer components {
 .card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); }
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
@@ -112,6 +114,7 @@ body::before {
 .btn-ghost { background: transparent; }
 .pill { display: inline-flex; align-items: center; gap: .35rem; padding: .15rem .6rem; border-radius: 999px; font-size: .8rem; font-weight: 600; border: 1px solid var(--line); background: var(--panel-2); }
 .kbd { font-family: var(--font-mono); font-size: .75rem; padding: .05rem .35rem; border-radius: 6px; border: 1px solid var(--line); background: var(--bg-2); }
+}
 :focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
 
 /* Markdown statements */

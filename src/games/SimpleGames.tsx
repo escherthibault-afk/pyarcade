@@ -317,6 +317,8 @@ export function QuizGame({ session }: { session: Session }) {
               }`}
             >
               <span className="kbd">{'ABCDEF'[k]}</span> {c}
+              {picked !== null && k === q.answer && <span className="ml-auto font-sans text-ok">✓</span>}
+              {picked === k && k !== q.answer && <span className="ml-auto font-sans text-ko">✗</span>}
             </button>
           ))}
         </div>
