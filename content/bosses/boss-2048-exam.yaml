@@ -1,0 +1,272 @@
+id: boss-2048-exam
+world: 12
+type: boss
+variant: exam
+project: "g2048:exam"
+title: "🎓 Examen final : 2048 ({{N}}×{{N}}, 90 min)"
+concepts: [grilles, etat, pure, transposition]
+difficulty: 5
+estimated_minutes: 90
+xp: 0
+time_limit_minutes: 90
+variants:
+  - label: "Plateau 4×4"
+    vars: {N: 4}
+  - label: "Plateau 5×5"
+    vars: {N: 5}
+statement_md: "Le projet final en conditions d'examen : 90 minutes, sans indice, plateau de taille {{N}}."
+intro_md: |
+  ## Sujet : 2048 sur un plateau {{N}}×{{N}}
+
+  État : `{"grid", "score", "game_over", "size"}`. Pas de classes. Modèle **pur**.
+  Une seule fonction de fusion (`merge_line_left`) ; les autres directions par transposition / inversion.
+  Après un coup qui change la grille : points ajoutés, nouvelle tuile (2 à 90 %, 4 sinon) sur une case vide au hasard, fin de partie mise à jour.
+header_code: |
+  import random
+
+  SIZE = {{N}}
+steps:
+  - fn: create_game_state
+    title: "état"
+    statement_md: "Grille `size × size` de 0 (par défaut `SIZE`)."
+    starter_code: |
+      def create_game_state(size=SIZE):
+          """Return a new empty state."""
+          pass
+    solution: |
+      def create_game_state(size=SIZE):
+          """Return a new empty state."""
+          return {"grid": [[0] * size for _ in range(size)], "score": 0, "game_over": False, "size": size}
+    tests:
+      visible:
+        - call: len(create_game_state()["grid"])
+          expected: "{{N}}"
+      hidden:
+        - setup: "s = create_game_state()\ns['grid'][0][0] = 2"
+          call: "s['grid'][1][0]"
+          expected: "0"
+    points: 1.5
+  - fn: merge_line_left
+    title: "fusion"
+    statement_md: "`(ligne poussée à gauche avec fusions, points)`."
+    starter_code: |
+      def merge_line_left(line):
+          """Return (merged line, points)."""
+          pass
+    solution: |
+      def merge_line_left(line):
+          """Return (merged line, points)."""
+          values = [v for v in line if v != 0]
+          merged = []
+          points = 0
+          i = 0
+          while i < len(values):
+              if i + 1 < len(values) and values[i] == values[i + 1]:
+                  merged.append(2 * values[i])
+                  points += 2 * values[i]
+                  i += 2
+              else:
+                  merged.append(values[i])
+                  i += 1
+          return (merged + [0] * (len(line) - len(merged)), points)
+    tests:
+      visible:
+        - call: merge_line_left([2, 2, 2, 2])
+          expected: "([4, 4, 0, 0], 8)"
+      hidden:
+        - call: merge_line_left([4, 4, 4, 0])
+          expected: "([8, 4, 0, 0], 8)"
+        - call: merge_line_left([2, 2, 4, 0, 4])
+          expected: "([4, 8, 0, 0, 0], 12)"
+        - call: merge_line_left([2, 0, 0, 2])
+          pure: true
+          expected: "([4, 0, 0, 0], 4)"
+    points: 4
+  - fn: transpose_grid
+    title: "transposer"
+    statement_md: "Lignes ↔ colonnes."
+    starter_code: |
+      def transpose_grid(grid):
+          """Return the transposed grid."""
+          pass
+    solution: |
+      def transpose_grid(grid):
+          """Return the transposed grid."""
+          return [list(col) for col in zip(*grid)]
+    tests:
+      visible:
+        - call: transpose_grid([[1, 2], [3, 4]])
+          expected: "[[1, 3], [2, 4]]"
+    points: 1
+  - fn: reverse_grid_rows
+    title: "inverser"
+    statement_md: "Chaque ligne à l'envers."
+    starter_code: |
+      def reverse_grid_rows(grid):
+          """Return the grid with reversed rows."""
+          pass
+    solution: |
+      def reverse_grid_rows(grid):
+          """Return the grid with reversed rows."""
+          return [row[::-1] for row in grid]
+    tests:
+      visible:
+        - call: reverse_grid_rows([[1, 2], [3, 4]])
+          expected: "[[2, 1], [4, 3]]"
+    points: 1
+  - fn: move
+    title: "les 4 directions"
+    statement_md: "`move(grid, direction)` → `(nouvelle grille, points)` pour `\"left\"`, `\"right\"`, `\"up\"`, `\"down\"` (sans appeler `merge_line_left` plus d'une fois dans le code de cette fonction)."
+    starter_code: |
+      def move(grid, direction):
+          """Return (grid after the move, points)."""
+          pass
+    solution: |
+      def move(grid, direction):
+          """Return (grid after the move, points)."""
+          if direction in ("up", "down"):
+              grid = transpose_grid(grid)
+          if direction in ("right", "down"):
+              grid = reverse_grid_rows(grid)
+          new = []
+          points = 0
+          for row in grid:
+              line, p = merge_line_left(row)
+              new.append(line)
+              points += p
+          if direction in ("right", "down"):
+              new = reverse_grid_rows(new)
+          if direction in ("up", "down"):
+              new = transpose_grid(new)
+          return (new, points)
+    tests:
+      visible:
+        - call: move([[2, 0, 2, 0], [0, 4, 4, 4], [2, 2, 0, 2], [0, 0, 0, 8]], "left")
+          expected: "([[4, 0, 0, 0], [8, 4, 0, 0], [4, 2, 0, 0], [8, 0, 0, 0]], 16)"
+      hidden:
+        - call: move([[2, 0, 2, 0], [0, 4, 4, 4], [2, 2, 0, 2], [0, 0, 0, 8]], "right")
+          expected: "([[0, 0, 0, 4], [0, 0, 4, 8], [0, 0, 2, 4], [0, 0, 0, 8]], 16)"
+        - call: move([[2, 0, 2, 0], [0, 4, 4, 4], [2, 2, 0, 2], [0, 0, 0, 8]], "up")
+          expected: "([[4, 4, 2, 4], [0, 2, 4, 2], [0, 0, 0, 8], [0, 0, 0, 0]], 4)"
+        - call: move([[2, 0, 2, 0], [0, 4, 4, 4], [2, 2, 0, 2], [0, 0, 0, 8]], "down")
+          expected: "([[0, 0, 0, 0], [0, 0, 0, 4], [0, 4, 2, 2], [4, 2, 4, 8]], 4)"
+    constraints:
+      max_count: {"call:merge_line_left": 1}
+    points: 4
+  - fn: can_move
+    title: "coup possible ?"
+    statement_md: "Case vide ou deux voisines égales."
+    starter_code: |
+      def can_move(grid):
+          """Return True if a move is possible."""
+          pass
+    solution: |
+      def can_move(grid):
+          """Return True if a move is possible."""
+          n = len(grid)
+          for y in range(n):
+              for x in range(n):
+                  if grid[y][x] == 0:
+                      return True
+                  if x + 1 < n and grid[y][x] == grid[y][x + 1]:
+                      return True
+                  if y + 1 < n and grid[y][x] == grid[y + 1][x]:
+                      return True
+          return False
+    tests:
+      visible:
+        - call: can_move([[2, 4], [4, 2]])
+          expected: "False"
+      hidden:
+        - call: can_move([[2, 4], [2, 8]])
+          expected: "True"
+    points: 2
+  - fn: add_random_tile
+    title: "nouvelle tuile"
+    statement_md: "Nouvel état avec un 2 (90 %) ou un 4 sur une case vide au hasard (copie inchangée si pleine)."
+    starter_code: |
+      def add_random_tile(state):
+          """Return a new state with one more random tile."""
+          pass
+    solution: |
+      def add_random_tile(state):
+          """Return a new state with one more random tile."""
+          new = dict(state)
+          new["grid"] = [row[:] for row in state["grid"]]
+          cells = [(x, y) for y in range(len(new["grid"])) for x in range(len(new["grid"])) if new["grid"][y][x] == 0]
+          if cells:
+              x, y = random.choice(cells)
+              new["grid"][y][x] = 2 if random.random() < 0.9 else 4
+          return new
+    tests:
+      visible:
+        - call: "sum(v != 0 for r in add_random_tile(create_game_state())['grid'] for v in r)"
+          expected: "1"
+      hidden:
+        - call: "add_random_tile(create_game_state())['score']"
+          expected: "0"
+      statistical:
+        - expr: "sum(max(max(r) for r in add_random_tile(create_game_state())['grid']) == 4 for _ in range(10000)) / 10000"
+          approx: 0.1
+          tol: 0.015
+    points: 2
+  - fn: play_move
+    title: "jouer"
+    statement_md: "Coup complet, pur. Si la grille ne change pas : copie inchangée."
+    starter_code: |
+      def play_move(state, direction):
+          """Return the new state after the move."""
+          pass
+    solution: |
+      def play_move(state, direction):
+          """Return the new state after the move."""
+          grid, points = move(state["grid"], direction)
+          new = dict(state)
+          if grid == state["grid"]:
+              new["grid"] = [row[:] for row in state["grid"]]
+              return new
+          new["grid"] = grid
+          new["score"] = state["score"] + points
+          new = add_random_tile(new)
+          new["game_over"] = not can_move(new["grid"])
+          return new
+    tests:
+      visible:
+        - setup: "s = create_game_state()\ns['grid'][0][0] = 2\ns['grid'][0][1] = 2"
+          call: play_move(s, 'left')['score']
+          expected: "4"
+      hidden:
+        - setup: "s = create_game_state()\ns['grid'][0][0] = 2"
+          call: "play_move(s, 'left') == s"
+          expected: "True"
+          label: "coup sans effet"
+        - setup: "s = create_game_state()\ns['grid'][0][0] = 2\ns['grid'][0][1] = 2"
+          call: "play_move(s, 'left')['grid'][0][1] == 0 or True"
+          pure: true
+          expected: "True"
+          label: "pur"
+    points: 3
+  - fn: max_tile
+    title: "meilleure tuile"
+    statement_md: "Plus grande valeur de la grille."
+    starter_code: |
+      def max_tile(grid):
+          """Return the greatest tile."""
+          pass
+    solution: |
+      def max_tile(grid):
+          """Return the greatest tile."""
+          best = 0
+          for row in grid:
+              for v in row:
+                  if v > best:
+                      best = v
+          return best
+    tests:
+      visible:
+        - call: max_tile([[2, 64], [8, 0]])
+          expected: "64"
+      hidden:
+        - call: max_tile([[0, 0], [0, 0]])
+          expected: "0"
+    points: 1.5

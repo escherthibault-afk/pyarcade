@@ -165,3 +165,9 @@ body::before {
   body { background: white; color: black; }
   .card { box-shadow: none; border-color: #ccc; break-inside: avoid; }
 }
+
+/* Pixelify Sans has a broken "fi" ligature: disable ligatures wherever the display font is used */
+.font-display, .md h1, .md h2, .md h3 {
+  font-variant-ligatures: none;
+  font-feature-settings: "liga" 0, "clig" 0, "dlig" 0;
+}

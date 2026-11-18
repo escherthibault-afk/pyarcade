@@ -99,7 +99,7 @@ worlds:
     emoji: "🏗️"
     color: "#fb923c"
     radar: fonctions
-    bosses: []
+    bosses: [boss-2048-guided, boss-2048-twin-snake, boss-2048-exam]
   - id: wordle
     title: Parcours express Wordle
     title_en: Wordle fast track

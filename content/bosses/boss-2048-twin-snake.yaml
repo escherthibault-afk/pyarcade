@@ -1,0 +1,283 @@
+id: boss-2048-twin-snake
+world: 12
+type: boss
+variant: twin
+project: "g2048:snake"
+title: "👯 Jumeau : Snake en style fonctionnel"
+concepts: [etat, pure, mvc, tuples, listes]
+difficulty: 5
+estimated_minutes: 60
+xp: 500
+live_game: snake
+statement_md: "Même architecture que le 2048 (état dans un dict, modèle pur, vue, contrôleur), autre jeu."
+intro_md: |
+  ## Le serpent
+
+  Le serpent est une **liste de positions** `(x, y)`, la **tête en premier**. L'état est un dict :
+  `{"snake", "direction", "food", "score", "over", "width", "height"}`.
+  À chaque tick, la tête avance d'une case dans `direction`. Si elle sort du plateau ou rencontre le corps → partie finie.
+  Si elle mange la nourriture → le serpent **grandit** (on garde la queue), le score augmente et une nouvelle nourriture apparaît.
+  Sinon → il avance (on retire la queue). On ne peut pas faire demi-tour.
+
+  Toutes les fonctions du modèle sont **pures**. `DIRECTIONS` et `OPPOSITE` sont fournis.
+header_code: |
+  import random
+
+  DIRECTIONS = {"up": (0, -1), "down": (0, 1), "left": (-1, 0), "right": (1, 0)}
+  OPPOSITE = {"up": "down", "down": "up", "left": "right", "right": "left"}
+steps:
+  - fn: create_snake_state
+    title: "état initial"
+    statement_md: "Serpent de 3 cases `[(2, y), (1, y), (0, y)]` avec `y = height // 2`, direction `\"right\"`, pas de nourriture, score 0."
+    starter_code: |
+      def create_snake_state(width, height):
+          """Return the initial state."""
+          pass
+    solution: |
+      def create_snake_state(width, height):
+          """Return the initial state."""
+          y = height // 2
+          return {"snake": [(2, y), (1, y), (0, y)], "direction": "right", "food": None, "score": 0, "over": False, "width": width, "height": height}
+    tests:
+      visible:
+        - call: create_snake_state(6, 3)
+          expected: "{'snake': [(2, 1), (1, 1), (0, 1)], 'direction': 'right', 'food': None, 'score': 0, 'over': False, 'width': 6, 'height': 3}"
+    hints: ["Un dict littéral.", "`y = height // 2`.", "La tête est le premier élément."]
+    points: 1
+  - fn: next_head
+    title: "où va la tête ?"
+    statement_md: "Nouvelle position de la tête dans `direction` (utilise `DIRECTIONS`)."
+    starter_code: |
+      def next_head(snake, direction):
+          """Return the next position of the head."""
+          pass
+    solution: |
+      def next_head(snake, direction):
+          """Return the next position of the head."""
+          dx, dy = DIRECTIONS[direction]
+          x, y = snake[0]
+          return (x + dx, y + dy)
+    tests:
+      visible:
+        - call: next_head([(2, 1), (1, 1)], "up")
+          expected: "(2, 0)"
+      hidden:
+        - call: next_head([(0, 0)], "left")
+          expected: "(-1, 0)"
+    hints: ["Déballe le décalage et la tête.", "Addition coordonnée par coordonnée.", "Renvoie un tuple."]
+    points: 1
+  - fn: change_direction
+    title: "tourner"
+    statement_md: "Nouvel état avec la nouvelle direction, **sauf** si c'est le demi-tour (ou une direction inconnue) : alors inchangé."
+    starter_code: |
+      def change_direction(state, direction):
+          """Return a new state with the new direction (no U-turn)."""
+          pass
+    solution: |
+      def change_direction(state, direction):
+          """Return a new state with the new direction (no U-turn)."""
+          new = dict(state)
+          if direction in DIRECTIONS and direction != OPPOSITE[state["direction"]]:
+              new["direction"] = direction
+          return new
+    tests:
+      visible:
+        - call: change_direction(create_snake_state(6, 3), "up")["direction"]
+          expected: "'up'"
+      hidden:
+        - call: change_direction(create_snake_state(6, 3), "left")["direction"]
+          expected: "'right'"
+          label: "pas de demi-tour"
+        - call: change_direction(create_snake_state(6, 3), "?")["direction"]
+          expected: "'right'"
+        - call: change_direction(create_snake_state(6, 3), "up")
+          pure: true
+          expected: "{'snake': [(2, 1), (1, 1), (0, 1)], 'direction': 'up', 'food': None, 'score': 0, 'over': False, 'width': 6, 'height': 3}"
+    hints: ["Copie l'état.", "`OPPOSITE[state[\"direction\"]]` est le demi-tour.", "Deux conditions."]
+    points: 1.5
+  - fn: empty_cells
+    title: "cases libres"
+    statement_md: "Liste des `(x, y)` (ligne par ligne) qui ne sont pas occupées par le serpent."
+    starter_code: |
+      def empty_cells(state):
+          """Return the cells not occupied by the snake."""
+          pass
+    solution: |
+      def empty_cells(state):
+          """Return the cells not occupied by the snake."""
+          cells = []
+          for y in range(state["height"]):
+              for x in range(state["width"]):
+                  if (x, y) not in state["snake"]:
+                      cells.append((x, y))
+          return cells
+    tests:
+      visible:
+        - call: "empty_cells({'snake': [(0, 0)], 'width': 2, 'height': 1})"
+          expected: "[(1, 0)]"
+      hidden:
+        - call: "len(empty_cells(create_snake_state(6, 3)))"
+          expected: "15"
+    hints: ["Double boucle.", "`(x, y) not in state[\"snake\"]`.", "Ordre : y puis x."]
+    points: 1.5
+  - fn: place_food
+    title: "la nourriture"
+    statement_md: "Nouvel état avec `food` sur une case libre tirée au hasard (`None` s'il n'y en a pas)."
+    starter_code: |
+      def place_food(state):
+          """Return a new state with food on a random free cell."""
+          pass
+    solution: |
+      def place_food(state):
+          """Return a new state with food on a random free cell."""
+          new = dict(state)
+          cells = empty_cells(state)
+          new["food"] = random.choice(cells) if cells else None
+          return new
+    tests:
+      visible:
+        - call: "place_food(create_snake_state(6, 3))['food'] not in create_snake_state(6, 3)['snake']"
+          expected: "True"
+      hidden:
+        - call: "place_food({'snake': [(0, 0)], 'width': 1, 'height': 1, 'food': (5, 5)})['food']"
+          expected: "None"
+          label: "plateau plein"
+    hints: ["Réutilise `empty_cells`.", "`random.choice`.", "`None` si la liste est vide."]
+    points: 1.5
+  - fn: hits_wall
+    title: "le mur"
+    statement_md: "`True` si `pos` est hors du plateau."
+    starter_code: |
+      def hits_wall(pos, width, height):
+          """Return True if pos is outside the board."""
+          pass
+    solution: |
+      def hits_wall(pos, width, height):
+          """Return True if pos is outside the board."""
+          return not (0 <= pos[0] < width and 0 <= pos[1] < height)
+    tests:
+      visible:
+        - call: hits_wall((6, 0), 6, 3)
+          expected: "True"
+      hidden:
+        - call: hits_wall((0, 0), 6, 3)
+          expected: "False"
+        - call: hits_wall((0, -1), 6, 3)
+          expected: "True"
+    hints: ["Dans le plateau : 0 ≤ x < width et 0 ≤ y < height.", "La négation.", "`not (...)`"]
+    points: 1
+  - fn: move_snake
+    title: "un tick"
+    statement_md: |
+      Nouvel état après un pas : partie finie si la nouvelle tête sort du plateau ou touche le corps **sans la queue**
+      (la queue va bouger) ; si elle mange, le serpent grandit (+1 score, nouvelle nourriture) ; sinon il avance.
+      Si la partie est déjà finie : copie inchangée.
+    starter_code: |
+      def move_snake(state):
+          """Return the state after one tick."""
+          pass
+    solution: |
+      def move_snake(state):
+          """Return the state after one tick."""
+          if state["over"]:
+              return dict(state)
+          head = next_head(state["snake"], state["direction"])
+          new = dict(state)
+          if hits_wall(head, state["width"], state["height"]) or head in state["snake"][:-1]:
+              new["over"] = True
+              return new
+          if head == state["food"]:
+              new["snake"] = [head] + state["snake"]
+              new["score"] = state["score"] + 1
+              new = place_food(new)
+          else:
+              new["snake"] = [head] + state["snake"][:-1]
+          return new
+    tests:
+      visible:
+        - call: move_snake(create_snake_state(6, 3))["snake"]
+          expected: "[(3, 1), (2, 1), (1, 1)]"
+      hidden:
+        - setup: "s = create_snake_state(6, 3)\ns['food'] = (3, 1)"
+          call: "(move_snake(s)['snake'], move_snake(s)['score'])"
+          expected: "([(3, 1), (2, 1), (1, 1), (0, 1)], 1)"
+          label: "manger fait grandir"
+        - call: move_snake(create_snake_state(3, 3))["over"]
+          expected: "True"
+          label: "mur"
+        - call: "move_snake({'snake': [(2, 2), (2, 1), (1, 1), (1, 2), (1, 3)], 'direction': 'left', 'food': None, 'score': 0, 'over': False, 'width': 5, 'height': 5})['over']"
+          expected: "True"
+          label: "se mord la queue"
+        - call: "move_snake({'snake': [(1, 1), (1, 2), (2, 2), (2, 1)], 'direction': 'right', 'food': None, 'score': 0, 'over': False, 'width': 5, 'height': 5})['over']"
+          expected: "False"
+          label: "la queue s'en va : pas de collision"
+        - call: move_snake(create_snake_state(6, 3))
+          pure: true
+          expected: "{'snake': [(3, 1), (2, 1), (1, 1)], 'direction': 'right', 'food': None, 'score': 0, 'over': False, 'width': 6, 'height': 3}"
+    hints:
+      - "Calcule la nouvelle tête, puis teste mur et corps (`state[\"snake\"][:-1]`)."
+      - "Manger : `[head] + snake` ; avancer : `[head] + snake[:-1]`."
+      - "Après avoir mangé, `place_food`."
+    points: 4
+  - fn: render
+    title: "la vue"
+    statement_md: "Liste de chaînes (une par ligne) : `\"@\"` tête, `\"#\"` corps, `\"*\"` nourriture, `\".\"` vide."
+    starter_code: |
+      def render(state):
+          """Return the board as a list of strings."""
+          pass
+    solution: |
+      def render(state):
+          """Return the board as a list of strings."""
+          rows = []
+          for y in range(state["height"]):
+              row = ""
+              for x in range(state["width"]):
+                  if (x, y) == state["snake"][0]:
+                      row += "@"
+                  elif (x, y) in state["snake"]:
+                      row += "#"
+                  elif (x, y) == state["food"]:
+                      row += "*"
+                  else:
+                      row += "."
+              rows.append(row)
+          return rows
+    tests:
+      visible:
+        - call: "render({'snake': [(1, 0), (0, 0)], 'food': (2, 1), 'width': 3, 'height': 2})"
+          expected: "['#@.', '..*']"
+    hints: ["Double boucle qui construit les lignes.", "La tête d'abord (elle est aussi dans le serpent).", "Une chaîne par ligne."]
+    points: 2
+  - fn: game_loop
+    title: "le contrôleur"
+    statement_md: |
+      `moves` est une liste de directions (une par tick ; `None` = garder la direction). Pars d'un état neuf avec nourriture,
+      et pour chaque élément : change de direction si besoin, puis `move_snake` ; arrête-toi si la partie est finie. Renvoie l'état final.
+    starter_code: |
+      def game_loop(moves, width=10, height=8):
+          """Play the given moves and return the final state."""
+          pass
+    solution: |
+      def game_loop(moves, width=10, height=8):
+          """Play the given moves and return the final state."""
+          state = place_food(create_snake_state(width, height))
+          for direction in moves:
+              if direction is not None:
+                  state = change_direction(state, direction)
+              state = move_snake(state)
+              if state["over"]:
+                  break
+          return state
+    tests:
+      visible:
+        - call: "game_loop([None, None])['snake'][0]"
+          expected: "(4, 4)"
+      hidden:
+        - call: "game_loop([None] * 20)['over']"
+          expected: "True"
+          label: "fonce dans le mur"
+        - call: "game_loop(['up', 'up', 'left'])['snake'][0]"
+          expected: "(1, 2)"
+    hints: ["État neuf + nourriture.", "Une boucle sur les mouvements.", "`break` quand c'est fini."]
+    points: 2
