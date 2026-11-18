@@ -2,9 +2,10 @@
 import { describe, expect, it } from 'vitest'
 import { spawnSync } from 'node:child_process'
 import { existsSync } from 'node:fs'
-import { join } from 'node:path'
+import { join, dirname } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-const ROOT = join(__dirname, '..')
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 const PY = existsSync(join(ROOT, '.venv/bin/python')) ? join(ROOT, '.venv/bin/python') : 'python3'
 
 function py(requests: object[]) {

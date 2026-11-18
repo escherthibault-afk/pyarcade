@@ -50,6 +50,9 @@ export function gradeExam(level: BossLevel, code: string, report: TestReport): E
     const score = s.points * (testsPart + (signature ? 0.15 : 0) + (readability && passed > 0 ? 0.15 : 0))
     return { fn: s.fn, max: s.points, passed, total: results.length, signature, readability, notes, score: Math.round(score * 4) / 4 }
   })
-  const total = Math.round(rows.reduce((a, r) => a + r.score, 0) * 4) / 4
+  // the rubric is always brought back to /20 (twins used as final exams may have another total)
+  const maxTotal = rows.reduce((a, r) => a + r.max, 0) || 1
+  const raw = rows.reduce((a, r) => a + r.score, 0)
+  const total = Math.round(((raw * 20) / maxTotal) * 4) / 4
   return { total: Math.min(20, total), rows }
 }

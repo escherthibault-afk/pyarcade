@@ -10,7 +10,8 @@
     "test": "vitest run",
     "verify-content": "tsx scripts/verify-content.ts",
     "e2e": "playwright test",
-    "typecheck": "tsc --noEmit -p ."
+    "typecheck": "tsc --noEmit -p .",
+    "build:ci": "npm run verify-content && npm run build"
   },
   "dependencies": {
     "@codemirror/autocomplete": "^6.20.4",
@@ -49,5 +50,8 @@
     "typescript": "^7.0.2",
     "vite": "^8.3.8",
     "vitest": "^5.1.1"
+  },
+  "engines": {
+    "node": ">=22"
   }
 }

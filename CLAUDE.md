@@ -93,3 +93,26 @@ Formats de test : `call` + `expected` (expression Python), `output` (stdout exac
 - **Listes de mots** : `words_en_5.txt` = mots de 5 lettres du dictionnaire Webster (domaine public, fourni par
   macOS) ∪ liste de mots courants écrite à la main ; `secrets_en_5.txt` = mots courants seulement (pour le mot
   secret) ; `words_fr_*.txt` = mots français courants sans accents, écrits à la main.
+- **verify-content** : jobs passés à Python par fichier temporaire (pas de pipe stdin). Pour le `starter_code`, on
+  s'arrête au premier test raté (timeout court) ; une contrainte AST violée compte comme un échec (Golf, Refactor).
+  Les niveaux qui utilisent `random` sont rejoués avec 3 autres états aléatoires pour détecter les tests instables.
+- **Comparaison** : les nombres numpy (`np.int64`…) sont acceptés comme des `int`/`float` Python.
+- **Boss** : timeout de 10 s par test (projets plus lourds). Les jumeaux et examens s'ouvrent après le boss guidé
+  du même projet (`project: "wordle:mastermind"` → racine `wordle`). Un boss peut figurer dans plusieurs mondes
+  (le boss Wordle est dans le parcours express et dans le monde 9).
+- **Examen final** : un boss jumeau non battu tiré au hasard, ouvert en mode examen (`?final=1`, 90 min, sans
+  indice). Les notes sont toujours ramenées sur 20 (proportionnellement aux points du barème). ≥ 10/20 → certificat
+  + monde secret.
+- **Sujet blanc** (Mode révision DS) : 5 à 8 niveaux `code_fill`/`bug_hunt`/`copy`/`refactor`/`predict_output`
+  (difficulté ≥ 2) tirés des mondes choisis, au plus un tiers de « Devine la sortie ».
+- **Données inventées** : métro de « Néo-Strasbourg » (`metro_*.csv`), vélos (`velo_stations.csv`).
+- **Police d'affichage** (Pixelify Sans) : ligatures désactivées (le « fi » est cassé dans la fonte).
+- `npm run build` ne lance pas Python (Vercel n'a pas matplotlib) ; la CI lance `verify-content` avant le build
+  (`npm run build:ci` fait les deux en local).
+
+## Contenu (état actuel)
+
+235 niveaux dont 26 boss : mondes 0 à 12, parcours express Wordle (21 niveaux + 4 boss), monde secret (8 niveaux).
+Boss : videur (monde 1) ; 421 + Yams + examen ; Tennis + ping-pong + examen ; Recamán + Syracuse + examen ;
+Boids + gravité + examen ; Épidémie + Jeu de la vie + feu de forêt ; Wordle + Mastermind + Motus + examen à
+variantes ; Métro + vélos + examen CSV « à la française » ; 2048 + Snake + examen 4×4/5×5.

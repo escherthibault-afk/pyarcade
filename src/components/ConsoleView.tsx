@@ -1,11 +1,12 @@
-import { Fragment } from 'react'
+import { Fragment, lazy, Suspense } from 'react'
 import { parseMarkup } from '../lib/richMarkup'
 import type { ExecResult } from '../engine/api'
 import { ErrorCard } from './ErrorCard'
 import { CanvasView } from './CanvasView'
-import { MapView } from './MapView'
 import { AnimatedCanvas } from './AnimatedCanvas'
 import { useTr } from '../i18n'
+
+const MapView = lazy(() => import('./MapView').then((m) => ({ default: m.MapView })))
 
 const MARK = '\x1b[R]'
 const CLEAR = '\x1b[CLEAR]'
@@ -47,7 +48,11 @@ export function ConsoleView({ result, running, placeholder }: { result: ExecResu
       {result?.images?.map((b64, i) => <img key={i} alt={`figure ${i + 1}`} className="max-w-full rounded-lg bg-white" src={`data:image/png;base64,${b64}`} />)}
       {result?.canvas?.animated && !result.error && <AnimatedCanvas width={result.canvas.width} height={result.canvas.height} first={result.canvas.frame} />}
       {result?.canvas && !result.canvas.animated && result.canvas.frame.length > 0 && <CanvasView width={result.canvas.width} height={result.canvas.height} frame={result.canvas.frame} />}
-      {result?.maps?.map((m, i) => <MapView key={i} data={m} />)}
+      {result?.maps?.map((m, i) => (
+        <Suspense key={i} fallback={<div className="text-muted">…</div>}>
+          <MapView data={m} />
+        </Suspense>
+      ))}
       {result && !result.stdout && !result.error && !result.images && !result.canvas && !result.maps && (
         <div className="text-sm text-muted">{tr('(rien n’a été affiché)', '(nothing was printed)')}</div>
       )}

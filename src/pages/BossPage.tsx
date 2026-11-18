@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Link, useNavigate } from 'react-router'
+import { Link, useNavigate, useSearchParams } from 'react-router'
 import { motion } from 'framer-motion'
 import type { BossLevel, BossStep } from '../content/schema'
 import { bossFile, bossVariant } from '../content/variants'
@@ -26,9 +26,15 @@ export function BossPage({ level: base }: { level: BossLevel }) {
   const profile = useProfile()
   const settings = useSettings()
   const world = getWorld(base.world)
-  const unlocked = isLevelUnlocked(profile, base, settings.unlockAll)
+  const [params] = useSearchParams()
+  const final = params.get('final') === '1'
+  const unlocked = final || isLevelUnlocked(profile, base, settings.unlockAll)
   const [variantIdx, setVariantIdx] = useState(0)
-  const level = useMemo(() => bossVariant(base, variantIdx), [base, variantIdx])
+  const level = useMemo(() => {
+    const l = bossVariant(base, variantIdx)
+    // final exam: any twin project, in exam conditions
+    return final ? { ...l, variant: 'exam' as const, time_limit_minutes: 90, title: `🎓 Diplôme PyArcade — ${l.title.replace(/^\S+\s/, '')}` } : l
+  }, [base, variantIdx, final])
   const exam = level.variant === 'exam'
   const [phase, setPhase] = useState<'intro' | 'fight' | 'won' | 'graded'>(exam ? 'intro' : 'fight')
   const [copyMode, setCopyMode] = useState(false)
@@ -95,7 +101,7 @@ export function BossPage({ level: base }: { level: BossLevel }) {
       </div>
     )
 
-  return <BossFight key={`${level.id}-${variantIdx}`} level={level} copyMode={copyMode} onPhase={setPhase} phase={phase} />
+  return <BossFight key={`${level.id}-${variantIdx}`} level={level} copyMode={copyMode} onPhase={setPhase} phase={phase} final={final} />
 }
 
 function defLine(code: string, fn: string): number | null {
@@ -104,7 +110,7 @@ function defLine(code: string, fn: string): number | null {
   return i >= 0 ? i + 1 : null
 }
 
-function BossFight({ level, copyMode, onPhase, phase }: { level: BossLevel; copyMode: boolean; onPhase: (p: 'intro' | 'fight' | 'won' | 'graded') => void; phase: string }) {
+function BossFight({ level, copyMode, onPhase, phase, final }: { level: BossLevel; copyMode: boolean; onPhase: (p: 'intro' | 'fight' | 'won' | 'graded') => void; phase: string; final: boolean }) {
   const tr = useTr()
   const profile = useProfile()
   const settings = useSettings()
@@ -112,7 +118,7 @@ function BossFight({ level, copyMode, onPhase, phase }: { level: BossLevel; copy
   const heartsNow = useStore((s) => s.heartsNow)
   const loseHeart = useStore((s) => s.loseHeart)
   const exam = level.variant === 'exam'
-  const draftKey = `${level.id}`
+  const draftKey = final ? `${level.id}:final` : `${level.id}`
   const [code, setCode] = useState(() => profile.drafts[draftKey] ?? bossFile(level, 'starter_code'))
   const [stepIdx, setStepIdx] = useState(0)
   const [focusLine, setFocusLine] = useState<number | null>(null)
@@ -193,7 +199,11 @@ function BossFight({ level, copyMode, onPhase, phase }: { level: BossLevel; copy
         b.bestScore = Math.max(b.bestScore ?? 0, g.total)
         b.won = b.won || g.total >= 10
         b.examStartedAt = undefined
-        if (g.total >= 14 && level.project === 'wordle') p.examsDone.push(`${level.id}:14`)
+        if (g.total >= 14 && level.project.startsWith('wordle')) p.examsDone.push(`${level.id}:14`)
+        if (final && g.total >= 10) {
+          p.diploma = { project: level.title, score: g.total, date: new Date().toISOString() }
+          p.secret = true
+        }
         p.xp += Math.round(g.total * 15)
         p.coins += Math.round(g.total * 2)
       })
@@ -250,7 +260,7 @@ function BossFight({ level, copyMode, onPhase, phase }: { level: BossLevel; copy
     setTimeout(() => setFocusLine(defLine(code, level.steps[i].fn)), 0)
   }
 
-  if (phase === 'graded' && grade) return <GradeView level={level} grade={grade} report={report} />
+  if (phase === 'graded' && grade) return <GradeView level={level} grade={grade} report={report} final={final} />
 
   const won = !exam && level.steps.every((s) => validated.has(s.fn))
   const variantMeta = VARIANT_LABEL[level.variant]
@@ -412,7 +422,7 @@ function BossFight({ level, copyMode, onPhase, phase }: { level: BossLevel; copy
   )
 }
 
-function GradeView({ level, grade, report }: { level: BossLevel; grade: ExamGrade; report: TestReport | null }) {
+function GradeView({ level, grade, report, final }: { level: BossLevel; grade: ExamGrade; report: TestReport | null; final: boolean }) {
   const tr = useTr()
   return (
     <div className="mx-auto max-w-3xl space-y-4 p-4">
@@ -455,6 +465,15 @@ function GradeView({ level, grade, report }: { level: BossLevel; grade: ExamGrad
         </table>
       </div>
       {report && <TestPanel report={report} running={false} total={report.results.length} partial={[]} />}
+      {final && grade.total >= 10 && (
+        <div className="card border-gold p-4 text-center">
+          <div className="font-display text-2xl text-gold">🎓 {tr('Diplôme PyArcade obtenu !', 'PyArcade diploma earned!')}</div>
+          <p className="text-sm">{tr('Le monde secret est débloqué sur la carte.', 'The secret world is now unlocked on the map.')}</p>
+          <Link className="btn btn-primary mt-2" to="/certificate">
+            📜 {tr('Voir le certificat', 'See the certificate')}
+          </Link>
+        </div>
+      )}
       <div className="flex justify-center gap-2">
         <Link className="btn" to="/map">
           🗺️ {tr('Carte', 'Map')}
