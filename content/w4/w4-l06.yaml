@@ -1,0 +1,42 @@
+id: w4-l06
+world: 4
+type: code_fill
+title: "La somme des n premiers"
+concepts: [for, accumulateur]
+difficulty: 2
+estimated_minutes: 3
+xp: 30
+story: "Les points bonus s'accumulent : 1 + 2 + 3 + … Combien au total ?"
+statement_md: "Renvoie `1 + 2 + ... + n` avec une boucle `for` (sans `sum` ni formule)."
+starter_code: |
+  def sum_to(n):
+      """Return 1 + 2 + ... + n (0 if n <= 0)."""
+      pass
+solution: |
+  def sum_to(n):
+      """Return 1 + 2 + ... + n (0 if n <= 0)."""
+      total = 0
+      for i in range(1, n + 1):
+          total = total + i
+      return total
+tests:
+  visible:
+    - call: sum_to(4)
+      expected: "10"
+  hidden:
+    - call: sum_to(0)
+      expected: "0"
+    - call: sum_to(1)
+      expected: "1"
+      label: "décalage d'une case ?"
+    - call: sum_to(100)
+      expected: "5050"
+constraints:
+  required: [For]
+  forbidden: ["call:sum"]
+hints:
+  - "Un accumulateur `total` qui démarre à 0."
+  - "`range(1, n + 1)` pour aller jusqu'à n inclus."
+  - "`total = total + i` dans la boucle."
+explanation_md: "Le motif de l'accumulateur : initialiser **avant** la boucle, mettre à jour **dans** la boucle, renvoyer **après**."
+exam_tip: "Ne nomme jamais ta variable `sum` : tu écraserais la fonction `sum` de Python."

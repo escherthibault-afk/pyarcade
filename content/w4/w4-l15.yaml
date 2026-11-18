@@ -1,0 +1,43 @@
+id: w4-l15
+world: 4
+type: quiz
+title: "QCM éclair : boucles"
+concepts: [while, for, range, break]
+difficulty: 2
+estimated_minutes: 2
+xp: 35
+story: "Avant le boss Tennis, vérifie tes réflexes de boucle."
+statement_md: "10 questions, 60 secondes."
+time_limit: 60
+questions:
+  - q: "Combien de tours fait `for i in range(3, 8):` ?"
+    choices: ["5", "6", "8", "3"]
+    answer: 0
+  - q: "Que vaut `i` après `for i in range(4): pass` ?"
+    choices: ["3", "4", "0", "Erreur"]
+    answer: 0
+  - q: "Que fait `break` ?"
+    choices: ["Sort de la boucle", "Passe au tour suivant", "Arrête le programme", "Recommence la boucle"]
+    answer: 0
+  - q: "Que fait `continue` ?"
+    choices: ["Passe directement au tour suivant", "Sort de la boucle", "Ne fait rien", "Lève une erreur"]
+    answer: 0
+  - q: "`n = 0` puis `while n < 3: n += 1`. Que vaut `n` ?"
+    choices: ["2", "3", "4", "Boucle infinie"]
+    answer: 1
+  - q: "`while True:` sans `break`…"
+    choices: ["boucle infinie", "ne fait rien", "fait un tour", "erreur de syntaxe"]
+    answer: 0
+  - q: "Combien de `*` : `for i in range(3): for j in range(i): print('*')` ?"
+    choices: ["3", "6", "9", "0+1+2 = 3"]
+    answer: 3
+  - q: "Pour simuler n parties et compter les victoires, on utilise plutôt…"
+    choices: ["for _ in range(n)", "while True", "if n", "range(n) seul"]
+    answer: 0
+  - q: "Pour jouer un jeu de tennis jusqu'à sa fin, on utilise plutôt…"
+    choices: ["while not game_over(a, b)", "for i in range(4)", "for i in range(6)", "if game_over(a, b)"]
+    answer: 0
+  - q: "`for x in [3, 1, 2]: total = x`. Que vaut `total` à la fin ?"
+    choices: ["6", "2", "3", "1"]
+    answer: 1
+    explain: "Sans `+=`, total est écrasé à chaque tour."

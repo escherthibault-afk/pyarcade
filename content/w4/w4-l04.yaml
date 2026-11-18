@@ -1,0 +1,27 @@
+id: w4-l04
+world: 4
+type: robot
+title: "Le couloir sans fin"
+concepts: [while, robot, condition_arret]
+difficulty: 2
+estimated_minutes: 3
+xp: 30
+story: "Trois couloirs de longueurs différentes, un seul programme."
+statement_md: "Écris un programme qui amène le robot au drapeau dans **les trois** cartes. Il faut une boucle !"
+grids:
+  - ["#####", "#>.G#", "#####"]
+  - ["#########", "#>.....G#", "#########"]
+  - ["####", "#>G#", "####"]
+starter_code: |
+  move()
+  move()
+solution: |
+  while not at_goal():
+      move()
+constraints:
+  required: [While]
+  max_lines: 3
+hints:
+  - "On ne sait pas combien de pas faire : boucle « tant que pas arrivé »."
+  - "`at_goal()` dit si le robot est sur le drapeau."
+  - "`while not at_goal():` puis `move()`."

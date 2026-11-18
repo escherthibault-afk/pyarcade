@@ -1,0 +1,418 @@
+id: boss-tennis-guided
+world: 4
+type: boss
+variant: guided
+project: tennis
+title: "🎾 Boss Tennis"
+concepts: [random, while, bool, monte_carlo, fonctions]
+difficulty: 4
+estimated_minutes: 60
+xp: 450
+min_stars: 30
+live_game: tennis
+packages: [matplotlib]
+statement_md: "Simule un match de tennis point par point, puis estime les chances de victoire par Monte Carlo."
+intro_md: |
+  ## Tennis : du point au match
+
+  Deux joueurs A et B ont un **niveau** (un entier positif). A gagne chaque point avec la probabilité
+  `p = level_a / (level_a + level_b)`, indépendamment des autres points.
+
+  - **Jeu** : avec avantage (règle normale), il faut **au moins 4 points et 2 d'avance**. Sans avantage, le premier à 4 points gagne.
+  - **Set** : il faut **au moins 6 jeux et 2 d'avance** ; à 6-6, un dernier jeu décisif (simplifié) donne le set 7-6.
+  - **Match** : en `nb_sets` sets (3 ou 5), le premier à en gagner la majorité (`nb_sets // 2 + 1`).
+
+  Les fonctions renvoient `True` si **A** gagne. On les emboîte : point → jeu → set → match.
+  Puis on estime les probabilités en répétant des milliers de simulations (Monte Carlo) et on trace des courbes avec `matplotlib`.
+
+  Petite surprise : un léger avantage par point (52 % contre 48 %) devient un gros avantage sur un match. À toi de le mesurer.
+header_code: |
+  import random
+steps:
+  - fn: win_point
+    title: "un point"
+    statement_md: "Renvoie `True` si A gagne le point, avec la probabilité `level_a / (level_a + level_b)`."
+    starter_code: |
+      def win_point(level_a, level_b):
+          """Return True if player A wins the point."""
+          pass
+    solution: |
+      def win_point(level_a, level_b):
+          """Return True if player A wins the point."""
+          return random.random() < level_a / (level_a + level_b)
+    tests:
+      visible:
+        - call: "type(win_point(50, 50)).__name__"
+          expected: "'bool'"
+      hidden:
+        - call: "any(win_point(0, 10) for _ in range(3000))"
+          expected: "False"
+          label: "niveau nul"
+      statistical:
+        - expr: "sum(win_point(60, 40) for _ in range(20000)) / 20000"
+          approx: 0.6
+          tol: 0.015
+    hints:
+      - "Événement de probabilité p : `random.random() < p`."
+      - "p = level_a / (level_a + level_b)"
+      - "`return random.random() < level_a / (level_a + level_b)`"
+    points: 1
+  - fn: game_over
+    title: "le jeu est-il fini ?"
+    statement_md: "Avec avantage : au moins 4 points pour l'un **et** 2 d'avance. Sans avantage : l'un des deux a 4 points."
+    starter_code: |
+      def game_over(points_a, points_b, advantage=True):
+          """Return True if the game is finished."""
+          pass
+    solution: |
+      def game_over(points_a, points_b, advantage=True):
+          """Return True if the game is finished."""
+          if advantage:
+              return (points_a >= 4 or points_b >= 4) and abs(points_a - points_b) >= 2
+          return points_a == 4 or points_b == 4
+    tests:
+      visible:
+        - call: game_over(4, 1)
+          expected: "True"
+        - call: game_over(4, 3)
+          expected: "False"
+      hidden:
+        - call: game_over(3, 3)
+          expected: "False"
+        - call: game_over(6, 4)
+          expected: "True"
+          label: "après avantage"
+        - call: game_over(7, 6)
+          expected: "False"
+        - call: game_over(4, 3, False)
+          expected: "True"
+          label: "sans avantage"
+        - call: game_over(3, 3, False)
+          expected: "False"
+    hints:
+      - "Deux règles selon `advantage`."
+      - "`abs(points_a - points_b) >= 2` pour l'écart."
+      - "Sans avantage : `points_a == 4 or points_b == 4`."
+    points: 1.5
+  - fn: win_game
+    title: "un jeu"
+    statement_md: "Joue des points (`win_point`) **tant que** le jeu n'est pas fini, puis renvoie `True` si A l'a gagné."
+    starter_code: |
+      def win_game(level_a, level_b, advantage=True):
+          """Play a whole game and return True if A wins it."""
+          pass
+    solution: |
+      def win_game(level_a, level_b, advantage=True):
+          """Play a whole game and return True if A wins it."""
+          points_a = 0
+          points_b = 0
+          while not game_over(points_a, points_b, advantage):
+              if win_point(level_a, level_b):
+                  points_a += 1
+              else:
+                  points_b += 1
+          return points_a > points_b
+    tests:
+      visible:
+        - call: "type(win_game(50, 50)).__name__"
+          expected: "'bool'"
+      hidden:
+        - call: "all(win_game(10, 0) for _ in range(100))"
+          expected: "True"
+          label: "joueur imbattable"
+      statistical:
+        - expr: "sum(win_game(52, 48) for _ in range(8000)) / 8000"
+          approx: 0.5499
+          tol: 0.022
+          label: "avec avantage ≈ 0.550"
+        - expr: "sum(win_game(52, 48, False) for _ in range(8000)) / 8000"
+          approx: 0.5437
+          tol: 0.022
+          label: "sans avantage ≈ 0.544"
+    hints:
+      - "Deux compteurs de points, une boucle `while not game_over(...)`."
+      - "À chaque tour : `if win_point(...): points_a += 1 else: points_b += 1`."
+      - "Après la boucle : `return points_a > points_b`."
+    points: 2.5
+  - fn: set_over
+    title: "le set est-il fini ?"
+    statement_md: "Fini si l'un a au moins 6 jeux **et** 2 d'avance, **ou** si l'un a 7 jeux (le 7-6 après 6-6)."
+    starter_code: |
+      def set_over(games_a, games_b):
+          """Return True if the set is finished."""
+          pass
+    solution: |
+      def set_over(games_a, games_b):
+          """Return True if the set is finished."""
+          if games_a == 7 or games_b == 7:
+              return True
+          return (games_a >= 6 or games_b >= 6) and abs(games_a - games_b) >= 2
+    tests:
+      visible:
+        - call: set_over(6, 3)
+          expected: "True"
+        - call: set_over(6, 5)
+          expected: "False"
+      hidden:
+        - call: set_over(7, 5)
+          expected: "True"
+        - call: set_over(6, 6)
+          expected: "False"
+        - call: set_over(7, 6)
+          expected: "True"
+          label: "jeu décisif"
+        - call: set_over(5, 5)
+          expected: "False"
+    hints:
+      - "Même idée que `game_over` avec 6 au lieu de 4."
+      - "Cas spécial : 7 jeux, c'est fini."
+      - "`if games_a == 7 or games_b == 7: return True`"
+    points: 1.5
+  - fn: win_set
+    title: "un set"
+    statement_md: "Joue des jeux (avec avantage) tant que le set n'est pas fini ; renvoie `True` si A gagne le set."
+    starter_code: |
+      def win_set(level_a, level_b):
+          """Play a whole set and return True if A wins it."""
+          pass
+    solution: |
+      def win_set(level_a, level_b):
+          """Play a whole set and return True if A wins it."""
+          games_a = 0
+          games_b = 0
+          while not set_over(games_a, games_b):
+              if win_game(level_a, level_b):
+                  games_a += 1
+              else:
+                  games_b += 1
+          return games_a > games_b
+    tests:
+      visible:
+        - call: "type(win_set(50, 50)).__name__"
+          expected: "'bool'"
+      statistical:
+        - expr: "sum(win_set(52, 48) for _ in range(3000)) / 3000"
+          approx: 0.6386
+          tol: 0.035
+          label: "≈ 0.639"
+    hints:
+      - "Copie la structure de `win_game`, un niveau au-dessus."
+      - "Compteurs de jeux, `while not set_over(...)`."
+      - "Chaque tour joue un jeu entier avec `win_game`."
+    points: 2
+  - fn: win_match
+    title: "le match"
+    statement_md: "Joue des sets jusqu'à ce qu'un joueur en ait `nb_sets // 2 + 1` ; renvoie `True` si A gagne."
+    starter_code: |
+      def win_match(level_a, level_b, nb_sets=3):
+          """Play a whole match and return True if A wins it."""
+          pass
+    solution: |
+      def win_match(level_a, level_b, nb_sets=3):
+          """Play a whole match and return True if A wins it."""
+          needed = nb_sets // 2 + 1
+          sets_a = 0
+          sets_b = 0
+          while sets_a < needed and sets_b < needed:
+              if win_set(level_a, level_b):
+                  sets_a += 1
+              else:
+                  sets_b += 1
+          return sets_a == needed
+    tests:
+      visible:
+        - call: "type(win_match(50, 50)).__name__"
+          expected: "'bool'"
+      hidden:
+        - call: "all(win_match(10, 0, 5) for _ in range(20))"
+          expected: "True"
+      statistical:
+        - expr: "sum(win_match(52, 48) for _ in range(1200)) / 1200"
+          approx: 0.7026
+          tol: 0.055
+          label: "3 sets ≈ 0.703"
+    hints:
+      - "`needed = nb_sets // 2 + 1`"
+      - "La boucle continue tant que personne n'a atteint `needed`."
+      - "`return sets_a == needed`"
+    points: 2
+  - fn: estimate_win
+    title: "Monte Carlo"
+    statement_md: "Simule `n` matchs (`win_match`) et renvoie la **fréquence** des victoires de A."
+    starter_code: |
+      def estimate_win(level_a, level_b, nb_sets=3, n=1000):
+          """Return the frequency of A's wins over n simulated matches."""
+          pass
+    solution: |
+      def estimate_win(level_a, level_b, nb_sets=3, n=1000):
+          """Return the frequency of A's wins over n simulated matches."""
+          wins = 0
+          for _ in range(n):
+              if win_match(level_a, level_b, nb_sets):
+                  wins += 1
+          return wins / n
+    tests:
+      visible:
+        - call: "0 <= estimate_win(50, 50, 3, 50) <= 1"
+          expected: "True"
+      hidden:
+        - call: "estimate_win(10, 0, 3, 20)"
+          expected: "1.0"
+      statistical:
+        - expr: "estimate_win(50, 50, 3, 1500)"
+          approx: 0.5
+          tol: 0.05
+          label: "niveaux égaux"
+    hints:
+      - "Compteur + boucle `for _ in range(n)`."
+      - "N'oublie pas de passer `nb_sets` à `win_match`."
+      - "`return wins / n`"
+    points: 1.5
+  - fn: score_name
+    title: "15, 30, 40"
+    statement_md: "Nom du score d'un joueur dans un jeu : 0 → `\"0\"`, 1 → `\"15\"`, 2 → `\"30\"`, 3 → `\"40\"`. Utilise une **liste**."
+    starter_code: |
+      def score_name(points):
+          """Return the tennis name of 0, 1, 2 or 3 points."""
+          pass
+    solution: |
+      def score_name(points):
+          """Return the tennis name of 0, 1, 2 or 3 points."""
+          names = ["0", "15", "30", "40"]
+          return names[points]
+    tests:
+      visible:
+        - call: score_name(2)
+          expected: "'30'"
+      hidden:
+        - call: score_name(0)
+          expected: "'0'"
+        - call: score_name(3)
+          expected: "'40'"
+    hints:
+      - "Une liste dont l'indice est le nombre de points."
+      - "`names = [\"0\", \"15\", \"30\", \"40\"]`"
+      - "`return names[points]`"
+    points: 1
+  - fn: game_score
+    title: "le tableau d'affichage"
+    statement_md: |
+      Renvoie le texte affiché pendant un jeu (avec avantage) :
+      - jeu fini : `"Jeu A"` ou `"Jeu B"` ;
+      - égalité à partir de 3-3 : `"Égalité"` ;
+      - après 3-3, un point d'avance : `"Avantage A"` / `"Avantage B"` ;
+      - sinon : `"15-30"` (avec `score_name`).
+    starter_code: |
+      def game_score(points_a, points_b):
+          """Return the scoreboard text of a game."""
+          pass
+    solution: |
+      def game_score(points_a, points_b):
+          """Return the scoreboard text of a game."""
+          if game_over(points_a, points_b):
+              if points_a > points_b:
+                  return "Jeu A"
+              return "Jeu B"
+          if points_a >= 3 and points_b >= 3:
+              if points_a == points_b:
+                  return "Égalité"
+              if points_a > points_b:
+                  return "Avantage A"
+              return "Avantage B"
+          return f"{score_name(points_a)}-{score_name(points_b)}"
+    tests:
+      visible:
+        - call: game_score(1, 2)
+          expected: "'15-30'"
+        - call: game_score(3, 3)
+          expected: "'Égalité'"
+      hidden:
+        - call: game_score(5, 4)
+          expected: "'Avantage A'"
+        - call: game_score(4, 6)
+          expected: "'Jeu B'"
+        - call: game_score(4, 1)
+          expected: "'Jeu A'"
+        - call: game_score(3, 0)
+          expected: "'40-0'"
+        - call: game_score(6, 6)
+          expected: "'Égalité'"
+    hints:
+      - "Traite d'abord « jeu fini » avec `game_over`."
+      - "Ensuite, à partir de 3-3, égalité ou avantage."
+      - "Sinon, une f-string avec `score_name`."
+    points: 2
+  - fn: win_curve
+    title: "la courbe"
+    statement_md: |
+      Pour chaque niveau `level_a` de la liste `levels`, estime la probabilité que A gagne un match contre un adversaire de niveau `opponent`
+      (`estimate_win` avec `n` matchs) ; renvoie la **liste** des probabilités, dans le même ordre.
+    starter_code: |
+      def win_curve(levels, opponent=50, nb_sets=3, n=200):
+          """Return the list of estimated win probabilities, one per level in levels."""
+          pass
+    solution: |
+      def win_curve(levels, opponent=50, nb_sets=3, n=200):
+          """Return the list of estimated win probabilities, one per level in levels."""
+          curve = []
+          for level in levels:
+              curve.append(estimate_win(level, opponent, nb_sets, n))
+          return curve
+    tests:
+      visible:
+        - call: "len(win_curve([40, 50, 60], 50, 3, 20))"
+          expected: "3"
+      hidden:
+        - call: "win_curve([], 50)"
+          expected: "[]"
+        - call: "win_curve([1000, 0], 50, 3, 10)"
+          expected: "[1.0, 0.0]"
+          label: "extrêmes"
+    hints:
+      - "Une liste vide, puis une boucle sur `levels`."
+      - "`curve.append(estimate_win(level, opponent, nb_sets, n))`"
+      - "Renvoie la liste."
+    points: 1.5
+  - fn: plot_curve
+    title: "tracer avec matplotlib"
+    statement_md: |
+      Trace la courbe : `levels` en abscisse, `win_curve(levels, opponent)` en ordonnée, avec un titre, des noms d'axes
+      (`xlabel`, `ylabel`) et une **légende** (`label=` puis `plt.legend()`). Renvoie la liste des probabilités tracées.
+      (Sur le site, la figure s'affiche dans la console ; chez toi, `plt.show()` ouvre une fenêtre.)
+    starter_code: |
+      import matplotlib.pyplot as plt
+
+
+      def plot_curve(levels, opponent=50):
+          """Plot A's win probability against its level and return the plotted values."""
+          pass
+    solution: |
+      import matplotlib.pyplot as plt
+
+
+      def plot_curve(levels, opponent=50):
+          """Plot A's win probability against its level and return the plotted values."""
+          probabilities = win_curve(levels, opponent)
+          plt.plot(levels, probabilities, label=f"contre un niveau {opponent}")
+          plt.xlabel("niveau de A")
+          plt.ylabel("probabilité de gagner le match")
+          plt.title("Monte Carlo : tennis")
+          plt.legend()
+          return probabilities
+    tests:
+      visible:
+        - call: "len(plot_curve([45, 50, 55]))"
+          expected: "3"
+      hidden:
+        - setup: "import matplotlib.pyplot as plt\nplt.close('all')\nplot_curve([40, 60])"
+          call: "(plt.gca().get_xlabel() != '', plt.gca().get_ylabel() != '', plt.gca().get_legend() is not None)"
+          expected: "(True, True, True)"
+          label: "axes nommés et légende"
+        - setup: "import matplotlib.pyplot as plt\nplt.close('all')\nplot_curve([40, 60])"
+          call: "list(plt.gca().get_lines()[0].get_xdata())"
+          expected: "[40, 60]"
+    hints:
+      - "`plt.plot(xs, ys, label=\"...\")` trace une courbe."
+      - "`plt.xlabel`, `plt.ylabel`, `plt.title`, puis `plt.legend()`."
+      - "Calcule d'abord les probabilités avec `win_curve`, renvoie-les à la fin."
+    points: 2

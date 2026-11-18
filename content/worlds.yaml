@@ -38,7 +38,7 @@ worlds:
     emoji: "🔁"
     color: "#3ddc84"
     radar: boucles
-    bosses: []
+    bosses: [boss-tennis-guided, boss-tennis-twin-pingpong, boss-tennis-exam]
   - id: 5
     title: Listes
     title_en: Lists

@@ -1,0 +1,22 @@
+id: w4-l02
+world: 4
+type: trace
+title: "Trace la boucle"
+concepts: [while, trace]
+difficulty: 2
+estimated_minutes: 3
+xp: 30
+story: "Une boucle qui divise par deux… jusqu'où ?"
+statement_md: "Après chaque passage sur la ligne marquée, note `n` et `steps`."
+code: |
+  n = 37
+  steps = 0
+  while n > 1:
+      n = n // 2
+      steps = steps + 1  # @snap
+watch: [n, steps]
+hints:
+  - "37 // 2 = 18."
+  - "Puis 9, 4, 2, 1."
+  - "La boucle s'arrête quand n vaut 1."
+explanation_md: "Diviser par 2 jusqu'à 1 prend environ log₂(n) étapes : 5 pour 37. C'est l'idée de la recherche dichotomique."

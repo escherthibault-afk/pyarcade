@@ -14,6 +14,7 @@ import copy
 import io
 import json
 import math
+import numbers
 import os
 import random
 import sys
@@ -398,14 +399,16 @@ def compare(got, exp, tol=None, path="résultat"):
         if type(got) is not type(exp):
             return False, "type", path
         return got == exp, None, path
-    if isinstance(exp, float) and isinstance(got, (int, float)):
+    if isinstance(exp, float) and isinstance(got, numbers.Real):
         if math.isnan(exp) and isinstance(got, float) and math.isnan(got):
             return True, None, path
         return math.isclose(got, exp, rel_tol=rel, abs_tol=abs_), ("float" if got != exp else None), path
-    if isinstance(exp, int) and isinstance(got, float):
+    if isinstance(exp, int) and isinstance(got, numbers.Real) and not isinstance(got, numbers.Integral):
         if got == exp:
             return False, "float_vs_int", path
         return False, None, path
+    if isinstance(exp, int) and isinstance(got, numbers.Integral):
+        return int(got) == exp, None, path
     if isinstance(exp, (list, tuple)):
         if not isinstance(got, (list, tuple)):
             return False, "type", path
@@ -625,6 +628,8 @@ def cmd_run_tests(req):
         results.append(
             run_test(t, ns, code, req.get("seed"), req.get("given_code", ""), req.get("files"), req.get("timeout_ms", 5000))
         )
+        if req.get("stop_on_fail") and not results[-1]["passed"]:
+            return {"load": load, "results": results}
     for st in req.get("statistical", []):
         results.append(cmd_stat({"ns": "_rt", "stat": st, "code": code, "seeds": req.get("stat_seeds")}))
     return {"load": load, "results": results}

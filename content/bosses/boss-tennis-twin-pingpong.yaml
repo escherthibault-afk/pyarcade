@@ -1,0 +1,276 @@
+id: boss-tennis-twin-pingpong
+world: 4
+type: boss
+variant: twin
+project: "tennis:pingpong"
+title: "👯 Jumeau : match de ping-pong"
+concepts: [random, while, bool, modulo, monte_carlo]
+difficulty: 4
+estimated_minutes: 45
+xp: 350
+statement_md: "Même structure que le tennis (point → manche → match), règles du tennis de table."
+intro_md: |
+  ## Tennis de table
+
+  A gagne chaque point avec la probabilité `level_a / (level_a + level_b)`.
+
+  - **Manche** : la première à **11 points avec 2 points d'écart** (sinon on continue : 12-10, 13-11…).
+  - **Match** : au meilleur de `best_of` manches (5 par défaut) : il faut en gagner `best_of // 2 + 1`.
+  - **Service** : A sert en premier ; le service change **tous les 2 points** ; à partir de **10-10**, il change **à chaque point**.
+header_code: |
+  import random
+steps:
+  - fn: win_point
+    title: "un point"
+    statement_md: "`True` si A gagne le point (probabilité `level_a / (level_a + level_b)`)."
+    starter_code: |
+      def win_point(level_a, level_b):
+          """Return True if A wins the point."""
+          pass
+    solution: |
+      def win_point(level_a, level_b):
+          """Return True if A wins the point."""
+          return random.random() < level_a / (level_a + level_b)
+    tests:
+      visible:
+        - call: "type(win_point(1, 1)).__name__"
+          expected: "'bool'"
+      statistical:
+        - expr: "sum(win_point(55, 45) for _ in range(20000)) / 20000"
+          approx: 0.55
+          tol: 0.015
+    hints:
+      - "Comme au tennis."
+      - "`random.random() < p`"
+      - "p = level_a / (level_a + level_b)"
+    points: 1
+  - fn: game_over
+    title: "fin de manche"
+    statement_md: "`True` si l'un a au moins 11 points **et** 2 d'avance."
+    starter_code: |
+      def game_over(points_a, points_b):
+          """Return True if the game (11 points, 2 ahead) is finished."""
+          pass
+    solution: |
+      def game_over(points_a, points_b):
+          """Return True if the game (11 points, 2 ahead) is finished."""
+          return (points_a >= 11 or points_b >= 11) and abs(points_a - points_b) >= 2
+    tests:
+      visible:
+        - call: game_over(11, 5)
+          expected: "True"
+        - call: game_over(11, 10)
+          expected: "False"
+      hidden:
+        - call: game_over(10, 10)
+          expected: "False"
+        - call: game_over(14, 12)
+          expected: "True"
+        - call: game_over(3, 11)
+          expected: "True"
+    hints:
+      - "Même forme que `game_over` du tennis, avec 11."
+      - "`abs(...) >= 2`"
+      - "Parenthèses autour du `or`."
+    points: 1.5
+  - fn: server
+    title: "qui sert ?"
+    statement_md: |
+      Renvoie `"A"` ou `"B"` : le serveur du **prochain** point, sachant le score. A sert les 2 premiers points, puis B 2 points, etc.
+      À partir de 10-10, le service alterne à chaque point (A sert à 10-10, B à 11-10 ou 10-11, A à 11-11…).
+    starter_code: |
+      def server(points_a, points_b):
+          """Return "A" or "B", the player serving the next point."""
+          pass
+    solution: |
+      def server(points_a, points_b):
+          """Return "A" or "B", the player serving the next point."""
+          played = points_a + points_b
+          if points_a >= 10 and points_b >= 10:
+              turn = played % 2
+          else:
+              turn = (played // 2) % 2
+          if turn == 0:
+              return "A"
+          return "B"
+    tests:
+      visible:
+        - call: server(0, 0)
+          expected: "'A'"
+        - call: server(1, 1)
+          expected: "'B'"
+      hidden:
+        - call: server(1, 0)
+          expected: "'A'"
+        - call: server(3, 1)
+          expected: "'A'"
+        - call: server(5, 2)
+          expected: "'B'"
+        - call: server(10, 10)
+          expected: "'A'"
+          label: "10-10"
+        - call: server(11, 10)
+          expected: "'B'"
+        - call: server(11, 11)
+          expected: "'A'"
+    hints:
+      - "Nombre de points joués = points_a + points_b."
+      - "Changement tous les 2 points : `(joués // 2) % 2`. Après 10-10 : `joués % 2`."
+      - "0 → \"A\", 1 → \"B\"."
+    points: 2.5
+  - fn: win_game
+    title: "une manche"
+    statement_md: "Joue des points tant que la manche n'est pas finie ; `True` si A la gagne."
+    starter_code: |
+      def win_game(level_a, level_b):
+          """Play a game and return True if A wins it."""
+          pass
+    solution: |
+      def win_game(level_a, level_b):
+          """Play a game and return True if A wins it."""
+          a = 0
+          b = 0
+          while not game_over(a, b):
+              if win_point(level_a, level_b):
+                  a += 1
+              else:
+                  b += 1
+          return a > b
+    tests:
+      visible:
+        - call: "all(win_game(5, 0) for _ in range(50))"
+          expected: "True"
+      statistical:
+        - expr: "sum(win_game(55, 45) for _ in range(6000)) / 6000"
+          approx: 0.6868
+          tol: 0.025
+    hints:
+      - "Deux compteurs, `while not game_over(...)`."
+      - "Un point par tour."
+      - "`return a > b`"
+    points: 2.5
+  - fn: win_match
+    title: "le match"
+    statement_md: "Au meilleur de `best_of` manches ; `True` si A gagne."
+    starter_code: |
+      def win_match(level_a, level_b, best_of=5):
+          """Play a match and return True if A wins it."""
+          pass
+    solution: |
+      def win_match(level_a, level_b, best_of=5):
+          """Play a match and return True if A wins it."""
+          needed = best_of // 2 + 1
+          a = 0
+          b = 0
+          while a < needed and b < needed:
+              if win_game(level_a, level_b):
+                  a += 1
+              else:
+                  b += 1
+          return a == needed
+    tests:
+      visible:
+        - call: "all(win_match(5, 0) for _ in range(20))"
+          expected: "True"
+      statistical:
+        - expr: "sum(win_match(55, 45) for _ in range(2500)) / 2500"
+          approx: 0.819
+          tol: 0.035
+          label: "au meilleur des 5"
+        - expr: "sum(win_match(55, 45, 3) for _ in range(2500)) / 2500"
+          approx: 0.7672
+          tol: 0.04
+          label: "au meilleur des 3"
+    hints:
+      - "`needed = best_of // 2 + 1`"
+      - "Boucle tant que personne n'a `needed` manches."
+      - "`return a == needed`"
+    points: 2.5
+  - fn: estimate_win
+    title: "Monte Carlo"
+    statement_md: "Fréquence de victoire de A sur `n` matchs simulés."
+    starter_code: |
+      def estimate_win(level_a, level_b, best_of=5, n=1000):
+          """Return the frequency of A's wins over n matches."""
+          pass
+    solution: |
+      def estimate_win(level_a, level_b, best_of=5, n=1000):
+          """Return the frequency of A's wins over n matches."""
+          wins = 0
+          for _ in range(n):
+              if win_match(level_a, level_b, best_of):
+                  wins += 1
+          return wins / n
+    tests:
+      visible:
+        - call: "estimate_win(5, 0, 5, 10)"
+          expected: "1.0"
+      statistical:
+        - expr: "estimate_win(50, 50, 5, 2000)"
+          approx: 0.5
+          tol: 0.045
+    hints:
+      - "Compteur + `for _ in range(n)`."
+      - "Passe `best_of` à `win_match`."
+      - "`return wins / n`"
+    points: 1.5
+  - fn: closest_level
+    title: "quel niveau pour 90 % ?"
+    statement_md: |
+      Parcourt les niveaux `level_a` = `opponent`, `opponent + step`, … et renvoie le **premier** pour lequel
+      `estimate_win(level_a, opponent, best_of, n)` atteint au moins `target`. (On suppose qu'on finit par l'atteindre.)
+    starter_code: |
+      def closest_level(opponent, target=0.9, step=5, best_of=5, n=300):
+          """Return the first level of A reaching the target win frequency."""
+          pass
+    solution: |
+      def closest_level(opponent, target=0.9, step=5, best_of=5, n=300):
+          """Return the first level of A reaching the target win frequency."""
+          level = opponent
+          while estimate_win(level, opponent, best_of, n) < target:
+              level += step
+          return level
+    tests:
+      visible:
+        - call: "closest_level(50, 0.4, 5, 5, 50) >= 50"
+          expected: "True"
+      hidden:
+        - call: "closest_level(10, 1.0, 1000, 1, 20)"
+          expected: "1010"
+          label: "un seul grand pas suffit"
+      statistical:
+        - expr: "closest_level(50, 0.9, 5, 5, 300)"
+          approx: 67.5
+          tol: 3
+          label: "65 ou 70 contre 50"
+    hints:
+      - "Une boucle `while` : tant que la cible n'est pas atteinte, on augmente le niveau."
+      - "On commence à `opponent`."
+      - "`level += step`"
+    points: 2
+  - fn: match_report
+    title: "le compte rendu"
+    statement_md: "Renvoie `\"A gagne avec X % de chances\"` ou `\"B gagne avec X % de chances\"` (le favori, X = pourcentage **arrondi à l'entier** de `estimate_win`)."
+    starter_code: |
+      def match_report(level_a, level_b, n=1000):
+          """Return a sentence naming the favourite and its chance in percent."""
+          pass
+    solution: |
+      def match_report(level_a, level_b, n=1000):
+          """Return a sentence naming the favourite and its chance in percent."""
+          p = estimate_win(level_a, level_b, 5, n)
+          if p >= 0.5:
+              return f"A gagne avec {round(100 * p)} % de chances"
+          return f"B gagne avec {round(100 * (1 - p))} % de chances"
+    tests:
+      visible:
+        - call: "match_report(5, 0, 20)"
+          expected: "'A gagne avec 100 % de chances'"
+      hidden:
+        - call: "match_report(0, 5, 20)"
+          expected: "'B gagne avec 100 % de chances'"
+    hints:
+      - "Le favori est A si la fréquence est au moins 0,5."
+      - "Pour B : `1 - p`."
+      - "`round(100 * p)` donne un entier."
+    points: 1.5

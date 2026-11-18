@@ -1,0 +1,44 @@
+id: w4-l09
+world: 4
+type: code_fill
+title: "Compter les chiffres"
+concepts: [while, division_entiere]
+difficulty: 3
+estimated_minutes: 4
+xp: 40
+story: "Combien de chiffres pour afficher ton score ? Sans le convertir en texte !"
+statement_md: "Renvoie le nombre de chiffres de l'entier positif `n` (`count_digits(0)` vaut 1), **sans** `str` ni `len`."
+starter_code: |
+  def count_digits(n):
+      """Return the number of digits of the non-negative integer n."""
+      pass
+solution: |
+  def count_digits(n):
+      """Return the number of digits of the non-negative integer n."""
+      digits = 1
+      while n >= 10:
+          n = n // 10
+          digits += 1
+      return digits
+tests:
+  visible:
+    - call: count_digits(2026)
+      expected: "4"
+  hidden:
+    - call: count_digits(0)
+      expected: "1"
+      label: "zéro a un chiffre"
+    - call: count_digits(9)
+      expected: "1"
+    - call: count_digits(10)
+      expected: "2"
+      label: "pile une puissance de 10"
+    - call: count_digits(1000000)
+      expected: "7"
+constraints:
+  required: [While]
+  forbidden: ["call:str", "call:len"]
+hints:
+  - "`n // 10` enlève le dernier chiffre."
+  - "On compte combien de fois on peut enlever un chiffre avant d'arriver à un seul chiffre."
+  - "Commence à 1, et boucle `while n >= 10`."

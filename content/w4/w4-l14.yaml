@@ -1,0 +1,45 @@
+id: w4-l14
+world: 4
+type: code_fill
+title: "Rappel : FizzBuzz"
+concepts: [modulo, if, fonction, revision]
+difficulty: 2
+estimated_minutes: 3
+xp: 30
+review: true
+story: "Le grand classique des entretiens, avec des conditions du monde 1."
+statement_md: |
+  Renvoie `"FizzBuzz"` si `n` est multiple de 3 **et** de 5, `"Fizz"` si multiple de 3, `"Buzz"` si multiple de 5,
+  sinon le nombre **sous forme de chaîne**.
+starter_code: |
+  def fizzbuzz(n):
+      """Return "Fizz", "Buzz", "FizzBuzz" or str(n)."""
+      pass
+solution: |
+  def fizzbuzz(n):
+      """Return "Fizz", "Buzz", "FizzBuzz" or str(n)."""
+      if n % 15 == 0:
+          return "FizzBuzz"
+      elif n % 3 == 0:
+          return "Fizz"
+      elif n % 5 == 0:
+          return "Buzz"
+      return str(n)
+tests:
+  visible:
+    - call: fizzbuzz(9)
+      expected: "'Fizz'"
+    - call: fizzbuzz(7)
+      expected: "'7'"
+  hidden:
+    - call: fizzbuzz(30)
+      expected: "'FizzBuzz'"
+      label: "l'ordre des tests compte"
+    - call: fizzbuzz(10)
+      expected: "'Buzz'"
+    - call: fizzbuzz(0)
+      expected: "'FizzBuzz'"
+hints:
+  - "Le cas le plus restrictif d'abord."
+  - "Multiple de 3 et de 5 = multiple de 15."
+  - "`return str(n)` à la fin."

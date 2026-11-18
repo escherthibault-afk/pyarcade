@@ -9,6 +9,7 @@ export const LIVE_GAMES: Record<string, React.LazyExoticComponent<React.Componen
   mastermind: lazy(() => import('./MastermindLive')),
   motus: lazy(() => import('./WordleLive').then((m) => ({ default: m.MotusLive }))),
   dice421: lazy(() => import('./Dice421Live')),
+  tennis: lazy(() => import('./TennisLive')),
 }
 
 export function registerLiveGame(name: string, comp: (typeof LIVE_GAMES)[string]) {

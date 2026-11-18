@@ -33,9 +33,10 @@ def fail_summary(results):
     return out
 
 
-def run_suite(code, job, tests, statistical, seeds=None):
+def run_suite(code, job, tests, statistical, seeds=None, starter=False):
     return runner.cmd_run_tests(
         {
+            "stop_on_fail": starter,
             "code": code,
             "files": job.get("files"),
             "given_code": job.get("given_code", ""),
@@ -43,7 +44,7 @@ def run_suite(code, job, tests, statistical, seeds=None):
             "seed": job.get("seed"),
             "statistical": statistical,
             "stat_seeds": seeds,
-            "timeout_ms": job.get("timeout_ms", 8000),
+            "timeout_ms": 2000 if starter else job.get("timeout_ms", 8000),
         }
     )
 
@@ -77,7 +78,7 @@ def check_code(job):
     if not tests and not job.get("statistical"):
         errors.append("no tests")
     # the starter must fail at least one test (or a constraint)
-    st = run_suite(job["starter"], job, tests, job.get("statistical", []), [1])
+    st = run_suite(job["starter"], job, tests, job.get("statistical", []), [1], starter=True)
     starter_fails = bool(st["load"]["error"]) or any(not r.get("passed") for r in st["results"])
     if not starter_fails:
         errors.append("starter_code passes every test (tests are too weak)")

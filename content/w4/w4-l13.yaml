@@ -1,0 +1,29 @@
+id: w4-l13
+world: 4
+type: robot
+title: "Ramasse toutes les pièces"
+concepts: [while, if, robot]
+difficulty: 3
+estimated_minutes: 5
+xp: 45
+story: "Des pièces 🪙 traînent dans le couloir. Ramasse-les toutes avant d'atteindre le drapeau."
+statement_md: |
+  Le même programme doit marcher sur les deux cartes : avance jusqu'au drapeau en ramassant (`pick_coin()`) chaque pièce
+  sur laquelle tu passes (`coin_here()`).
+grids:
+  - ["########", "#>*.*.G#", "########"]
+  - ["#####", "#>**G", "#####"]
+starter_code: |
+  while not at_goal():
+      move()
+solution: |
+  while not at_goal():
+      if coin_here():
+          pick_coin()
+      move()
+constraints:
+  required: [While, If]
+hints:
+  - "À chaque case : d'abord regarder s'il y a une pièce, puis avancer."
+  - "`if coin_here(): pick_coin()` dans la boucle."
+  - "Ordre dans la boucle : test de la pièce, ramassage, puis `move()`."

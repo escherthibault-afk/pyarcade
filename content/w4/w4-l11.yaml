@@ -1,0 +1,29 @@
+id: w4-l11
+world: 4
+type: truth_table
+title: "Avantage !"
+concepts: [bool, de_morgan, while, tennis]
+difficulty: 3
+estimated_minutes: 4
+xp: 40
+story: "La condition de ton `while` : le jeu CONTINUE tant que personne n'a gagné."
+statement_md: |
+  Un joueur gagne le jeu avec au moins 4 points **et** 2 points d'avance.
+  Écris la condition « le jeu **continue** » (utile pour `while ... :`), en fonction de `a` et `b`.
+vars: [a, b]
+rows:
+  - {a: 0, b: 0}
+  - {a: 3, b: 3}
+  - {a: 4, b: 3}
+  - {a: 4, b: 2}
+  - {a: 5, b: 5}
+  - {a: 3, b: 5}
+  - {a: 7, b: 6}
+  - {a: 8, b: 6}
+solution: "not ((a >= 4 or b >= 4) and abs(a - b) >= 2)"
+hints:
+  - "C'est la négation de « le jeu est terminé »."
+  - "« terminé » : `(a >= 4 or b >= 4) and abs(a - b) >= 2`."
+  - "`not (...)` autour, ou De Morgan : `(a < 4 and b < 4) or abs(a - b) < 2`."
+explanation_md: "Pour écrire la condition d'un `while`, écris la condition d'**arrêt**, puis mets `not` devant. De Morgan permet ensuite de la simplifier."
+exam_tip: "Le piège du TP Tennis : arrêter le jeu à 4-3. Teste 4-3, 5-5, 7-6 et 8-6."

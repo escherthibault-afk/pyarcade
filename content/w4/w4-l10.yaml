@@ -1,0 +1,60 @@
+id: w4-l10
+world: 4
+type: code_fill
+title: "Monte Carlo : estimer une probabilité"
+concepts: [for, random, monte_carlo, frequence]
+difficulty: 3
+estimated_minutes: 5
+xp: 45
+story: "Quelle est la chance de faire au moins un 6 en lançant 4 dés ? Au lieu de calculer, simulons !"
+statement_md: |
+  Répète `n` fois l'expérience « lancer 4 dés » et renvoie la **fréquence** des expériences où **au moins un** dé vaut 6.
+  (La vraie probabilité vaut 1 − (5/6)⁴ ≈ 0,518.)
+starter_code: |
+  import random
+
+
+  def at_least_one_six(n):
+      """Return the observed frequency of 'at least one 6 with 4 dice' over n experiments."""
+      pass
+solution: |
+  import random
+
+
+  def at_least_one_six(n):
+      """Return the observed frequency of 'at least one 6 with 4 dice' over n experiments."""
+      success = 0
+      for _ in range(n):
+          found = False
+          for _ in range(4):
+              if random.randint(1, 6) == 6:
+                  found = True
+          if found:
+              success += 1
+      return success / n
+tests:
+  visible:
+    - call: "0 <= at_least_one_six(100) <= 1"
+      expected: "True"
+  hidden:
+    - call: "type(at_least_one_six(10)).__name__"
+      expected: "'float'"
+  statistical:
+    - expr: "at_least_one_six(20000)"
+      approx: 0.5177
+      tol: 0.015
+hints:
+  - "Une boucle externe pour les n expériences, une boucle interne pour les 4 dés."
+  - "Un booléen `found` remis à `False` au début de chaque expérience."
+  - "Fréquence = nombre de succès / n."
+explanation_md: "Plus n est grand, plus la fréquence se rapproche de la probabilité (loi des grands nombres). C'est le cœur du TP Tennis."
+card:
+  title: "Simulation de Monte Carlo"
+  body_md: |
+    ```python
+    succes = 0
+    for _ in range(n):
+        if experience():
+            succes += 1
+    return succes / n
+    ```

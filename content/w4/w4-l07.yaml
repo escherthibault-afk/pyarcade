@@ -1,0 +1,47 @@
+id: w4-l07
+world: 4
+type: bug_hunt
+title: "La boucle qui ne s'arrête jamais"
+concepts: [while, boucle_infinie, bug]
+difficulty: 2
+estimated_minutes: 4
+xp: 40
+story: "Le compteur de puissances de 2 a fait chauffer le serveur toute la nuit."
+statement_md: |
+  `powers_of_two(limit)` renvoie la liste des puissances de 2 **strictement inférieures** à `limit` : `powers_of_two(20)` → `[1, 2, 4, 8, 16]`.
+  **2 bugs** (dont une boucle infinie : le site l'arrêtera au bout de 3 s).
+starter_code: |
+  def powers_of_two(limit):
+      """Return the powers of two strictly lower than limit."""
+      result = []
+      p = 1
+      while p <= limit:
+          result.append(p)
+      return result
+solution: |
+  def powers_of_two(limit):
+      """Return the powers of two strictly lower than limit."""
+      result = []
+      p = 1
+      while p < limit:
+          result.append(p)
+          p = p * 2
+      return result
+bugs: 2
+tests:
+  visible:
+    - call: powers_of_two(20)
+      expected: "[1, 2, 4, 8, 16]"
+  hidden:
+    - call: powers_of_two(16)
+      expected: "[1, 2, 4, 8]"
+      label: "limite exclue"
+    - call: powers_of_two(1)
+      expected: "[]"
+    - call: powers_of_two(2)
+      expected: "[1]"
+hints:
+  - "Que vaut `p` au 2e tour ? Et au 1000e ?"
+  - "`p` ne change jamais ; et « strictement inférieur » s'écrit `<`."
+  - "Ajoute `p = p * 2` dans la boucle et remplace `<=` par `<`."
+explanation_md: "Une boucle `while` doit modifier une variable de sa condition. Ici `p` doublait jamais : condition toujours vraie."

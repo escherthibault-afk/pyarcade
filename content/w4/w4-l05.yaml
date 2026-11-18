@@ -1,0 +1,37 @@
+id: w4-l05
+world: 4
+type: predict_output
+title: "Les secrets de range"
+concepts: [for, range]
+difficulty: 2
+estimated_minutes: 2
+xp: 25
+story: "`range` a trois paramètres et une borne de fin exclue. Tout le monde s'y fait piéger un jour."
+statement_md: "Qu'affiche ce programme ? (`end=\" \"` remplace le retour à la ligne par un espace.)"
+code: |
+  for i in range(4):
+      print(i, end=" ")
+  print()
+  for i in range(1, 10, 3):
+      print(i, end=" ")
+  print()
+  for i in range(5, 0, -2):
+      print(i, end=" ")
+  print()
+  print(list(range(2, 2)))
+answer: |
+  0 1 2 3 
+  1 4 7 
+  5 3 1 
+  []
+hints:
+  - "`range(4)` : 0, 1, 2, 3 (4 exclu)."
+  - "`range(1, 10, 3)` : de 3 en 3, 10 exclu."
+  - "`range(2, 2)` est vide."
+explanation_md: "`range(début, fin, pas)` : début inclus, fin **exclue**. Avec un pas négatif, on descend."
+card:
+  title: "for et range"
+  body_md: |
+    `for i in range(n)` : i = 0 … n−1. `range(a, b)` : a … b−1. `range(a, b, pas)`.
+    `for x in liste` parcourt les éléments ; `for i in range(len(liste))` parcourt les indices.
+exam_tip: "Pour aller de 1 à n inclus : `range(1, n + 1)`."

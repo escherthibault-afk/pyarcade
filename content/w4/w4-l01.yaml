@@ -1,0 +1,41 @@
+id: w4-l01
+world: 4
+type: lesson
+title: "while : tant que…"
+concepts: [while, compteur]
+difficulty: 1
+estimated_minutes: 2
+xp: 15
+story: "Le jeu continue tant que le joueur a des vies. C'est exactement un while."
+statement_md: |
+  ```python
+  vies = 3
+  while vies > 0:          # la condition est testée AVANT chaque tour
+      print("Il reste", vies, "vies")
+      vies = vies - 1      # sans cette ligne : boucle infinie !
+  print("Game over")
+  ```
+example_code: |
+  vies = 3
+  while vies > 0:
+      print("Il reste", vies, "vies")
+      vies = vies - 1
+  print("Game over")
+task_md: "Modifie le programme pour qu'il commence avec **5** vies et en perde **2** à chaque tour. Quelle est la dernière ligne avant « Game over » ?"
+expected_output: "Il reste 5 vies\nIl reste 3 vies\nIl reste 1 vies\nGame over\n"
+solution: |
+  vies = 5
+  while vies > 0:
+      print("Il reste", vies, "vies")
+      vies = vies - 2
+  print("Game over")
+hints:
+  - "Deux nombres à changer."
+  - "5, 3, 1, puis -1 : la condition devient fausse."
+  - "`vies = 5` et `vies = vies - 2`."
+card:
+  title: "while"
+  body_md: |
+    `while condition:` répète le bloc tant que la condition est vraie. Quelque chose dans le bloc doit finir par la rendre fausse.
+    Idéal quand on ne sait pas à l'avance combien de tours il faudra (jeu, simulation).
+exam_tip: "Pour une boucle de jeu : `while not state[\"over\"]:` — et vérifie que chaque tour fait avancer l'état."

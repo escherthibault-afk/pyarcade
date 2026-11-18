@@ -1,0 +1,249 @@
+id: boss-tennis-exam
+world: 4
+type: boss
+variant: exam
+project: "tennis:exam"
+title: "🎓 Examen Tennis (75 min, avec jeu décisif)"
+concepts: [random, while, bool, monte_carlo]
+difficulty: 5
+estimated_minutes: 75
+xp: 0
+time_limit_minutes: 75
+statement_md: "Sujet en 75 minutes, sans indice. Nouveauté : le **jeu décisif** à 6-6."
+intro_md: |
+  ## Sujet : simulation de tennis
+
+  A gagne chaque point avec `p = level_a / (level_a + level_b)`.
+
+  - **Jeu** (avec ou sans avantage, comme en cours) : au moins 4 points et 2 d'avance ; sans avantage, le premier à 4.
+  - **Jeu décisif** (*tie-break*) : le premier à **7 points avec 2 d'avance**.
+  - **Set** : au moins 6 jeux et 2 d'avance ; **à 6-6, on joue un jeu décisif** dont le vainqueur gagne le set 7-6.
+  - **Match** : en `nb_sets` sets, le premier à `nb_sets // 2 + 1`.
+header_code: |
+  import random
+steps:
+  - fn: win_point
+    title: "point"
+    statement_md: "`True` si A gagne le point."
+    starter_code: |
+      def win_point(level_a, level_b):
+          """Return True if A wins the point."""
+          pass
+    solution: |
+      def win_point(level_a, level_b):
+          """Return True if A wins the point."""
+          return random.random() < level_a / (level_a + level_b)
+    tests:
+      visible:
+        - call: "type(win_point(1, 1)).__name__"
+          expected: "'bool'"
+      statistical:
+        - expr: "sum(win_point(70, 30) for _ in range(20000)) / 20000"
+          approx: 0.7
+          tol: 0.015
+    points: 1
+  - fn: game_over
+    title: "fin de jeu"
+    statement_md: "Avec avantage : ≥ 4 et 2 d'avance. Sans : l'un a 4."
+    starter_code: |
+      def game_over(points_a, points_b, advantage=True):
+          """Return True if the game is finished."""
+          pass
+    solution: |
+      def game_over(points_a, points_b, advantage=True):
+          """Return True if the game is finished."""
+          if advantage:
+              return (points_a >= 4 or points_b >= 4) and abs(points_a - points_b) >= 2
+          return points_a == 4 or points_b == 4
+    tests:
+      visible:
+        - call: game_over(4, 2)
+          expected: "True"
+      hidden:
+        - call: game_over(4, 3)
+          expected: "False"
+        - call: game_over(8, 6)
+          expected: "True"
+        - call: game_over(4, 3, False)
+          expected: "True"
+        - call: game_over(3, 3, False)
+          expected: "False"
+    points: 2.5
+  - fn: win_game
+    title: "jeu"
+    statement_md: "Joue un jeu, `True` si A gagne."
+    starter_code: |
+      def win_game(level_a, level_b, advantage=True):
+          """Play a game and return True if A wins it."""
+          pass
+    solution: |
+      def win_game(level_a, level_b, advantage=True):
+          """Play a game and return True if A wins it."""
+          a = 0
+          b = 0
+          while not game_over(a, b, advantage):
+              if win_point(level_a, level_b):
+                  a += 1
+              else:
+                  b += 1
+          return a > b
+    tests:
+      visible:
+        - call: "all(win_game(9, 0) for _ in range(30))"
+          expected: "True"
+      statistical:
+        - expr: "sum(win_game(52, 48) for _ in range(8000)) / 8000"
+          approx: 0.5499
+          tol: 0.022
+    points: 2
+  - fn: tiebreak_over
+    title: "fin de jeu décisif"
+    statement_md: "`True` si l'un a au moins 7 points et 2 d'avance."
+    starter_code: |
+      def tiebreak_over(points_a, points_b):
+          """Return True if the tie-break is finished."""
+          pass
+    solution: |
+      def tiebreak_over(points_a, points_b):
+          """Return True if the tie-break is finished."""
+          return (points_a >= 7 or points_b >= 7) and abs(points_a - points_b) >= 2
+    tests:
+      visible:
+        - call: tiebreak_over(7, 3)
+          expected: "True"
+      hidden:
+        - call: tiebreak_over(7, 6)
+          expected: "False"
+        - call: tiebreak_over(10, 8)
+          expected: "True"
+        - call: tiebreak_over(6, 4)
+          expected: "False"
+    points: 1.5
+  - fn: win_tiebreak
+    title: "jeu décisif"
+    statement_md: "Joue un jeu décisif, `True` si A gagne."
+    starter_code: |
+      def win_tiebreak(level_a, level_b):
+          """Play a tie-break and return True if A wins it."""
+          pass
+    solution: |
+      def win_tiebreak(level_a, level_b):
+          """Play a tie-break and return True if A wins it."""
+          a = 0
+          b = 0
+          while not tiebreak_over(a, b):
+              if win_point(level_a, level_b):
+                  a += 1
+              else:
+                  b += 1
+          return a > b
+    tests:
+      visible:
+        - call: "all(win_tiebreak(9, 0) for _ in range(20))"
+          expected: "True"
+      statistical:
+        - expr: "sum(win_tiebreak(52, 48) for _ in range(8000)) / 8000"
+          approx: 0.5629
+          tol: 0.022
+    points: 2
+  - fn: win_set
+    title: "set avec jeu décisif"
+    statement_md: "Jeux tant que le set n'est pas fini ; **à 6-6, un jeu décisif** décide. `True` si A gagne."
+    starter_code: |
+      def win_set(level_a, level_b):
+          """Play a set (tie-break at 6-6) and return True if A wins it."""
+          pass
+    solution: |
+      def win_set(level_a, level_b):
+          """Play a set (tie-break at 6-6) and return True if A wins it."""
+          a = 0
+          b = 0
+          while True:
+              if a == 6 and b == 6:
+                  return win_tiebreak(level_a, level_b)
+              if (a >= 6 or b >= 6) and abs(a - b) >= 2:
+                  return a > b
+              if win_game(level_a, level_b):
+                  a += 1
+              else:
+                  b += 1
+    tests:
+      visible:
+        - call: "all(win_set(9, 0) for _ in range(10))"
+          expected: "True"
+      statistical:
+        - expr: "sum(win_set(52, 48) for _ in range(3000)) / 3000"
+          approx: 0.6401
+          tol: 0.035
+    points: 4
+  - fn: win_match
+    title: "match"
+    statement_md: "Le premier à `nb_sets // 2 + 1` sets."
+    starter_code: |
+      def win_match(level_a, level_b, nb_sets=3):
+          """Play a match and return True if A wins it."""
+          pass
+    solution: |
+      def win_match(level_a, level_b, nb_sets=3):
+          """Play a match and return True if A wins it."""
+          needed = nb_sets // 2 + 1
+          a = 0
+          b = 0
+          while a < needed and b < needed:
+              if win_set(level_a, level_b):
+                  a += 1
+              else:
+                  b += 1
+          return a == needed
+    tests:
+      visible:
+        - call: "all(win_match(9, 0, 5) for _ in range(10))"
+          expected: "True"
+      statistical:
+        - expr: "sum(win_match(52, 48, 5) for _ in range(1000)) / 1000"
+          approx: 0.7493
+          tol: 0.055
+    points: 3
+  - fn: estimate_win
+    title: "Monte Carlo"
+    statement_md: "Fréquence des victoires de A sur `n` matchs."
+    starter_code: |
+      def estimate_win(level_a, level_b, nb_sets=3, n=1000):
+          """Return the frequency of A's wins over n matches."""
+          pass
+    solution: |
+      def estimate_win(level_a, level_b, nb_sets=3, n=1000):
+          """Return the frequency of A's wins over n matches."""
+          wins = 0
+          for _ in range(n):
+              if win_match(level_a, level_b, nb_sets):
+                  wins += 1
+          return wins / n
+    tests:
+      visible:
+        - call: "estimate_win(9, 0, 3, 10)"
+          expected: "1.0"
+      statistical:
+        - expr: "estimate_win(52, 48, 3, 1000)"
+          approx: 0.7047
+          tol: 0.06
+    points: 2
+  - fn: compare_formats
+    title: "3 ou 5 sets ?"
+    statement_md: "Renvoie le tuple `(fréquence en 3 sets, fréquence en 5 sets)` pour A, chacune estimée sur `n` matchs."
+    starter_code: |
+      def compare_formats(level_a, level_b, n=500):
+          """Return (frequency in 3 sets, frequency in 5 sets)."""
+          pass
+    solution: |
+      def compare_formats(level_a, level_b, n=500):
+          """Return (frequency in 3 sets, frequency in 5 sets)."""
+          return (estimate_win(level_a, level_b, 3, n), estimate_win(level_a, level_b, 5, n))
+    tests:
+      visible:
+        - call: "compare_formats(9, 0, 5)"
+          expected: "(1.0, 1.0)"
+      hidden:
+        - call: "type(compare_formats(50, 50, 5)).__name__"
+          expected: "'tuple'"
+    points: 2

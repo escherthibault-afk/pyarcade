@@ -1,0 +1,38 @@
+id: w4-l12
+world: 4
+type: code_fill
+title: "Le premier qui…"
+concepts: [for, break, recherche]
+difficulty: 2
+estimated_minutes: 3
+xp: 35
+story: "Trouver le premier multiple de 7 après 100, et s'arrêter tout de suite."
+statement_md: "Renvoie le plus petit entier **strictement supérieur** à `start` qui est multiple de `k` (k > 0)."
+starter_code: |
+  def next_multiple(start, k):
+      """Return the smallest integer > start that is a multiple of k."""
+      pass
+solution: |
+  def next_multiple(start, k):
+      """Return the smallest integer > start that is a multiple of k."""
+      n = start + 1
+      while n % k != 0:
+          n += 1
+      return n
+tests:
+  visible:
+    - call: next_multiple(100, 7)
+      expected: "105"
+  hidden:
+    - call: next_multiple(105, 7)
+      expected: "112"
+      label: "strictement supérieur"
+    - call: next_multiple(0, 1)
+      expected: "1"
+    - call: next_multiple(-5, 3)
+      expected: "-3"
+hints:
+  - "Commence à `start + 1` et avance d'un en un."
+  - "On s'arrête dès que `n % k == 0`."
+  - "`while n % k != 0: n += 1`"
+explanation_md: "Version avec `for` + `break` possible, mais `while` exprime directement « tant que ce n'est pas un multiple »."
