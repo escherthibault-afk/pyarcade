@@ -1,0 +1,43 @@
+id: w6-l08
+world: 6
+type: code_fill
+title: "Vecteur unitaire"
+concepts: [vecteurs, normalisation, cas_limites]
+difficulty: 3
+estimated_minutes: 4
+xp: 40
+story: "Pour diriger un oiseau, on veut la direction seule : un vecteur de longueur 1."
+statement_md: "Renvoie `v` divisé par sa norme (vecteur de longueur 1). Le vecteur nul `(0, 0)` est renvoyé tel quel."
+starter_code: |
+  import math
+
+
+  def v_unit(v):
+      """Return the unit vector with the direction of v ((0, 0) stays (0, 0))."""
+      pass
+solution: |
+  import math
+
+
+  def v_unit(v):
+      """Return the unit vector with the direction of v ((0, 0) stays (0, 0))."""
+      length = math.sqrt(v[0] ** 2 + v[1] ** 2)
+      if length == 0:
+          return (0, 0)
+      return (v[0] / length, v[1] / length)
+tests:
+  visible:
+    - call: v_unit((3, 4))
+      expected: "(0.6, 0.8)"
+  hidden:
+    - call: v_unit((0, 0))
+      expected: "(0, 0)"
+      label: "vecteur nul"
+    - call: v_unit((0, -5))
+      expected: "(0.0, -1.0)"
+    - call: "round(math.sqrt(sum(c * c for c in v_unit((7, -2)))), 9)"
+      expected: "1.0"
+hints:
+  - "Calcule la norme d'abord."
+  - "Cas particulier : norme nulle (sinon ZeroDivisionError)."
+  - "Divise chaque coordonnée par la norme."

@@ -54,7 +54,7 @@ worlds:
     emoji: "🧭"
     color: "#f39c6b"
     radar: listes
-    bosses: []
+    bosses: [boss-boids-guided, boss-boids-twin-gravity, boss-boids-exam]
   - id: 7
     title: Grilles
     title_en: Grids

@@ -1,0 +1,28 @@
+id: w6-l14
+world: 6
+type: copy
+title: "Mode copie : multiplier un vecteur"
+concepts: [vecteurs, tuple]
+difficulty: 1
+estimated_minutes: 2
+xp: 25
+story: "DS papier, trois lignes, zéro exécution."
+statement_md: "Renvoie le vecteur `v` multiplié par le nombre `k` (tuple)."
+starter_code: |
+  def v_mul(v, k):
+      """Return the vector v multiplied by the number k."""
+      pass
+solution: |
+  def v_mul(v, k):
+      """Return the vector v multiplied by the number k."""
+      return (v[0] * k, v[1] * k)
+tests:
+  visible:
+    - call: v_mul((1, -2), 3)
+      expected: "(3, -6)"
+  hidden:
+    - call: v_mul((5, 5), 0)
+      expected: "(0, 0)"
+    - call: v_mul((2, 4), 0.5)
+      expected: "(1.0, 2.0)"
+hints: []

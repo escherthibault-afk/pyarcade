@@ -1,0 +1,24 @@
+id: w6-l10
+world: 6
+type: truth_table
+title: "Dans le cercle ?"
+concepts: [bool, vecteurs, distance]
+difficulty: 2
+estimated_minutes: 3
+xp: 30
+story: "Un oiseau voit ses voisins s'ils sont dans un rayon de 5 autour de lui (lui étant en (0, 0))."
+statement_md: "Écris la condition « le point `(x, y)` est à distance **au plus 5** de l'origine », **sans racine carrée**."
+vars: [x, y]
+rows:
+  - {x: 3, y: 4}
+  - {x: 0, y: 0}
+  - {x: 4, y: 4}
+  - {x: -5, y: 0}
+  - {x: 1, y: -6}
+  - {x: -2, y: 3}
+solution: "x ** 2 + y ** 2 <= 25"
+hints:
+  - "Distance ≤ 5 ⟺ distance² ≤ 25."
+  - "Pas besoin de `sqrt` : compare les carrés."
+  - "`x ** 2 + y ** 2 <= 25`"
+explanation_md: "Comparer des carrés évite une racine (plus rapide et pas de flottant). Les boids font ça des milliers de fois par seconde."

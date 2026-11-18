@@ -1,0 +1,21 @@
+id: w6-l09
+world: 6
+type: trace
+title: "Trace le vol"
+concepts: [tuple, vecteurs, trace]
+difficulty: 2
+estimated_minutes: 3
+xp: 30
+story: "Un oiseau vole, freine, repart. Note sa position à chaque instant."
+statement_md: "Après chaque passage sur la ligne marquée, note `pos` et `vel`."
+code: |
+  pos = (0, 0)
+  vel = (2, 1)
+  for t in range(4):
+      pos = (pos[0] + vel[0], pos[1] + vel[1])
+      vel = (vel[0] - 1, vel[1])  # @snap
+watch: [pos, vel]
+hints:
+  - "La position avance de la vitesse, PUIS la vitesse diminue en x."
+  - "Tour 1 : pos = (2, 1), vel = (1, 1)."
+  - "La vitesse en x peut devenir négative."

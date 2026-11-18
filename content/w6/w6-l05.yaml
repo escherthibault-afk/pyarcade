@@ -1,0 +1,38 @@
+id: w6-l05
+world: 6
+type: bug_hunt
+title: "La distance qui délire"
+concepts: [priorite, puissance, vecteurs, bug]
+difficulty: 3
+estimated_minutes: 4
+xp: 40
+story: "Deux oiseaux à 5 mètres l'un de l'autre… selon le programme, ils sont à 12,5 mètres."
+statement_md: "`v_dist(u, v)` renvoie la distance entre deux points. **2 bugs**."
+starter_code: |
+  def v_dist(u, v):
+      """Return the distance between the points u and v."""
+      dx = u[0] - v[0]
+      dy = u[1] - v[0]
+      return (dx ** 2 + dy ** 2) ** 1 / 2
+solution: |
+  def v_dist(u, v):
+      """Return the distance between the points u and v."""
+      dx = u[0] - v[0]
+      dy = u[1] - v[1]
+      return (dx ** 2 + dy ** 2) ** 0.5
+bugs: 2
+tests:
+  visible:
+    - call: v_dist((0, 0), (3, 4))
+      expected: "5.0"
+  hidden:
+    - call: v_dist((1, 1), (1, 1))
+      expected: "0.0"
+    - call: v_dist((2, 7), (5, 3))
+      expected: "5.0"
+      label: "coordonnées différentes"
+hints:
+  - "Relis les indices de `dy`. Et calcule `25 ** 1 / 2` à la main."
+  - "`** 1 / 2` se lit `(25 ** 1) / 2` : la puissance passe avant la division."
+  - "`dy = u[1] - v[1]` et `** 0.5`."
+explanation_md: "`x ** 1 / 2` = `(x ** 1) / 2`. Pour une racine carrée : `x ** 0.5` ou `math.sqrt(x)`."

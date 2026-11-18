@@ -1,0 +1,287 @@
+id: boss-boids-twin-gravity
+world: 6
+type: boss
+variant: twin
+project: "boids:gravity"
+title: "👯 Jumeau : particules et gravité"
+concepts: [tuple, vecteurs, dict, listes, physique]
+difficulty: 5
+estimated_minutes: 55
+xp: 400
+statement_md: "Des planètes au lieu d'oiseaux : mêmes vecteurs, mêmes fonctions pures, autre physique."
+intro_md: |
+  ## Mini-système solaire
+
+  Une particule est un dictionnaire `{"pos": (x, y), "vel": (vx, vy), "mass": m}`.
+  Deux particules s'attirent avec une force d'intensité `g × m1 × m2 / d²` (d = distance), dirigée de l'une vers l'autre.
+
+  Une **étape** de durée `dt` (méthode d'Euler) : pour chaque particule, force totale `F` → accélération `F / m` →
+  nouvelle vitesse `vel + acc × dt` → nouvelle position `pos + nouvelle_vel × dt`. **Toutes les forces sont calculées
+  à partir des positions d'avant l'étape** (on construit une nouvelle liste, on ne modifie pas l'ancienne).
+header_code: |
+  import math
+steps:
+  - fn: v_add
+    title: "addition"
+    statement_md: "`u + v`."
+    starter_code: |
+      def v_add(u, v):
+          """Return u + v."""
+          pass
+    solution: |
+      def v_add(u, v):
+          """Return u + v."""
+          return (u[0] + v[0], u[1] + v[1])
+    tests:
+      visible:
+        - call: v_add((1, 2), (3, 4))
+          expected: "(4, 6)"
+    hints: ["Coordonnée par coordonnée.", "Un tuple.", "`(u[0] + v[0], u[1] + v[1])`"]
+    points: 0.5
+  - fn: v_sub
+    title: "soustraction"
+    statement_md: "`u - v`."
+    starter_code: |
+      def v_sub(u, v):
+          """Return u - v."""
+          pass
+    solution: |
+      def v_sub(u, v):
+          """Return u - v."""
+          return (u[0] - v[0], u[1] - v[1])
+    tests:
+      visible:
+        - call: v_sub((1, 2), (3, 4))
+          expected: "(-2, -2)"
+    hints: ["Comme v_add.", "u moins v.", "`(u[0] - v[0], u[1] - v[1])`"]
+    points: 0.5
+  - fn: v_mul
+    title: "produit par un nombre"
+    statement_md: "`v × k`."
+    starter_code: |
+      def v_mul(v, k):
+          """Return v times k."""
+          pass
+    solution: |
+      def v_mul(v, k):
+          """Return v times k."""
+          return (v[0] * k, v[1] * k)
+    tests:
+      visible:
+        - call: v_mul((1, -1), 2)
+          expected: "(2, -2)"
+    hints: ["Chaque coordonnée.", "Un tuple.", "`(v[0] * k, v[1] * k)`"]
+    points: 0.5
+  - fn: v_len
+    title: "norme"
+    statement_md: "Longueur du vecteur."
+    starter_code: |
+      def v_len(v):
+          """Return the length of v."""
+          pass
+    solution: |
+      def v_len(v):
+          """Return the length of v."""
+          return math.sqrt(v[0] ** 2 + v[1] ** 2)
+    tests:
+      visible:
+        - call: v_len((3, 4))
+          expected: "5.0"
+    hints: ["Pythagore.", "`math.sqrt`.", "`math.sqrt(v[0] ** 2 + v[1] ** 2)`"]
+    points: 0.5
+  - fn: create_particle
+    title: "une particule"
+    statement_md: "Renvoie `{\"pos\": (x, y), \"vel\": (vx, vy), \"mass\": mass}`."
+    starter_code: |
+      def create_particle(x, y, vx, vy, mass):
+          """Return a new particle dict."""
+          pass
+    solution: |
+      def create_particle(x, y, vx, vy, mass):
+          """Return a new particle dict."""
+          return {"pos": (x, y), "vel": (vx, vy), "mass": mass}
+    tests:
+      visible:
+        - call: create_particle(0, 0, 1, 0, 5)
+          expected: "{'pos': (0, 0), 'vel': (1, 0), 'mass': 5}"
+    hints: ["Dictionnaire littéral.", "Trois clés.", "Positions et vitesses en tuples."]
+    points: 0.5
+  - fn: gravity
+    title: "la force d'une particule sur une autre"
+    statement_md: |
+      Force exercée **sur `p` par `other`** : intensité `g × m_p × m_other / d²`, direction unitaire `(other.pos - p.pos) / d`.
+      Si `d == 0`, renvoie `(0, 0)`.
+    starter_code: |
+      def gravity(p, other, g):
+          """Return the gravitational force applied on p by other."""
+          pass
+    solution: |
+      def gravity(p, other, g):
+          """Return the gravitational force applied on p by other."""
+          delta = v_sub(other["pos"], p["pos"])
+          d = v_len(delta)
+          if d == 0:
+              return (0, 0)
+          strength = g * p["mass"] * other["mass"] / d ** 2
+          return v_mul(delta, strength / d)
+    tests:
+      visible:
+        - setup: "a = create_particle(0, 0, 0, 0, 2)\nb = create_particle(3, 4, 0, 0, 5)"
+          call: gravity(a, b, 1)
+          expected: "(0.24, 0.32)"
+      hidden:
+        - setup: "a = create_particle(0, 0, 0, 0, 2)"
+          call: gravity(a, a, 1)
+          expected: "(0, 0)"
+          label: "distance nulle"
+        - setup: "a = create_particle(0, 0, 0, 0, 2)\nb = create_particle(3, 4, 0, 0, 5)"
+          call: gravity(b, a, 1)
+          expected: "(-0.24, -0.32)"
+          label: "action-réaction"
+    hints:
+      - "Vecteur de p vers other : `other.pos - p.pos`, de longueur d."
+      - "Direction unitaire : delta / d ; intensité : g m1 m2 / d²."
+      - "`v_mul(delta, strength / d)`"
+    points: 3
+  - fn: total_force
+    title: "force totale"
+    statement_md: "Somme des forces exercées sur `p` par toutes les **autres** particules de la liste."
+    starter_code: |
+      def total_force(p, particles, g):
+          """Return the sum of the forces applied on p by the other particles."""
+          pass
+    solution: |
+      def total_force(p, particles, g):
+          """Return the sum of the forces applied on p by the other particles."""
+          force = (0, 0)
+          for other in particles:
+              if other is not p:
+                  force = v_add(force, gravity(p, other, g))
+          return force
+    tests:
+      visible:
+        - setup: "a = create_particle(0, 0, 0, 0, 2)\nb = create_particle(3, 4, 0, 0, 5)"
+          call: total_force(a, [a, b], 1)
+          expected: "(0.24, 0.32)"
+      hidden:
+        - setup: "a = create_particle(0, 0, 0, 0, 1)\nb = create_particle(1, 0, 0, 0, 1)\nc = create_particle(-1, 0, 0, 0, 1)"
+          call: total_force(a, [a, b, c], 1)
+          expected: "(0.0, 0.0)"
+          label: "forces qui s'annulent"
+    hints:
+      - "Accumulateur vecteur `(0, 0)`."
+      - "Ignore p lui-même (`is not`)."
+      - "Ajoute `gravity(p, other, g)`."
+    points: 2
+  - fn: step
+    title: "une étape d'Euler"
+    statement_md: "Renvoie la **nouvelle liste** de particules après une étape `dt` (forces calculées sur l'ancienne liste)."
+    starter_code: |
+      def step(particles, dt, g):
+          """Return the new list of particles after one Euler step."""
+          pass
+    solution: |
+      def step(particles, dt, g):
+          """Return the new list of particles after one Euler step."""
+          new = []
+          for p in particles:
+              acc = v_mul(total_force(p, particles, g), 1 / p["mass"])
+              vel = v_add(p["vel"], v_mul(acc, dt))
+              pos = v_add(p["pos"], v_mul(vel, dt))
+              new.append({"pos": pos, "vel": vel, "mass": p["mass"]})
+          return new
+    tests:
+      visible:
+        - setup: "a = create_particle(0, 0, 0, 0, 2)\nb = create_particle(3, 4, 0, 0, 5)"
+          call: step([a, b], 1, 1)[0]
+          expected: "{'pos': (0.12, 0.16), 'vel': (0.12, 0.16), 'mass': 2}"
+      hidden:
+        - setup: "a = create_particle(0, 0, 0, 0, 2)\nb = create_particle(3, 4, 0, 0, 5)"
+          call: step([a, b], 1, 1)[1]
+          expected: "{'pos': (2.952, 3.936), 'vel': (-0.048, -0.064), 'mass': 5}"
+          label: "calculée avec l'ancienne position de a"
+        - setup: "a = create_particle(0, 0, 1, 0, 2)"
+          call: step([a], 0.5, 1)
+          pure: true
+          expected: "[{'pos': (0.5, 0.0), 'vel': (1.0, 0.0), 'mass': 2}]"
+          label: "seule : mouvement rectiligne, fonction pure"
+    hints:
+      - "Nouvelle liste ; pour chaque particule, utilise toujours `particles` (l'ancienne) pour les forces."
+      - "acc = F / m ; vel = vel + acc × dt ; pos = pos + vel × dt."
+      - "Crée un nouveau dict, ne modifie pas p."
+    points: 3.5
+  - fn: kinetic_energy
+    title: "énergie cinétique"
+    statement_md: "`0.5 × m × |v|²` (somme sur toutes les particules)."
+    starter_code: |
+      def kinetic_energy(particles):
+          """Return the total kinetic energy."""
+          pass
+    solution: |
+      def kinetic_energy(particles):
+          """Return the total kinetic energy."""
+          total = 0
+          for p in particles:
+              total += 0.5 * p["mass"] * (p["vel"][0] ** 2 + p["vel"][1] ** 2)
+          return total
+    tests:
+      visible:
+        - call: kinetic_energy([create_particle(0, 0, 3, 4, 2)])
+          expected: "25.0"
+      hidden:
+        - call: kinetic_energy([])
+          expected: "0"
+        - call: kinetic_energy([create_particle(0, 0, 1, 0, 2), create_particle(0, 0, 0, 2, 1)])
+          expected: "3.0"
+    hints: ["Accumulateur.", "|v|² = vx² + vy².", "0.5 × m × |v|²"]
+    points: 1.5
+  - fn: center_of_mass
+    title: "centre de masse"
+    statement_md: "Moyenne des positions **pondérée par les masses** (liste non vide)."
+    starter_code: |
+      def center_of_mass(particles):
+          """Return the mass-weighted mean position."""
+          pass
+    solution: |
+      def center_of_mass(particles):
+          """Return the mass-weighted mean position."""
+          total_mass = 0
+          weighted = (0, 0)
+          for p in particles:
+              total_mass += p["mass"]
+              weighted = v_add(weighted, v_mul(p["pos"], p["mass"]))
+          return v_mul(weighted, 1 / total_mass)
+    tests:
+      visible:
+        - call: center_of_mass([create_particle(0, 0, 0, 0, 1), create_particle(4, 0, 0, 0, 3)])
+          expected: "(3.0, 0.0)"
+      hidden:
+        - call: center_of_mass([create_particle(2, 5, 0, 0, 7)])
+          expected: "(2.0, 5.0)"
+    hints: ["Somme des m × pos, divisée par la masse totale.", "Deux accumulateurs.", "`v_mul(weighted, 1 / total_mass)`"]
+    points: 2
+  - fn: momentum
+    title: "quantité de mouvement"
+    statement_md: "Somme des vecteurs `m × vel` (elle se conserve pendant la simulation !)."
+    starter_code: |
+      def momentum(particles):
+          """Return the total momentum vector."""
+          pass
+    solution: |
+      def momentum(particles):
+          """Return the total momentum vector."""
+          total = (0, 0)
+          for p in particles:
+              total = v_add(total, v_mul(p["vel"], p["mass"]))
+          return total
+    tests:
+      visible:
+        - call: momentum([create_particle(0, 0, 1, 0, 2), create_particle(0, 0, -1, 1, 1)])
+          expected: "(1, 1)"
+      hidden:
+        - setup: "a = create_particle(0, 0, 0, 0, 2)\nb = create_particle(3, 4, 0, 0, 5)"
+          call: "tuple(round(c, 9) for c in momentum(step([a, b], 1, 1)))"
+          expected: "(0.0, 0.0)"
+          label: "conservée"
+    hints: ["Accumulateur vecteur.", "`v_mul(p[\"vel\"], p[\"mass\"])`", "Somme avec v_add."]
+    points: 2

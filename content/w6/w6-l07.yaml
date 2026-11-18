@@ -1,0 +1,44 @@
+id: w6-l07
+world: 6
+type: quiz
+title: "QCM éclair : tuples et vecteurs"
+concepts: [tuple, vecteurs, immuabilite]
+difficulty: 2
+estimated_minutes: 2
+xp: 30
+story: "Vecteurs en vitesse."
+statement_md: "10 questions, 60 secondes."
+time_limit: 60
+questions:
+  - q: "`t = (1, 2)` ; `t[0] = 5` provoque…"
+    choices: ["TypeError", "t = (5, 2)", "rien", "IndexError"]
+    answer: 0
+  - q: "Que vaut `(1,)` ?"
+    choices: ["un tuple d'un élément", "l'entier 1", "une erreur", "une liste"]
+    answer: 0
+  - q: "Que vaut `type((1))` ?"
+    choices: ["int", "tuple"]
+    answer: 0
+    explain: "Les parenthèses seules ne font pas un tuple : c'est la virgule."
+  - q: "Norme du vecteur (6, 8) ?"
+    choices: ["10", "14", "48", "100"]
+    answer: 0
+  - q: "Distance entre (1, 1) et (4, 5) ?"
+    choices: ["5", "7", "25", "3"]
+    answer: 0
+  - q: "`x, y = (2, 3)` puis `x, y = y, x`. Que vaut x ?"
+    choices: ["3", "2"]
+    answer: 0
+  - q: "Un tuple peut-il être une clé de dictionnaire ?"
+    choices: ["Oui (il est immuable)", "Non"]
+    answer: 0
+  - q: "Que vaut `max([(1, 5), (2, 0)])` ?"
+    choices: ["(2, 0)", "(1, 5)", "5", "Erreur"]
+    answer: 0
+    explain: "Comparaison lexicographique : 2 > 1 suffit."
+  - q: "Pour multiplier le vecteur v par 3, on écrit…"
+    choices: ["(3 * v[0], 3 * v[1])", "v * 3", "3 * v", "v ** 3"]
+    answer: 0
+  - q: "Moyenne de (0, 0) et (4, 2) ?"
+    choices: ["(2.0, 1.0)", "(4, 2)", "(2, 2)", "3"]
+    answer: 0

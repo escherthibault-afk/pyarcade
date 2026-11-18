@@ -1,0 +1,42 @@
+id: w6-l01
+world: 6
+type: lesson
+title: "Les tuples"
+concepts: [tuple, deballage, immuabilite]
+difficulty: 1
+estimated_minutes: 2
+xp: 15
+story: "Un oiseau de la nuée a une position (x, y). Deux nombres qui vont ensemble : un tuple."
+statement_md: |
+  ```python
+  pos = (3, 4)          # un tuple : comme une liste, mais NON modifiable
+  x, y = pos            # déballage : x = 3, y = 4
+  pos[0]                # 3
+  pos = (pos[0] + 1, pos[1])   # pour « changer », on crée un nouveau tuple
+  # pos[0] = 5          # TypeError : un tuple est immuable
+  ```
+example_code: |
+  pos = (3, 4)
+  vel = (1, -2)
+  x, y = pos
+  vx, vy = vel
+  new_pos = (x + vx, y + vy)
+  print(new_pos)
+task_md: "Fais avancer l'oiseau de **deux** pas de vitesse (pos + 2 × vel) : le programme doit afficher `(5, 0)`."
+expected_output: "(5, 0)\n"
+solution: |
+  pos = (3, 4)
+  vel = (1, -2)
+  x, y = pos
+  vx, vy = vel
+  new_pos = (x + 2 * vx, y + 2 * vy)
+  print(new_pos)
+hints:
+  - "Seule la ligne de `new_pos` change."
+  - "x + 2 × vx et y + 2 × vy."
+  - "`new_pos = (x + 2 * vx, y + 2 * vy)`"
+card:
+  title: "Tuples"
+  body_md: |
+    `t = (a, b)` immuable · déballage `a, b = t` · `t[0]` · comparaison élément par élément.
+    Pour un vecteur, renvoie un **nouveau** tuple : `(x1 + x2, y1 + y2)`.

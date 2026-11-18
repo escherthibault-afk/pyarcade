@@ -1,0 +1,461 @@
+id: boss-boids-guided
+world: 6
+type: boss
+variant: guided
+project: boids
+title: "🐦 Boss Boids (la nuée)"
+concepts: [tuple, vecteurs, listes, dict, fonctions]
+difficulty: 5
+estimated_minutes: 70
+xp: 500
+min_stars: 28
+live_game: boids
+statement_md: "Trois règles locales, une nuée réaliste. Tout est fait de petites fonctions sur des vecteurs."
+intro_md: |
+  ## Les boids
+
+  Chaque oiseau (*boid*) est un **dictionnaire** `{"pos": (x, y), "vel": (vx, vy)}` : position et vitesse sont des **vecteurs** (tuples).
+  À chaque étape, chaque oiseau regarde ses **voisins** (les autres oiseaux à moins de `radius`) et applique trois règles :
+
+  1. **Séparation** : s'éloigner des voisins trop proches (à moins de `min_dist`) ;
+  2. **Alignement** : prendre la vitesse moyenne des voisins ;
+  3. **Cohésion** : se rapprocher du centre des voisins.
+
+  Ces trois vecteurs, pondérés par des poids, s'ajoutent à la vitesse, qu'on **limite** à `max_speed`. Puis l'oiseau avance,
+  et réapparaît de l'autre côté de l'écran s'il en sort (le monde est « torique » : `x % width`).
+
+  Toutes les fonctions sont **pures** : elles renvoient de nouveaux tuples / dictionnaires et ne modifient jamais leurs paramètres.
+  Sur le site, la nuée est dessinée par le module `canvas` (chez toi, ce serait `pygame`).
+header_code: |
+  import math
+steps:
+  - fn: v_add
+    title: "addition"
+    statement_md: "Somme de deux vecteurs 2D (tuple)."
+    starter_code: |
+      def v_add(u, v):
+          """Return u + v."""
+          pass
+    solution: |
+      def v_add(u, v):
+          """Return u + v."""
+          return (u[0] + v[0], u[1] + v[1])
+    tests:
+      visible:
+        - call: v_add((1, 2), (3, -4))
+          expected: "(4, -2)"
+      hidden:
+        - call: v_add((0, 0), (0.5, 0))
+          expected: "(0.5, 0)"
+    hints:
+      - "Coordonnée par coordonnée."
+      - "Un tuple."
+      - "`return (u[0] + v[0], u[1] + v[1])`"
+    points: 0.5
+  - fn: v_sub
+    title: "soustraction"
+    statement_md: "`u - v`."
+    starter_code: |
+      def v_sub(u, v):
+          """Return u - v."""
+          pass
+    solution: |
+      def v_sub(u, v):
+          """Return u - v."""
+          return (u[0] - v[0], u[1] - v[1])
+    tests:
+      visible:
+        - call: v_sub((5, 5), (2, 7))
+          expected: "(3, -2)"
+      hidden:
+        - call: v_sub((0, 0), (1, 1))
+          expected: "(-1, -1)"
+    hints:
+      - "Comme `v_add`."
+      - "L'ordre compte : u moins v."
+      - "`(u[0] - v[0], u[1] - v[1])`"
+    points: 0.5
+  - fn: v_mul
+    title: "multiplication par un nombre"
+    statement_md: "`v × k`."
+    starter_code: |
+      def v_mul(v, k):
+          """Return v multiplied by the number k."""
+          pass
+    solution: |
+      def v_mul(v, k):
+          """Return v multiplied by the number k."""
+          return (v[0] * k, v[1] * k)
+    tests:
+      visible:
+        - call: v_mul((1, -2), 3)
+          expected: "(3, -6)"
+      hidden:
+        - call: v_mul((4, 2), 0.5)
+          expected: "(2.0, 1.0)"
+    hints:
+      - "Chaque coordonnée multipliée par k."
+      - "Un tuple."
+      - "`(v[0] * k, v[1] * k)`"
+    points: 0.5
+  - fn: v_len2
+    title: "norme au carré"
+    statement_md: "`x² + y²` (pas de racine : rapide pour comparer des distances)."
+    starter_code: |
+      def v_len2(v):
+          """Return the squared length of v."""
+          pass
+    solution: |
+      def v_len2(v):
+          """Return the squared length of v."""
+          return v[0] ** 2 + v[1] ** 2
+    tests:
+      visible:
+        - call: v_len2((3, 4))
+          expected: "25"
+      hidden:
+        - call: v_len2((0, 0))
+          expected: "0"
+    hints:
+      - "Somme des carrés."
+      - "`**` ou `x * x`."
+      - "`v[0] ** 2 + v[1] ** 2`"
+    points: 0.5
+  - fn: v_len
+    title: "norme"
+    statement_md: "Racine de `v_len2`."
+    starter_code: |
+      def v_len(v):
+          """Return the length of v."""
+          pass
+    solution: |
+      def v_len(v):
+          """Return the length of v."""
+          return math.sqrt(v_len2(v))
+    tests:
+      visible:
+        - call: v_len((3, 4))
+          expected: "5.0"
+      hidden:
+        - call: v_len((-6, 8))
+          expected: "10.0"
+    hints:
+      - "`math` est importé."
+      - "Réutilise `v_len2`."
+      - "`math.sqrt(v_len2(v))`"
+    points: 0.5
+  - fn: v_dist
+    title: "distance"
+    statement_md: "Distance entre les points `u` et `v`."
+    starter_code: |
+      def v_dist(u, v):
+          """Return the distance between the points u and v."""
+          pass
+    solution: |
+      def v_dist(u, v):
+          """Return the distance between the points u and v."""
+          return v_len(v_sub(u, v))
+    tests:
+      visible:
+        - call: v_dist((0, 0), (3, 4))
+          expected: "5.0"
+      hidden:
+        - call: v_dist((1, 1), (1, 1))
+          expected: "0.0"
+    hints:
+      - "Norme de la différence."
+      - "Compose `v_len` et `v_sub`."
+      - "`v_len(v_sub(u, v))`"
+    points: 0.5
+  - fn: vsum
+    title: "somme d'une liste de vecteurs"
+    statement_md: "Somme de tous les vecteurs de la liste (`(0, 0)` si elle est vide)."
+    starter_code: |
+      def vsum(vectors):
+          """Return the sum of a list of vectors ((0, 0) for an empty list)."""
+          pass
+    solution: |
+      def vsum(vectors):
+          """Return the sum of a list of vectors ((0, 0) for an empty list)."""
+          total = (0, 0)
+          for v in vectors:
+              total = v_add(total, v)
+          return total
+    tests:
+      visible:
+        - call: vsum([(1, 2), (3, 4), (-1, 0)])
+          expected: "(3, 6)"
+      hidden:
+        - call: vsum([])
+          expected: "(0, 0)"
+        - call: vsum([(1, 1)])
+          expected: "(1, 1)"
+    hints:
+      - "Un accumulateur vecteur `(0, 0)`."
+      - "`total = v_add(total, v)`"
+      - "Les tuples sont immuables : on remplace `total` à chaque tour."
+    points: 1
+  - fn: v_limit
+    title: "limiter la vitesse"
+    statement_md: "Si `v` est plus long que `max_len`, renvoie `v` réduit à la longueur `max_len` (même direction) ; sinon `v` tel quel."
+    starter_code: |
+      def v_limit(v, max_len):
+          """Return v scaled down to max_len if it is longer."""
+          pass
+    solution: |
+      def v_limit(v, max_len):
+          """Return v scaled down to max_len if it is longer."""
+          length = v_len(v)
+          if length > max_len:
+              return v_mul(v, max_len / length)
+          return v
+    tests:
+      visible:
+        - call: v_limit((3, 4), 1)
+          expected: "(0.6, 0.8)"
+      hidden:
+        - call: v_limit((0.3, 0.4), 1)
+          expected: "(0.3, 0.4)"
+          label: "déjà assez court"
+        - call: v_limit((0, 0), 1)
+          expected: "(0, 0)"
+        - call: v_limit((0, -10), 2)
+          expected: "(0.0, -2.0)"
+    hints:
+      - "Compare la norme à `max_len`."
+      - "Multiplier par `max_len / longueur` ramène la longueur à `max_len`."
+      - "Le vecteur nul ne dépasse jamais : pas de division par zéro."
+    points: 1
+  - fn: create_boid
+    title: "un oiseau"
+    statement_md: "Renvoie `{\"pos\": (x, y), \"vel\": (vx, vy)}`."
+    starter_code: |
+      def create_boid(x, y, vx, vy):
+          """Return a new boid dict."""
+          pass
+    solution: |
+      def create_boid(x, y, vx, vy):
+          """Return a new boid dict."""
+          return {"pos": (x, y), "vel": (vx, vy)}
+    tests:
+      visible:
+        - call: create_boid(1, 2, 3, 4)
+          expected: "{'pos': (1, 2), 'vel': (3, 4)}"
+    hints:
+      - "Un dictionnaire littéral."
+      - "Deux clés, deux tuples."
+      - "`{\"pos\": (x, y), \"vel\": (vx, vy)}`"
+    points: 0.5
+  - fn: neighbors
+    title: "les voisins"
+    statement_md: "Liste des **autres** oiseaux de `boids` à distance **strictement inférieure** à `radius` de `boid` (exclure `boid` lui-même : `other is not boid`)."
+    starter_code: |
+      def neighbors(boid, boids, radius):
+          """Return the other boids closer than radius."""
+          pass
+    solution: |
+      def neighbors(boid, boids, radius):
+          """Return the other boids closer than radius."""
+          result = []
+          for other in boids:
+              if other is not boid and v_dist(boid["pos"], other["pos"]) < radius:
+                  result.append(other)
+          return result
+    tests:
+      visible:
+        - setup: "a = create_boid(0, 0, 1, 0)\nb = create_boid(3, 4, 0, 1)\nc = create_boid(50, 50, 0, 0)"
+          call: neighbors(a, [a, b, c], 10)
+          expected: "[{'pos': (3, 4), 'vel': (0, 1)}]"
+      hidden:
+        - setup: "a = create_boid(0, 0, 1, 0)\nb = create_boid(3, 4, 0, 1)"
+          call: neighbors(a, [a, b], 5)
+          expected: "[]"
+          label: "strictement inférieur"
+        - setup: "a = create_boid(0, 0, 1, 0)"
+          call: neighbors(a, [a], 100)
+          expected: "[]"
+          label: "pas soi-même"
+    hints:
+      - "Parcours la liste et filtre."
+      - "Deux conditions : ce n'est pas lui-même (`is not`) et la distance est < radius."
+      - "`v_dist(boid[\"pos\"], other[\"pos\"]) < radius`"
+    points: 1.5
+  - fn: separation
+    title: "règle 1 : séparation"
+    statement_md: "Somme des vecteurs `boid.pos - other.pos` pour chaque voisin à distance **< min_dist** (`(0, 0)` s'il n'y en a pas)."
+    starter_code: |
+      def separation(boid, close, min_dist):
+          """Return the vector pushing boid away from too close neighbors."""
+          pass
+    solution: |
+      def separation(boid, close, min_dist):
+          """Return the vector pushing boid away from too close neighbors."""
+          pushes = []
+          for other in close:
+              if v_dist(boid["pos"], other["pos"]) < min_dist:
+                  pushes.append(v_sub(boid["pos"], other["pos"]))
+          return vsum(pushes)
+    tests:
+      visible:
+        - setup: "a = create_boid(0, 0, 1, 0)\nb = create_boid(3, 4, 0, 1)"
+          call: separation(a, [b], 6)
+          expected: "(-3, -4)"
+      hidden:
+        - setup: "a = create_boid(0, 0, 1, 0)\nb = create_boid(3, 4, 0, 1)"
+          call: separation(a, [b], 5)
+          expected: "(0, 0)"
+          label: "pas assez proche"
+        - setup: "a = create_boid(0, 0, 1, 0)\nb = create_boid(1, 0, 0, 0)\nc = create_boid(0, -2, 0, 0)"
+          call: separation(a, [b, c], 3)
+          expected: "(-1, 2)"
+          label: "plusieurs voisins"
+        - setup: "a = create_boid(0, 0, 1, 0)\nb = create_boid(1, 0, 0, 0)"
+          call: separation(a, [b], 3)
+          pure: true
+          expected: "(-1, 0)"
+    hints:
+      - "Le vecteur qui éloigne de `other`, c'est `pos - other.pos`."
+      - "Ne garde que les voisins plus proches que `min_dist`."
+      - "Additionne avec `vsum`."
+    points: 1.5
+  - fn: alignment
+    title: "règle 2 : alignement"
+    statement_md: "Vitesse moyenne des voisins **moins** la vitesse de `boid` (`(0, 0)` sans voisin)."
+    starter_code: |
+      def alignment(boid, close):
+          """Return the steering vector towards the neighbors' mean velocity."""
+          pass
+    solution: |
+      def alignment(boid, close):
+          """Return the steering vector towards the neighbors' mean velocity."""
+          if len(close) == 0:
+              return (0, 0)
+          mean_vel = v_mul(vsum([o["vel"] for o in close]), 1 / len(close))
+          return v_sub(mean_vel, boid["vel"])
+    tests:
+      visible:
+        - setup: "a = create_boid(0, 0, 1, 0)\nb = create_boid(3, 4, 0, 1)"
+          call: alignment(a, [b])
+          expected: "(-1.0, 1.0)"
+      hidden:
+        - setup: "a = create_boid(0, 0, 1, 0)"
+          call: alignment(a, [])
+          expected: "(0, 0)"
+          label: "pas de voisin"
+        - setup: "a = create_boid(0, 0, 0, 0)\nb = create_boid(1, 1, 2, 0)\nc = create_boid(2, 2, 0, 2)"
+          call: alignment(a, [b, c])
+          expected: "(1.0, 1.0)"
+    hints:
+      - "Cas sans voisin d'abord (sinon division par zéro)."
+      - "Moyenne = somme × (1 / nombre)."
+      - "Puis on soustrait la vitesse de l'oiseau."
+    points: 1.5
+  - fn: cohesion
+    title: "règle 3 : cohésion"
+    statement_md: "Centre (moyenne des positions) des voisins **moins** la position de `boid` (`(0, 0)` sans voisin)."
+    starter_code: |
+      def cohesion(boid, close):
+          """Return the vector towards the center of the neighbors."""
+          pass
+    solution: |
+      def cohesion(boid, close):
+          """Return the vector towards the center of the neighbors."""
+          if len(close) == 0:
+              return (0, 0)
+          center = v_mul(vsum([o["pos"] for o in close]), 1 / len(close))
+          return v_sub(center, boid["pos"])
+    tests:
+      visible:
+        - setup: "a = create_boid(0, 0, 1, 0)\nb = create_boid(3, 4, 0, 1)"
+          call: cohesion(a, [b])
+          expected: "(3.0, 4.0)"
+      hidden:
+        - setup: "a = create_boid(0, 0, 1, 0)"
+          call: cohesion(a, [])
+          expected: "(0, 0)"
+        - setup: "a = create_boid(1, 1, 0, 0)\nb = create_boid(3, 1, 0, 0)\nc = create_boid(1, 5, 0, 0)"
+          call: cohesion(a, [b, c])
+          expected: "(1.0, 2.0)"
+    hints:
+      - "Même structure que `alignment`, avec les positions."
+      - "Centre = moyenne des positions."
+      - "Vecteur du boid vers le centre : centre − position."
+    points: 1.5
+  - fn: update
+    title: "une étape de simulation"
+    statement_md: |
+      Renvoie le **nouvel** oiseau : voisins dans `params["radius"]`, accélération
+      `w_sep × séparation(min_dist) + w_ali × alignement + w_coh × cohésion`, nouvelle vitesse = vitesse + accélération
+      **limitée** à `params["max_speed"]`, nouvelle position = position + nouvelle vitesse, ramenée dans l'écran avec
+      `x % width` et `y % height`. Ne modifie pas `boid`.
+    starter_code: |
+      def update(boid, boids, params, width, height):
+          """Return the boid after one simulation step (pure function)."""
+          pass
+    solution: |
+      def update(boid, boids, params, width, height):
+          """Return the boid after one simulation step (pure function)."""
+          close = neighbors(boid, boids, params["radius"])
+          acc = vsum([
+              v_mul(separation(boid, close, params["min_dist"]), params["w_sep"]),
+              v_mul(alignment(boid, close), params["w_ali"]),
+              v_mul(cohesion(boid, close), params["w_coh"]),
+          ])
+          vel = v_limit(v_add(boid["vel"], acc), params["max_speed"])
+          x, y = v_add(boid["pos"], vel)
+          return {"pos": (x % width, y % height), "vel": vel}
+    tests:
+      visible:
+        - setup: "P = {'radius': 10, 'min_dist': 6, 'w_sep': 0.1, 'w_ali': 0.5, 'w_coh': 0.01, 'max_speed': 2}\na = create_boid(0, 0, 1, 0)\nb = create_boid(3, 4, 0, 1)\nc = create_boid(50, 50, 0, 0)"
+          call: update(a, [a, b, c], P, 100, 100)
+          expected: "{'pos': (0.23, 0.14), 'vel': (0.23, 0.14)}"
+      hidden:
+        - setup: "P = {'radius': 10, 'min_dist': 6, 'w_sep': 0.1, 'w_ali': 0.5, 'w_coh': 0.01, 'max_speed': 2}\nc = create_boid(50, 50, 0, 0)"
+          call: update(c, [c], P, 100, 100)
+          expected: "{'pos': (50.0, 50.0), 'vel': (0.0, 0.0)}"
+          label: "seul au monde"
+        - setup: "P = {'radius': 10, 'min_dist': 6, 'w_sep': 0.1, 'w_ali': 0.5, 'w_coh': 0.01, 'max_speed': 2}\nd = create_boid(99, 1, 2, -2)"
+          call: update(d, [d], P, 100, 100)
+          expected: "{'pos': (0.41421356237309226, 99.58578643762691), 'vel': (1.414213562373095, -1.414213562373095)}"
+          label: "bord du monde + vitesse limitée"
+        - setup: "P = {'radius': 10, 'min_dist': 6, 'w_sep': 0.1, 'w_ali': 0.5, 'w_coh': 0.01, 'max_speed': 2}\na = create_boid(0, 0, 1, 0)\nb = create_boid(3, 4, 0, 1)"
+          call: update(a, [a, b], P, 100, 100)
+          pure: true
+          expected: "{'pos': (0.23, 0.14), 'vel': (0.23, 0.14)}"
+          label: "fonction pure"
+    hints:
+      - "Étapes : voisins → trois règles pondérées → somme → nouvelle vitesse limitée → nouvelle position modulo l'écran."
+      - "`acc = vsum([v_mul(separation(...), params[\"w_sep\"]), ...])`"
+      - "`x, y = v_add(boid[\"pos\"], vel)` puis `{\"pos\": (x % width, y % height), \"vel\": vel}`."
+    points: 3
+  - fn: flee_hunter
+    title: "le prédateur"
+    statement_md: "Si le prédateur (position `hunter`) est à moins de `radius`, renvoie le vecteur `pos - hunter` (fuir) ; sinon `(0, 0)`."
+    starter_code: |
+      def flee_hunter(boid, hunter, radius):
+          """Return the escape vector if the hunter is closer than radius."""
+          pass
+    solution: |
+      def flee_hunter(boid, hunter, radius):
+          """Return the escape vector if the hunter is closer than radius."""
+          if v_dist(boid["pos"], hunter) < radius:
+              return v_sub(boid["pos"], hunter)
+          return (0, 0)
+    tests:
+      visible:
+        - setup: "a = create_boid(0, 0, 1, 0)"
+          call: flee_hunter(a, (1, 1), 5)
+          expected: "(-1, -1)"
+      hidden:
+        - setup: "a = create_boid(0, 0, 1, 0)"
+          call: flee_hunter(a, (10, 0), 5)
+          expected: "(0, 0)"
+        - setup: "a = create_boid(0, 0, 1, 0)"
+          call: flee_hunter(a, (5, 0), 5)
+          expected: "(0, 0)"
+          label: "pile à la limite"
+    hints:
+      - "Une condition sur la distance."
+      - "Fuir = s'éloigner : `pos - hunter`."
+      - "`(0, 0)` sinon."
+    points: 1

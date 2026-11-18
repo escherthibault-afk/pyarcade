@@ -11,6 +11,7 @@ export const LIVE_GAMES: Record<string, React.LazyExoticComponent<React.Componen
   dice421: lazy(() => import('./Dice421Live')),
   tennis: lazy(() => import('./TennisLive')),
   recaman: lazy(() => import('./RecamanLive')),
+  boids: lazy(() => import('./BoidsLive')),
 }
 
 export function registerLiveGame(name: string, comp: (typeof LIVE_GAMES)[string]) {

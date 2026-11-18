@@ -1,0 +1,43 @@
+id: w6-l11
+world: 6
+type: code_fill
+title: "Le plus proche"
+concepts: [vecteurs, distance, minimum]
+difficulty: 3
+estimated_minutes: 5
+xp: 45
+story: "Le requin cherche le poisson le plus proche."
+statement_md: "Renvoie le point de `points` (liste non vide) le plus proche de `target` (le premier en cas d'égalité), **sans** `min`."
+starter_code: |
+  def closest(target, points):
+      """Return the point of points closest to target (first one on ties)."""
+      pass
+solution: |
+  def closest(target, points):
+      """Return the point of points closest to target (first one on ties)."""
+      best = points[0]
+      best_d2 = (best[0] - target[0]) ** 2 + (best[1] - target[1]) ** 2
+      for p in points:
+          d2 = (p[0] - target[0]) ** 2 + (p[1] - target[1]) ** 2
+          if d2 < best_d2:
+              best = p
+              best_d2 = d2
+      return best
+tests:
+  visible:
+    - call: closest((0, 0), [(5, 5), (1, 2), (-3, 0)])
+      expected: "(1, 2)"
+  hidden:
+    - call: closest((0, 0), [(3, 0), (0, 3)])
+      expected: "(3, 0)"
+      label: "égalité : le premier"
+    - call: closest((10, 10), [(0, 0)])
+      expected: "(0, 0)"
+    - call: closest((2, 2), [(0, 0), (2, 3), (2, 2)])
+      expected: "(2, 2)"
+constraints:
+  forbidden: ["call:min", "call:sorted"]
+hints:
+  - "Motif du minimum, sur la distance."
+  - "Garde le meilleur point ET sa distance."
+  - "Strictement inférieur pour garder le premier en cas d'égalité."

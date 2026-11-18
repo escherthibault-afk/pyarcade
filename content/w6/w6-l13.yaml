@@ -1,0 +1,54 @@
+id: w6-l13
+world: 6
+type: refactor
+title: "Refactor : la boussole"
+concepts: [refactor, dict, tuple]
+difficulty: 3
+estimated_minutes: 4
+xp: 45
+story: "Huit `if` pour huit directions. Une table ferait ça en une ligne."
+statement_md: |
+  `direction(name)` renvoie le vecteur unitaire d'une direction (`"N"` → `(0, -1)` car l'axe y descend à l'écran, `"E"` → `(1, 0)`…),
+  ou `(0, 0)` pour un nom inconnu. Le code marche, mais il est trop long : **remplace la cascade de `if` par un dictionnaire**
+  (au plus **1** `if`, et les tests doivent toujours passer).
+starter_code: |
+  def direction(name):
+      """Return the unit vector of a compass direction (y axis points down)."""
+      if name == "N":
+          return (0, -1)
+      elif name == "S":
+          return (0, 1)
+      elif name == "E":
+          return (1, 0)
+      elif name == "W":
+          return (-1, 0)
+      else:
+          return (0, 0)
+solution: |
+  VECTORS = {"N": (0, -1), "S": (0, 1), "E": (1, 0), "W": (-1, 0)}
+
+
+  def direction(name):
+      """Return the unit vector of a compass direction (y axis points down)."""
+      return VECTORS.get(name, (0, 0))
+tests:
+  visible:
+    - call: direction("N")
+      expected: "(0, -1)"
+    - call: direction("E")
+      expected: "(1, 0)"
+  hidden:
+    - call: direction("S")
+      expected: "(0, 1)"
+    - call: direction("W")
+      expected: "(-1, 0)"
+    - call: direction("?")
+      expected: "(0, 0)"
+constraints:
+  max_count: {If: 1}
+  required: [Dict]
+hints:
+  - "Un dictionnaire `{\"N\": (0, -1), ...}` associe chaque nom à son vecteur."
+  - "`.get(clé, défaut)` gère les noms inconnus sans `if`."
+  - "`return VECTORS.get(name, (0, 0))`"
+explanation_md: "Une table (dict) remplace une cascade de `if` quand chaque cas associe une valeur à une clé. C'est l'astuce du 421 : une valeur par combinaison."

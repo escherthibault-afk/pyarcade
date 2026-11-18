@@ -1,0 +1,222 @@
+id: boss-boids-exam
+world: 6
+type: boss
+variant: exam
+project: "boids:exam"
+title: "🎓 Examen vecteurs : toutes dimensions (60 min)"
+concepts: [tuple, vecteurs, zip, listes]
+difficulty: 5
+estimated_minutes: 60
+xp: 0
+time_limit_minutes: 60
+statement_md: "Sujet en 60 minutes, sans indice. **Les vecteurs peuvent avoir n'importe quelle dimension** (2D, 3D…)."
+intro_md: |
+  ## Sujet : vecteurs en dimension n
+
+  Un vecteur est un tuple de nombres de longueur quelconque : `(1, 2)`, `(1, 2, 3)`… Deux vecteurs combinés ont toujours la même dimension.
+  `zip(u, v)` parcourt deux tuples en parallèle. Les fonctions renvoient des **tuples**.
+  Un « oiseau » est un dict `{"pos": vecteur, "vel": vecteur}`.
+header_code: |
+  import math
+steps:
+  - fn: v_add
+    title: "addition"
+    statement_md: "Somme coordonnée par coordonnée."
+    starter_code: |
+      def v_add(u, v):
+          """Return u + v (any dimension)."""
+          pass
+    solution: |
+      def v_add(u, v):
+          """Return u + v (any dimension)."""
+          return tuple(a + b for a, b in zip(u, v))
+    tests:
+      visible:
+        - call: v_add((1, 2, 3), (4, 5, 6))
+          expected: "(5, 7, 9)"
+      hidden:
+        - call: v_add((1, 2), (1, 1))
+          expected: "(2, 3)"
+        - call: v_add((), ())
+          expected: "()"
+    points: 2
+  - fn: v_sub
+    title: "soustraction"
+    statement_md: "`u - v`."
+    starter_code: |
+      def v_sub(u, v):
+          """Return u - v (any dimension)."""
+          pass
+    solution: |
+      def v_sub(u, v):
+          """Return u - v (any dimension)."""
+          return tuple(a - b for a, b in zip(u, v))
+    tests:
+      visible:
+        - call: v_sub((5, 5, 5), (1, 2, 3))
+          expected: "(4, 3, 2)"
+      hidden:
+        - call: v_sub((0,), (2,))
+          expected: "(-2,)"
+    points: 1.5
+  - fn: v_mul
+    title: "produit"
+    statement_md: "`v × k`."
+    starter_code: |
+      def v_mul(v, k):
+          """Return v times k (any dimension)."""
+          pass
+    solution: |
+      def v_mul(v, k):
+          """Return v times k (any dimension)."""
+          return tuple(a * k for a in v)
+    tests:
+      visible:
+        - call: v_mul((1, 2, 3), 2)
+          expected: "(2, 4, 6)"
+      hidden:
+        - call: v_mul((), 5)
+          expected: "()"
+    points: 1.5
+  - fn: v_dot
+    title: "produit scalaire"
+    statement_md: "Somme des produits des coordonnées."
+    starter_code: |
+      def v_dot(u, v):
+          """Return the dot product of u and v."""
+          pass
+    solution: |
+      def v_dot(u, v):
+          """Return the dot product of u and v."""
+          total = 0
+          for a, b in zip(u, v):
+              total += a * b
+          return total
+    tests:
+      visible:
+        - call: v_dot((1, 2, 3), (4, 5, 6))
+          expected: "32"
+      hidden:
+        - call: v_dot((1, 0), (0, 1))
+          expected: "0"
+          label: "orthogonaux"
+    points: 2
+  - fn: v_len
+    title: "norme"
+    statement_md: "Racine du produit scalaire de `v` avec lui-même."
+    starter_code: |
+      def v_len(v):
+          """Return the length of v."""
+          pass
+    solution: |
+      def v_len(v):
+          """Return the length of v."""
+          return math.sqrt(v_dot(v, v))
+    tests:
+      visible:
+        - call: v_len((2, 3, 6))
+          expected: "7.0"
+      hidden:
+        - call: v_len((3, 4))
+          expected: "5.0"
+    points: 1.5
+  - fn: v_dist
+    title: "distance"
+    statement_md: "Distance entre deux points."
+    starter_code: |
+      def v_dist(u, v):
+          """Return the distance between u and v."""
+          pass
+    solution: |
+      def v_dist(u, v):
+          """Return the distance between u and v."""
+          return v_len(v_sub(u, v))
+    tests:
+      visible:
+        - call: v_dist((1, 1, 1), (3, 4, 7))
+          expected: "7.0"
+    points: 1.5
+  - fn: v_mean
+    title: "point moyen"
+    statement_md: "Moyenne d'une liste **non vide** de vecteurs de même dimension."
+    starter_code: |
+      def v_mean(vectors):
+          """Return the mean of a non-empty list of vectors."""
+          pass
+    solution: |
+      def v_mean(vectors):
+          """Return the mean of a non-empty list of vectors."""
+          total = vectors[0]
+          for v in vectors[1:]:
+              total = v_add(total, v)
+          return v_mul(total, 1 / len(vectors))
+    tests:
+      visible:
+        - call: v_mean([(0, 0, 0), (2, 4, 6)])
+          expected: "(1.0, 2.0, 3.0)"
+      hidden:
+        - call: v_mean([(5, 1)])
+          expected: "(5.0, 1.0)"
+    points: 2.5
+  - fn: nearest
+    title: "le plus proche"
+    statement_md: "Le point de `points` (non vide) le plus proche de `target` ; le premier en cas d'égalité."
+    starter_code: |
+      def nearest(target, points):
+          """Return the point closest to target."""
+          pass
+    solution: |
+      def nearest(target, points):
+          """Return the point closest to target."""
+          best = points[0]
+          for p in points:
+              if v_dist(p, target) < v_dist(best, target):
+                  best = p
+          return best
+    tests:
+      visible:
+        - call: nearest((0, 0, 0), [(5, 5, 5), (1, 0, 1), (0, 3, 0)])
+          expected: "(1, 0, 1)"
+      hidden:
+        - call: nearest((0, 0), [(1, 0), (0, 1)])
+          expected: "(1, 0)"
+    points: 2.5
+  - fn: cohesion
+    title: "cohésion en dimension n"
+    statement_md: "Pour un oiseau et la liste de ses voisins : centre des voisins moins la position de l'oiseau (vecteur nul de la bonne dimension s'il n'y a pas de voisin)."
+    starter_code: |
+      def cohesion(boid, close):
+          """Return the vector from boid to the center of its neighbors."""
+          pass
+    solution: |
+      def cohesion(boid, close):
+          """Return the vector from boid to the center of its neighbors."""
+          if len(close) == 0:
+              return v_mul(boid["pos"], 0)
+          return v_sub(v_mean([o["pos"] for o in close]), boid["pos"])
+    tests:
+      visible:
+        - call: "cohesion({'pos': (0, 0, 0), 'vel': (0, 0, 0)}, [{'pos': (2, 2, 2), 'vel': (0, 0, 0)}])"
+          expected: "(2.0, 2.0, 2.0)"
+      hidden:
+        - call: "cohesion({'pos': (1, 2, 3), 'vel': (0, 0, 0)}, [])"
+          expected: "(0, 0, 0)"
+          label: "pas de voisin, bonne dimension"
+    points: 3
+  - fn: within
+    title: "voisins"
+    statement_md: "Les autres oiseaux (`is not`) à distance strictement inférieure à `radius`."
+    starter_code: |
+      def within(boid, boids, radius):
+          """Return the other boids closer than radius."""
+          pass
+    solution: |
+      def within(boid, boids, radius):
+          """Return the other boids closer than radius."""
+          return [o for o in boids if o is not boid and v_dist(o["pos"], boid["pos"]) < radius]
+    tests:
+      visible:
+        - setup: "a = {'pos': (0, 0, 0), 'vel': (0, 0, 0)}\nb = {'pos': (1, 1, 1), 'vel': (0, 0, 0)}\nc = {'pos': (9, 9, 9), 'vel': (0, 0, 0)}"
+          call: within(a, [a, b, c], 5)
+          expected: "[{'pos': (1, 1, 1), 'vel': (0, 0, 0)}]"
+    points: 2

@@ -1,0 +1,37 @@
+id: w6-l12
+world: 6
+type: golf
+title: "Golf : somme de vecteurs"
+concepts: [vecteurs, comprehension, sum, golf]
+difficulty: 3
+estimated_minutes: 4
+xp: 40
+story: "La force totale sur un oiseau, c'est la somme des forces. En une ligne, si possible."
+statement_md: "Renvoie la somme d'une liste de vecteurs 2D (`(0, 0)` pour une liste vide). Par : **55** caractères."
+starter_code: |
+  def vsum(vectors):
+      sx = 0
+      sy = 0
+      for v in vectors:
+          sx = sx + v[0]
+          sy = sy + v[1]
+      return (sx, sy)
+solution: |
+  def vsum(v):
+   return tuple(map(sum,zip(*v)))or(0,0)
+par_chars: 55
+tests:
+  visible:
+    - call: vsum([(1, 2), (3, 4)])
+      expected: "(4, 6)"
+  hidden:
+    - call: vsum([])
+      expected: "(0, 0)"
+    - call: vsum([(-1, 5)])
+      expected: "(-1, 5)"
+constraints:
+  max_chars: 75
+hints:
+  - "`sum` accepte un générateur : `sum(x for x, y in v)`."
+  - "Un tuple de deux `sum`."
+  - "Champion : `zip(*v)` regroupe les x d'un côté, les y de l'autre ; `map(sum, ...)` les additionne."

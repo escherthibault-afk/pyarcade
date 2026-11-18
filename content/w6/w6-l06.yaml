@@ -1,0 +1,33 @@
+id: w6-l06
+world: 6
+type: parsons
+title: "Le centre de la nuée"
+concepts: [tuple, moyenne, listes]
+difficulty: 2
+estimated_minutes: 3
+xp: 30
+story: "Les oiseaux se rapprochent du centre du groupe : encore faut-il le calculer."
+statement_md: "`center(points)` renvoie le point moyen d'une liste **non vide** de points `(x, y)`. Une ligne est un leurre."
+lines:
+  - "def center(points):"
+  - "    sx = 0"
+  - "    sy = 0"
+  - "    for x, y in points:"
+  - "        sx += x"
+  - "        sy += y"
+  - "    return (sx / len(points), sy / len(points))"
+distractors:
+  - "    return (sx, sy) / len(points)"
+tests:
+  visible:
+    - call: center([(0, 0), (2, 4)])
+      expected: "(1.0, 2.0)"
+  hidden:
+    - call: center([(3, 5)])
+      expected: "(3.0, 5.0)"
+    - call: center([(1, 1), (2, 2), (3, 3)])
+      expected: "(2.0, 2.0)"
+hints:
+  - "Deux accumulateurs, un par coordonnée."
+  - "On déballe chaque point dans la boucle : `for x, y in points:`."
+  - "On divise chaque somme séparément : on ne peut pas diviser un tuple."

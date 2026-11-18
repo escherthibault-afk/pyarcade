@@ -1,0 +1,45 @@
+id: w6-l04
+world: 6
+type: code_fill
+title: "La longueur d'un vecteur"
+concepts: [math, sqrt, vecteurs]
+difficulty: 2
+estimated_minutes: 3
+xp: 30
+story: "La vitesse d'un oiseau, c'est la longueur de son vecteur vitesse. Merci Pythagore."
+statement_md: "Renvoie la norme `√(x² + y²)` du vecteur `v` (avec `math.sqrt`)."
+starter_code: |
+  import math
+
+
+  def v_len(v):
+      """Return the length (norm) of the 2D vector v."""
+      pass
+solution: |
+  import math
+
+
+  def v_len(v):
+      """Return the length (norm) of the 2D vector v."""
+      return math.sqrt(v[0] ** 2 + v[1] ** 2)
+tests:
+  visible:
+    - call: v_len((3, 4))
+      expected: "5.0"
+  hidden:
+    - call: v_len((0, 0))
+      expected: "0.0"
+    - call: v_len((-3, -4))
+      expected: "5.0"
+      label: "coordonnées négatives"
+    - call: v_len((1, 1))
+      expected: "math.sqrt(2)"
+hints:
+  - "Pythagore : racine de la somme des carrés."
+  - "`math.sqrt(...)`, `x ** 2`."
+  - "`return math.sqrt(v[0] ** 2 + v[1] ** 2)`"
+card:
+  title: "Normes et distances"
+  body_md: |
+    norme : `math.sqrt(x**2 + y**2)` · distance : norme de `u - v`.
+    Pour comparer des distances, la norme au carré suffit (pas de racine, plus rapide).
