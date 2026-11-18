@@ -1,0 +1,23 @@
+id: w8-l07
+world: 8
+type: trace
+title: "Trace le dict"
+concepts: [dict, trace]
+difficulty: 2
+estimated_minutes: 3
+xp: 30
+story: "Une case malade guérit jour après jour."
+statement_md: "Note `day` et `cell` après chaque passage sur la ligne marquée."
+code: |
+  cell = {"state": "I", "sick_days": 0}
+  for day in range(4):
+      if cell["state"] == "I":
+          cell["sick_days"] += 1
+          if cell["sick_days"] >= 3:
+              cell["state"] = "R"
+      ok = True  # @snap
+watch: [day, cell]
+hints:
+  - "La case guérit (R) quand sick_days atteint 3."
+  - "Une fois R, plus rien ne change."
+  - "Jour 2 : {'state': 'R', 'sick_days': 3}."

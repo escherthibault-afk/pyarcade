@@ -1,0 +1,33 @@
+id: w7-l05
+world: 7
+type: parsons
+title: "Compter dans une grille"
+concepts: [grilles, boucles_imbriquees, compteur]
+difficulty: 2
+estimated_minutes: 3
+xp: 30
+story: "Combien de malades sur la carte ? Double boucle !"
+statement_md: "`count_value(grid, value)` compte les cases égales à `value`. Une ligne est un leurre."
+lines:
+  - "def count_value(grid, value):"
+  - "    count = 0"
+  - "    for row in grid:"
+  - "        for cell in row:"
+  - "            if cell == value:"
+  - "                count += 1"
+  - "    return count"
+distractors:
+  - "        count = 0"
+tests:
+  visible:
+    - call: count_value([["S", "I"], ["I", "R"]], "I")
+      expected: "2"
+  hidden:
+    - call: count_value([], "I")
+      expected: "0"
+    - call: count_value([[1, 1, 1]], 1)
+      expected: "3"
+hints:
+  - "Le compteur est créé une seule fois, avant les boucles."
+  - "Boucle sur les lignes, puis sur les cases de la ligne."
+  - "Le leurre remettrait le compteur à zéro à chaque ligne."

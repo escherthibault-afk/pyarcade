@@ -1,0 +1,36 @@
+id: w8-l09
+world: 8
+type: code_fill
+title: "Ranger par longueur"
+concepts: [dict, listes, regroupement]
+difficulty: 3
+estimated_minutes: 4
+xp: 40
+story: "Le dictionnaire du jeu de mots, rangé par longueur : un dict de listes."
+statement_md: "Renvoie `{longueur: [mots de cette longueur, dans l'ordre]}`."
+starter_code: |
+  def group_by_length(words):
+      """Return a dict {length: list of the words of that length}."""
+      pass
+solution: |
+  def group_by_length(words):
+      """Return a dict {length: list of the words of that length}."""
+      groups = {}
+      for w in words:
+          if len(w) not in groups:
+              groups[len(w)] = []
+          groups[len(w)].append(w)
+      return groups
+tests:
+  visible:
+    - call: group_by_length(["ab", "cde", "fg"])
+      expected: "{2: ['ab', 'fg'], 3: ['cde']}"
+  hidden:
+    - call: group_by_length([])
+      expected: "{}"
+    - call: group_by_length(["", "a"])
+      expected: "{0: [''], 1: ['a']}"
+hints:
+  - "Si la longueur n'est pas encore une clé, crée une liste vide."
+  - "Puis `append` le mot dans la bonne liste."
+  - "`groups.setdefault(len(w), []).append(w)` fait les deux."

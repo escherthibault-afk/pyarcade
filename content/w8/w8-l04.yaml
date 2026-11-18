@@ -1,0 +1,39 @@
+id: w8-l04
+world: 8
+type: bug_hunt
+title: "KeyError au premier vote"
+concepts: [dict, KeyError, bug]
+difficulty: 2
+estimated_minutes: 3
+xp: 30
+story: "Le système de vote plante dès le premier vote pour un nouveau jeu."
+statement_md: "`tally(votes)` compte les votes par jeu. **1 bug** (2 vies)."
+starter_code: |
+  def tally(votes):
+      """Return a dict {game: number of votes}."""
+      result = {}
+      for game in votes:
+          result[game] += 1
+      return result
+solution: |
+  def tally(votes):
+      """Return a dict {game: number of votes}."""
+      result = {}
+      for game in votes:
+          if game in result:
+              result[game] += 1
+          else:
+              result[game] = 1
+      return result
+bugs: 1
+tests:
+  visible:
+    - call: tally(["pong", "tetris", "pong"])
+      expected: "{'pong': 2, 'tetris': 1}"
+  hidden:
+    - call: tally([])
+      expected: "{}"
+hints:
+  - "Que vaut `result[\"pong\"]` la première fois ?"
+  - "Il faut créer la clé avant de l'incrémenter."
+  - "`if game in result: ... else: result[game] = 1`"

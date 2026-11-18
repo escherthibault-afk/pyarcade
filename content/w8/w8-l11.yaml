@@ -1,0 +1,46 @@
+id: w8-l11
+world: 8
+type: refactor
+title: "Refactor : la grille tarifaire"
+concepts: [refactor, dict]
+difficulty: 2
+estimated_minutes: 3
+xp: 35
+story: "Six `elif` pour six prix. Une table suffit."
+statement_md: "Remplace la cascade par un dictionnaire (au plus 1 `if`). Les prix ne changent pas ; un jeu inconnu coûte `None`."
+starter_code: |
+  def price(game):
+      """Return the price of a game, or None."""
+      if game == "pong":
+          return 1
+      elif game == "tetris":
+          return 2
+      elif game == "pacman":
+          return 2
+      elif game == "doom":
+          return 5
+      else:
+          return None
+solution: |
+  PRICES = {"pong": 1, "tetris": 2, "pacman": 2, "doom": 5}
+
+
+  def price(game):
+      """Return the price of a game, or None."""
+      return PRICES.get(game)
+tests:
+  visible:
+    - call: price("pong")
+      expected: "1"
+  hidden:
+    - call: price("doom")
+      expected: "5"
+    - call: price("zork")
+      expected: "None"
+constraints:
+  max_count: {If: 1}
+  required: [Dict]
+hints:
+  - "Un dict `{jeu: prix}`."
+  - "`.get(game)` renvoie None si absent."
+  - "`return PRICES.get(game)`"

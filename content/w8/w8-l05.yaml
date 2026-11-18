@@ -1,0 +1,29 @@
+id: w8-l05
+world: 8
+type: parsons
+title: "Inverser un dictionnaire"
+concepts: [dict, items]
+difficulty: 2
+estimated_minutes: 3
+xp: 30
+story: "On a les touches → actions ; on veut les actions → touches."
+statement_md: "`invert(d)` renvoie le dict où chaque valeur devient une clé et inversement (valeurs supposées distinctes). Une ligne est un leurre."
+lines:
+  - "def invert(d):"
+  - "    result = {}"
+  - "    for key, value in d.items():"
+  - "        result[value] = key"
+  - "    return result"
+distractors:
+  - "        result[key] = value"
+tests:
+  visible:
+    - call: 'invert({"z": "haut", "s": "bas"})'
+      expected: "{'haut': 'z', 'bas': 's'}"
+  hidden:
+    - call: invert({})
+      expected: "{}"
+hints:
+  - "`.items()` donne les couples (clé, valeur)."
+  - "La nouvelle clé est l'ancienne valeur."
+  - "`result[value] = key`"

@@ -1,0 +1,36 @@
+id: w8-l03
+world: 8
+type: code_fill
+title: "Fréquence des mots"
+concepts: [dict, compteur]
+difficulty: 2
+estimated_minutes: 3
+xp: 30
+story: "Quels mots les joueurs tapent-ils le plus ? Un dict de compteurs."
+statement_md: "Renvoie le dictionnaire `{mot: nombre d'apparitions}` de la liste `words`."
+starter_code: |
+  def frequencies(words):
+      """Return a dict {word: number of occurrences}."""
+      pass
+solution: |
+  def frequencies(words):
+      """Return a dict {word: number of occurrences}."""
+      counts = {}
+      for w in words:
+          counts[w] = counts.get(w, 0) + 1
+      return counts
+tests:
+  visible:
+    - call: frequencies(["a", "b", "a"])
+      expected: "{'a': 2, 'b': 1}"
+  hidden:
+    - call: frequencies([])
+      expected: "{}"
+    - call: frequencies(["x"] * 4)
+      expected: "{'x': 4}"
+constraints:
+  forbidden: ["import:collections", "name:Counter"]
+hints:
+  - "Dict vide, boucle, `get` avec 0 par défaut."
+  - "`counts[w] = counts.get(w, 0) + 1`"
+  - "Renvoie le dict."

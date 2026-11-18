@@ -1,0 +1,47 @@
+id: w7-l13
+world: 7
+type: write_test
+title: "Démasque les fausses copies"
+concepts: [copie, alias, tests]
+difficulty: 3
+estimated_minutes: 5
+xp: 45
+story: "Quatre fonctions prétendent copier une grille. Une seule fait une vraie copie indépendante."
+statement_md: "Écris des `assert` : la copie doit être **égale** à l'original, et modifier la copie ne doit **pas** modifier l'original (et inversement)."
+signature: |
+  def copy_grid(grid):
+      """Return an independent (deep) copy of the grid."""
+implementations:
+  - label: A
+    correct: false
+    code: |
+      def copy_grid(grid):
+          return grid
+  - label: B
+    correct: false
+    code: |
+      def copy_grid(grid):
+          return grid[:]
+  - label: C
+    correct: true
+    code: |
+      def copy_grid(grid):
+          return [row[:] for row in grid]
+  - label: D
+    correct: false
+    code: |
+      def copy_grid(grid):
+          return [[0] * len(row) for row in grid]
+starter_code: |
+  g = [[1, 2], [3, 4]]
+  c = copy_grid(g)
+solution: |
+  g = [[1, 2], [3, 4]]
+  c = copy_grid(g)
+  assert c == g
+  c[0][0] = 99
+  assert g[0][0] == 1
+hints:
+  - "D ne recopie pas les valeurs : teste l'égalité."
+  - "A et B partagent les lignes : modifie une case de la copie, puis regarde l'original."
+  - "`c[0][0] = 99` puis `assert g[0][0] == 1`."

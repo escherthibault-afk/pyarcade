@@ -1,0 +1,40 @@
+id: w7-l04
+world: 7
+type: bug_hunt
+title: "x ou y ?"
+concepts: [grilles, indices, bug]
+difficulty: 2
+estimated_minutes: 3
+xp: 30
+story: "Sur un plateau carré tout marchait. Sur un plateau rectangulaire : IndexError."
+statement_md: "`get_cell(grid, x, y)` renvoie la case de la colonne `x` et de la ligne `y`, ou `None` si elle est hors de la grille. **2 bugs**."
+starter_code: |
+  def get_cell(grid, x, y):
+      """Return grid[y][x], or None if (x, y) is outside the grid."""
+      if 0 <= x < len(grid) and 0 <= y < len(grid[0]):
+          return grid[x][y]
+      return None
+solution: |
+  def get_cell(grid, x, y):
+      """Return grid[y][x], or None if (x, y) is outside the grid."""
+      if 0 <= y < len(grid) and 0 <= x < len(grid[0]):
+          return grid[y][x]
+      return None
+bugs: 2
+tests:
+  visible:
+    - call: get_cell([[1, 2, 3], [4, 5, 6]], 2, 1)
+      expected: "6"
+  hidden:
+    - call: get_cell([[1, 2, 3], [4, 5, 6]], 2, 0)
+      expected: "3"
+    - call: get_cell([[1, 2, 3], [4, 5, 6]], 3, 0)
+      expected: "None"
+      label: "hors grille à droite"
+    - call: get_cell([[1, 2, 3], [4, 5, 6]], 0, -1)
+      expected: "None"
+      label: "indice négatif"
+hints:
+  - "Teste sur une grille 2 lignes × 3 colonnes."
+  - "La hauteur `len(grid)` borne y ; la largeur `len(grid[0])` borne x."
+  - "`grid[y][x]`."

@@ -1,0 +1,41 @@
+id: w7-l01
+world: 7
+type: lesson
+title: "Une grille = une liste de lignes"
+concepts: [grilles, listes, indexation]
+difficulty: 1
+estimated_minutes: 2
+xp: 15
+story: "Le plateau du 2048, l'écran de l'épidémie : des grilles. On les range ligne par ligne."
+statement_md: |
+  ```python
+  grid = [[1, 2, 3],      # ligne y = 0
+          [4, 5, 6]]      # ligne y = 1
+  grid[1][2]       # 6  : d'abord la LIGNE y, puis la COLONNE x → grid[y][x]
+  len(grid)        # 2  : la hauteur (nombre de lignes)
+  len(grid[0])     # 3  : la largeur
+  grid[0][1] = 9   # on modifie une case
+  ```
+example_code: |
+  grid = [[1, 2, 3],
+          [4, 5, 6]]
+  print(grid[1][2])
+  print(len(grid), len(grid[0]))
+task_md: "Affiche la case de la colonne `x = 0` et de la ligne `y = 1`, puis mets `0` dans la case `x = 2, y = 0` et affiche la grille. Sortie attendue : `4` puis `[[1, 2, 0], [4, 5, 6]]`."
+expected_output: "4\n[[1, 2, 0], [4, 5, 6]]\n"
+solution: |
+  grid = [[1, 2, 3],
+          [4, 5, 6]]
+  print(grid[1][0])
+  grid[0][2] = 0
+  print(grid)
+hints:
+  - "Toujours `grid[y][x]` : ligne puis colonne."
+  - "x = 0, y = 1 → `grid[1][0]`."
+  - "`grid[0][2] = 0` puis `print(grid)`."
+card:
+  title: "Grilles"
+  body_md: |
+    `grid[y][x]` (ligne, puis colonne). Hauteur `len(grid)`, largeur `len(grid[0])`.
+    Parcours : `for y in range(len(grid)): for x in range(len(grid[0])):`.
+exam_tip: "Écris `grid[y][x]` partout, avec ces noms de variables : `grid[x][y]` est l'erreur classique (et passe inaperçue sur une grille carrée !)."

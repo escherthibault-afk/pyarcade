@@ -1,0 +1,31 @@
+id: w8-l14
+world: 8
+type: copy
+title: "Mode copie : compter les états"
+concepts: [dict, grilles, compteur]
+difficulty: 3
+estimated_minutes: 4
+xp: 40
+story: "DS papier : combien de S, I, R sur la carte ?"
+statement_md: "`grid` est une grille de dicts `{\"state\": ...}`. Renvoie le dict `{état: nombre de cases}` (seulement les états présents)."
+starter_code: |
+  def state_counts(grid):
+      """Return a dict {state: number of cells}."""
+      pass
+solution: |
+  def state_counts(grid):
+      """Return a dict {state: number of cells}."""
+      counts = {}
+      for row in grid:
+          for cell in row:
+              s = cell["state"]
+              counts[s] = counts.get(s, 0) + 1
+      return counts
+tests:
+  visible:
+    - call: 'state_counts([[{"state": "S"}, {"state": "I"}], [{"state": "S"}, {"state": "R"}]])'
+      expected: "{'S': 2, 'I': 1, 'R': 1}"
+  hidden:
+    - call: state_counts([])
+      expected: "{}"
+hints: []

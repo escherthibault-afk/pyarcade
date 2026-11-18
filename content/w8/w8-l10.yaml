@@ -1,0 +1,40 @@
+id: w8-l10
+world: 8
+type: code_fill
+title: "Dict de dicts"
+concepts: [dict, imbrication, moyenne]
+difficulty: 3
+estimated_minutes: 4
+xp: 40
+story: "Le carnet de notes : un dict d'élèves, chacun avec un dict de matières."
+statement_md: |
+  `grades` vaut par exemple `{"ada": {"maths": 18, "info": 20}, "alan": {"maths": 12}}`.
+  Renvoie la moyenne des notes de `name`, ou `None` si l'élève est inconnu ou n'a aucune note.
+starter_code: |
+  def student_average(grades, name):
+      """Return the mean grade of name, or None."""
+      pass
+solution: |
+  def student_average(grades, name):
+      """Return the mean grade of name, or None."""
+      if name not in grades or len(grades[name]) == 0:
+          return None
+      total = 0
+      for value in grades[name].values():
+          total += value
+      return total / len(grades[name])
+tests:
+  visible:
+    - call: 'student_average({"ada": {"maths": 18, "info": 20}}, "ada")'
+      expected: "19.0"
+  hidden:
+    - call: 'student_average({"ada": {"maths": 18}}, "bob")'
+      expected: "None"
+      label: "élève inconnu"
+    - call: 'student_average({"bob": {}}, "bob")'
+      expected: "None"
+      label: "aucune note"
+hints:
+  - "`grades[name]` est lui-même un dict."
+  - "Teste d'abord les cas `None`."
+  - "`.values()` donne les notes."

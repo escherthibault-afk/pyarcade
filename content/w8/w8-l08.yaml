@@ -1,0 +1,42 @@
+id: w8-l08
+world: 8
+type: quiz
+title: "QCM éclair : dictionnaires"
+concepts: [dict, cle, mutabilite]
+difficulty: 2
+estimated_minutes: 2
+xp: 30
+story: "Clés, valeurs, pièges."
+statement_md: "10 questions, 60 secondes."
+time_limit: 60
+questions:
+  - q: "`d = {}` ; `d[\"a\"]` …"
+    choices: ["KeyError", "None", "0", "\"\""]
+    answer: 0
+  - q: "`{\"a\": 1, \"a\": 2}` vaut…"
+    choices: ["{'a': 2}", "{'a': 1}", "Erreur", "{'a': [1, 2]}"]
+    answer: 0
+  - q: "Une liste peut-elle être une clé ?"
+    choices: ["Non (unhashable)", "Oui"]
+    answer: 0
+  - q: "`len({\"x\": 1, \"y\": 2})` vaut…"
+    choices: ["2", "4", "1"]
+    answer: 0
+  - q: "`for k in d:` parcourt…"
+    choices: ["les clés", "les valeurs", "les couples"]
+    answer: 0
+  - q: "`d.get(\"z\")` si la clé manque renvoie…"
+    choices: ["None", "KeyError", "0", "False"]
+    answer: 0
+  - q: "`d2 = d` puis `d2[\"k\"] = 1`. `d` a-t-il la clé \"k\" ?"
+    choices: ["Oui (même objet)", "Non"]
+    answer: 0
+  - q: "Comment copier un dict simple ?"
+    choices: ["dict(d) ou d.copy()", "d2 = d", "d[:]", "copy d"]
+    answer: 0
+  - q: "`del d[\"k\"]` …"
+    choices: ["supprime la clé k", "met k à None", "vide d", "erreur toujours"]
+    answer: 0
+  - q: "`list(d.values())` pour `{\"a\": 1, \"b\": 2}` ?"
+    choices: ["[1, 2]", "['a', 'b']", "[('a', 1), ('b', 2)]"]
+    answer: 0

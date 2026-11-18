@@ -1,0 +1,59 @@
+id: w7-l12
+world: 7
+type: bug_hunt
+title: "La contagion instantanée"
+concepts: [grilles, etat_suivant, mutation, bug]
+difficulty: 4
+estimated_minutes: 6
+xp: 55
+story: "En une seule étape, l'incendie traverse toute la forêt. Physiquement impossible : c'est un bug."
+statement_md: |
+  `spread(row)` calcule l'étape suivante d'une rangée d'arbres : un arbre `"T"` qui a un voisin (gauche ou droite) en feu `"F"`
+  **dans l'ancienne rangée** prend feu ; les feux `"F"` deviennent des cendres `"A"`. Renvoie une **nouvelle** liste.
+  Le code modifie la rangée pendant qu'il la lit : **1 bug** (2 vies).
+starter_code: |
+  def spread(row):
+      """Return the next state of the row (based on the OLD row only)."""
+      for i in range(len(row)):
+          if row[i] == "F":
+              row[i] = "A"
+          elif row[i] == "T":
+              left = i > 0 and row[i - 1] == "F"
+              right = i < len(row) - 1 and row[i + 1] == "F"
+              if left or right:
+                  row[i] = "F"
+      return row
+solution: |
+  def spread(row):
+      """Return the next state of the row (based on the OLD row only)."""
+      new = []
+      for i in range(len(row)):
+          if row[i] == "F":
+              new.append("A")
+          elif row[i] == "T":
+              left = i > 0 and row[i - 1] == "F"
+              right = i < len(row) - 1 and row[i + 1] == "F"
+              new.append("F" if left or right else "T")
+          else:
+              new.append(row[i])
+      return new
+bugs: 1
+tests:
+  visible:
+    - call: spread(["F", "T", "T", "T"])
+      expected: "['A', 'F', 'T', 'T']"
+  hidden:
+    - call: spread(["T", "T", "F", "T"])
+      expected: "['T', 'F', 'A', 'F']"
+    - call: spread(["F", "T", "T"])
+      pure: true
+      expected: "['A', 'F', 'T']"
+      label: "rangée d'origine intacte"
+    - call: spread(["A", "T"])
+      expected: "['A', 'T']"
+hints:
+  - "Après avoir mis la case 1 en feu, que voit la case 2 en regardant à gauche ?"
+  - "Il faut lire l'ANCIENNE rangée et écrire dans une NOUVELLE liste."
+  - "Une liste `new` remplie avec `append`, sans jamais modifier `row`."
+explanation_md: "Écrire dans la grille qu'on lit propage l'effet dans la même étape. Règle d'or des automates cellulaires : nouvelle grille calculée depuis l'ancienne."
+exam_tip: "TP Épidémie : `step(grid)` doit construire une NOUVELLE grille ; le correcteur teste qu'une contagion n'avance que d'une case par étape."

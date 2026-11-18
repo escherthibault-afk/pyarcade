@@ -1,0 +1,198 @@
+id: boss-epidemic-exam
+world: 8
+type: boss
+variant: exam
+project: "epidemic:exam"
+title: "🎓 Examen : feu de forêt (75 min)"
+concepts: [grilles, dict, random, simulation]
+difficulty: 5
+estimated_minutes: 75
+xp: 0
+time_limit_minutes: 75
+statement_md: "Sujet en 75 minutes, sans indice : un incendie se propage dans une forêt."
+intro_md: |
+  ## Sujet : propagation d'un incendie
+
+  La forêt est une grille de chaînes : `"T"` (arbre), `"F"` (en feu), `"A"` (cendres), `"."` (sol nu).
+  À chaque étape, **en même temps** :
+  - un arbre `T` prend feu avec la probabilité `p` **pour chacun** de ses voisins (4 directions) en feu ;
+  - une case `F` devient `A` ; `A` et `.` ne changent pas.
+
+  On allume le feu sur **toute la colonne de gauche** (les arbres de la colonne x = 0).
+header_code: |
+  import random
+steps:
+  - fn: create_forest
+    title: "planter la forêt"
+    statement_md: "Grille `height × width` : chaque case est `\"T\"` avec la probabilité `density`, sinon `\".\"`."
+    starter_code: |
+      def create_forest(width, height, density):
+          """Return a random forest grid."""
+          pass
+    solution: |
+      def create_forest(width, height, density):
+          """Return a random forest grid."""
+          return [["T" if random.random() < density else "." for _ in range(width)] for _ in range(height)]
+    tests:
+      visible:
+        - call: create_forest(3, 2, 1.0)
+          expected: "[['T', 'T', 'T'], ['T', 'T', 'T']]"
+      hidden:
+        - call: create_forest(2, 2, 0.0)
+          expected: "[['.', '.'], ['.', '.']]"
+      statistical:
+        - expr: "sum(c == 'T' for row in create_forest(100, 100, 0.6) for c in row) / 10000"
+          approx: 0.6
+          tol: 0.02
+    points: 2
+  - fn: ignite_left
+    title: "allumer"
+    statement_md: "Renvoie une **copie** où les arbres de la colonne 0 sont en feu."
+    starter_code: |
+      def ignite_left(forest):
+          """Return a copy of forest with the trees of column 0 on fire."""
+          pass
+    solution: |
+      def ignite_left(forest):
+          """Return a copy of forest with the trees of column 0 on fire."""
+          new = [row[:] for row in forest]
+          for row in new:
+              if row and row[0] == "T":
+                  row[0] = "F"
+          return new
+    tests:
+      visible:
+        - call: ignite_left([["T", "T"], [".", "T"]])
+          expected: "[['F', 'T'], ['.', 'T']]"
+      hidden:
+        - call: ignite_left([["T", "T"]])
+          pure: true
+          expected: "[['F', 'T']]"
+    points: 2
+  - fn: burning_neighbors
+    title: "voisins en feu"
+    statement_md: "Nombre de voisins (4 directions, dans la grille) en feu."
+    starter_code: |
+      def burning_neighbors(forest, x, y):
+          """Return how many of the 4 neighbors are on fire."""
+          pass
+    solution: |
+      def burning_neighbors(forest, x, y):
+          """Return how many of the 4 neighbors are on fire."""
+          count = 0
+          for dx, dy in [(0, -1), (0, 1), (-1, 0), (1, 0)]:
+              nx, ny = x + dx, y + dy
+              if 0 <= ny < len(forest) and 0 <= nx < len(forest[0]) and forest[ny][nx] == "F":
+                  count += 1
+          return count
+    tests:
+      visible:
+        - call: burning_neighbors([["F", "T", "F"]], 1, 0)
+          expected: "2"
+      hidden:
+        - call: burning_neighbors([["T", "T", "F"]], 0, 0)
+          expected: "0"
+          label: "bords"
+        - call: burning_neighbors([["T"], ["F"]], 0, 0)
+          expected: "1"
+    points: 3
+  - fn: next_state
+    title: "règle d'une case"
+    statement_md: "Nouvel état de la case `(x, y)` (sans modifier la forêt)."
+    starter_code: |
+      def next_state(forest, x, y, p):
+          """Return the next state of the cell (x, y)."""
+          pass
+    solution: |
+      def next_state(forest, x, y, p):
+          """Return the next state of the cell (x, y)."""
+          cell = forest[y][x]
+          if cell == "F":
+              return "A"
+          if cell == "T":
+              for _ in range(burning_neighbors(forest, x, y)):
+                  if random.random() < p:
+                      return "F"
+          return cell
+    tests:
+      visible:
+        - call: next_state([["F", "T"]], 1, 0, 1.0)
+          expected: "'F'"
+      hidden:
+        - call: next_state([["F", "T"]], 0, 0, 1.0)
+          expected: "'A'"
+        - call: next_state([["F", "T"]], 1, 0, 0.0)
+          expected: "'T'"
+        - call: next_state([["F", "."]], 1, 0, 1.0)
+          expected: "'.'"
+    points: 3
+  - fn: step
+    title: "une étape"
+    statement_md: "Nouvelle forêt calculée sur l'ancienne."
+    starter_code: |
+      def step(forest, p):
+          """Return the forest after one step."""
+          pass
+    solution: |
+      def step(forest, p):
+          """Return the forest after one step."""
+          return [[next_state(forest, x, y, p) for x in range(len(forest[0]))] for y in range(len(forest))]
+    tests:
+      visible:
+        - call: step([["F", "T", "T"]], 1.0)
+          expected: "[['A', 'F', 'T']]"
+      hidden:
+        - call: step([["F", "T", "T"]], 1.0)
+          pure: true
+          expected: "[['A', 'F', 'T']]"
+    points: 4
+  - fn: burn
+    title: "jusqu'à extinction"
+    statement_md: "Allume la colonne de gauche puis fait des étapes tant qu'il y a du feu. Renvoie le tuple `(nombre d'étapes, forêt finale)`."
+    starter_code: |
+      def burn(forest, p):
+          """Burn the forest until no fire is left; return (steps, final forest)."""
+          pass
+    solution: |
+      def burn(forest, p):
+          """Burn the forest until no fire is left; return (steps, final forest)."""
+          forest = ignite_left(forest)
+          steps = 0
+          while any("F" in row for row in forest):
+              forest = step(forest, p)
+              steps += 1
+          return (steps, forest)
+    tests:
+      visible:
+        - call: burn([["T", "T", "T"]], 1.0)
+          expected: "(3, [['A', 'A', 'A']])"
+      hidden:
+        - call: burn([["T", ".", "T"]], 1.0)
+          expected: "(1, [['A', '.', 'T']])"
+          label: "coupe-feu"
+    points: 4
+  - fn: burnt_share
+    title: "proportion brûlée"
+    statement_md: "Proportion des arbres de départ qui ont brûlé (`A` à la fin) ; 0 s'il n'y avait aucun arbre."
+    starter_code: |
+      def burnt_share(forest, p):
+          """Return the share of the initial trees that burnt."""
+          pass
+    solution: |
+      def burnt_share(forest, p):
+          """Return the share of the initial trees that burnt."""
+          trees = sum(c == "T" for row in forest for c in row)
+          if trees == 0:
+              return 0
+          final = burn(forest, p)[1]
+          return sum(c == "A" for row in final for c in row) / trees
+    tests:
+      visible:
+        - call: burnt_share([["T", "T"], ["T", "."]], 1.0)
+          expected: "1.0"
+      hidden:
+        - call: burnt_share([[".", "."]], 1.0)
+          expected: "0"
+        - call: burnt_share([["T", ".", "T"]], 1.0)
+          expected: "0.5"
+    points: 2

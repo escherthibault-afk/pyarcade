@@ -1,0 +1,56 @@
+id: w8-l13
+world: 8
+type: write_test
+title: "Démasque les fusions ratées"
+concepts: [dict, tests, pure]
+difficulty: 3
+estimated_minutes: 5
+xp: 45
+story: "Fusionner les scores de deux parties. Trois versions trichent."
+statement_md: "`merge_counts(a, b)` renvoie un **nouveau** dict où chaque clé a la somme de ses valeurs dans `a` et `b`, sans modifier `a` ni `b`."
+signature: |
+  def merge_counts(a, b):
+      """Return a new dict summing the counts of a and b."""
+implementations:
+  - label: A
+    correct: false
+    code: |
+      def merge_counts(a, b):
+          result = dict(a)
+          result.update(b)
+          return result
+  - label: B
+    correct: true
+    code: |
+      def merge_counts(a, b):
+          result = dict(a)
+          for k, v in b.items():
+              result[k] = result.get(k, 0) + v
+          return result
+  - label: C
+    correct: false
+    code: |
+      def merge_counts(a, b):
+          for k, v in b.items():
+              a[k] = a.get(k, 0) + v
+          return a
+  - label: D
+    correct: false
+    code: |
+      def merge_counts(a, b):
+          result = {}
+          for k in a:
+              result[k] = a[k] + b.get(k, 0)
+          return result
+starter_code: |
+  assert merge_counts({"x": 1}, {"y": 2}) == {"x": 1, "y": 2}
+solution: |
+  assert merge_counts({"x": 1}, {"x": 2}) == {"x": 3}
+  assert merge_counts({}, {"y": 2}) == {"y": 2}
+  a = {"x": 1}
+  merge_counts(a, {"x": 5})
+  assert a == {"x": 1}
+hints:
+  - "A écrase au lieu d'additionner ; D oublie les clés seulement dans b ; C modifie a."
+  - "Une clé commune, une clé seulement dans b, et une vérification que a n'a pas changé."
+  - "`a = {\"x\": 1}` ; `merge_counts(a, {\"x\": 5})` ; `assert a == {\"x\": 1}`"

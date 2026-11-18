@@ -69,7 +69,7 @@ worlds:
     emoji: "🗂️"
     color: "#e879f9"
     radar: dicts
-    bosses: []
+    bosses: [boss-epidemic-guided, boss-epidemic-twin-life, boss-epidemic-exam]
   - id: 9
     title: Chaînes & fichiers
     title_en: Strings & files

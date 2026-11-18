@@ -1,0 +1,426 @@
+id: boss-epidemic-guided
+world: 8
+type: boss
+variant: guided
+project: epidemic
+title: "🦠 Boss Épidémie (modèle SIR)"
+concepts: [grilles, dict, random, simulation, etat_suivant]
+difficulty: 5
+estimated_minutes: 70
+xp: 500
+min_stars: 28
+live_game: epidemic
+packages: [matplotlib]
+statement_md: "Une grille de dictionnaires, une règle locale, et l'épidémie se propage. Puis on vaccine."
+intro_md: |
+  ## Simulation d'épidémie
+
+  La ville est une **grille** (`grid[y][x]`) de cases. Chaque case est un dictionnaire `{"state": ..., "sick_days": ...}` :
+
+  | état | sens |
+  |---|---|
+  | `"S"` | sain mais **susceptible** d'être infecté |
+  | `"I"` | **infecté** (contagieux), depuis `sick_days` jours |
+  | `"R"` | **rétabli** (immunisé) |
+  | `"V"` | **vacciné** (ne change jamais) |
+
+  À chaque étape (un jour), **en même temps pour toutes les cases** :
+  - une case `S` a, pour **chacun** de ses voisins infectés (haut, bas, gauche, droite), une chance `p` d'être contaminée ;
+  - une case `I` passe un jour de plus malade ; quand `sick_days` atteint `duration`, elle devient `R` ;
+  - `R` et `V` ne changent pas.
+
+  **« En même temps »** veut dire : on calcule la nouvelle grille **à partir de l'ancienne**, sans jamais modifier l'ancienne pendant le calcul.
+  Enfin, on mesurera l'effet de la vaccination : à partir de quelle proportion l'épidémie ne décolle plus ?
+header_code: |
+  import random
+steps:
+  - fn: create_grid
+    title: "la ville saine"
+    statement_md: "Grille `height × width` de cases `{\"state\": \"S\", \"sick_days\": 0}` **toutes distinctes** (pas d'aliasing !)."
+    starter_code: |
+      def create_grid(width, height):
+          """Return a height x width grid of healthy cells (independent dicts)."""
+          pass
+    solution: |
+      def create_grid(width, height):
+          """Return a height x width grid of healthy cells (independent dicts)."""
+          return [[{"state": "S", "sick_days": 0} for _ in range(width)] for _ in range(height)]
+    tests:
+      visible:
+        - call: create_grid(2, 1)
+          expected: "[[{'state': 'S', 'sick_days': 0}, {'state': 'S', 'sick_days': 0}]]"
+      hidden:
+        - setup: "g = create_grid(2, 2)\ng[0][0]['state'] = 'I'"
+          call: "[c['state'] for row in g for c in row]"
+          expected: "['I', 'S', 'S', 'S']"
+          label: "cases indépendantes"
+        - call: "len(create_grid(4, 3)), len(create_grid(4, 3)[0])"
+          expected: "(3, 4)"
+          label: "hauteur, largeur"
+    hints:
+      - "Deux compréhensions imbriquées."
+      - "Le dict doit être créé DANS la compréhension, pour qu'il y en ait un nouveau par case."
+      - "`[[{...} for _ in range(width)] for _ in range(height)]`"
+    points: 1.5
+  - fn: infect
+    title: "le patient zéro"
+    statement_md: "Met la case `(x, y)` à `{\"state\": \"I\", \"sick_days\": 0}` (modifie la grille, ne renvoie rien)."
+    starter_code: |
+      def infect(grid, x, y):
+          """Make the cell (x, y) infected (in place)."""
+          pass
+    solution: |
+      def infect(grid, x, y):
+          """Make the cell (x, y) infected (in place)."""
+          grid[y][x] = {"state": "I", "sick_days": 0}
+    tests:
+      visible:
+        - setup: "g = create_grid(3, 2)\ninfect(g, 2, 1)"
+          call: "g[1][2]"
+          expected: "{'state': 'I', 'sick_days': 0}"
+      hidden:
+        - setup: "g = create_grid(3, 2)\ninfect(g, 2, 1)"
+          call: "g[0][2]['state']"
+          expected: "'S'"
+          label: "grid[y][x], pas grid[x][y]"
+    hints:
+      - "`grid[y][x]`."
+      - "On remplace la case par un nouveau dict."
+      - "Pas de `return`."
+    points: 1
+  - fn: count_sick_neighbors
+    title: "les voisins malades"
+    statement_md: "Nombre de voisins (haut, bas, gauche, droite) **dans la grille** qui sont `\"I\"`."
+    starter_code: |
+      def count_sick_neighbors(grid, x, y):
+          """Return how many of the 4 neighbors of (x, y) are infected."""
+          pass
+    solution: |
+      def count_sick_neighbors(grid, x, y):
+          """Return how many of the 4 neighbors of (x, y) are infected."""
+          count = 0
+          for dx, dy in [(0, -1), (0, 1), (-1, 0), (1, 0)]:
+              nx = x + dx
+              ny = y + dy
+              if 0 <= ny < len(grid) and 0 <= nx < len(grid[0]) and grid[ny][nx]["state"] == "I":
+                  count += 1
+          return count
+    tests:
+      visible:
+        - setup: "g = create_grid(3, 3)\ninfect(g, 1, 0)\ninfect(g, 0, 1)"
+          call: count_sick_neighbors(g, 1, 1)
+          expected: "2"
+      hidden:
+        - setup: "g = create_grid(3, 3)\ninfect(g, 0, 2)"
+          call: count_sick_neighbors(g, 0, 0)
+          expected: "0"
+          label: "pas d'indice -1 (bords)"
+        - setup: "g = create_grid(3, 3)\ninfect(g, 2, 0)"
+          call: count_sick_neighbors(g, 0, 0)
+          expected: "0"
+          label: "pas de retour par l'autre bord"
+        - setup: "g = create_grid(1, 1)"
+          call: count_sick_neighbors(g, 0, 0)
+          expected: "0"
+          label: "grille 1×1"
+    hints:
+      - "4 décalages, un test de bornes, un compteur."
+      - "`0 <= ny < len(grid) and 0 <= nx < len(grid[0])`"
+      - "Puis `grid[ny][nx][\"state\"] == \"I\"`."
+    points: 2
+  - fn: catches_infection
+    title: "attraper la maladie"
+    statement_md: "Avec `nb_sick` voisins malades, chacun contamine indépendamment avec la probabilité `p`. `True` si au moins une contamination réussit."
+    starter_code: |
+      def catches_infection(nb_sick, p):
+          """Return True if at least one of the nb_sick contacts transmits the disease."""
+          pass
+    solution: |
+      def catches_infection(nb_sick, p):
+          """Return True if at least one of the nb_sick contacts transmits the disease."""
+          for _ in range(nb_sick):
+              if random.random() < p:
+                  return True
+          return False
+    tests:
+      visible:
+        - call: catches_infection(0, 1.0)
+          expected: "False"
+          label: "aucun voisin malade"
+      hidden:
+        - call: catches_infection(3, 1.0)
+          expected: "True"
+        - call: "any(catches_infection(4, 0) for _ in range(1000))"
+          expected: "False"
+      statistical:
+        - expr: "sum(catches_infection(2, 0.5) for _ in range(20000)) / 20000"
+          approx: 0.75
+          tol: 0.015
+          label: "1 - (1 - p)² = 0.75"
+    hints:
+      - "Un tirage par voisin malade."
+      - "Un seul succès suffit : `return True` immédiatement."
+      - "`random.random() < p`"
+    points: 1.5
+  - fn: next_cell
+    title: "le nouvel état d'une case"
+    statement_md: |
+      Renvoie le **nouveau dict** de la case `(x, y)` (calculé sur `grid`, qu'on ne modifie pas) :
+      `S` → `I` (0 jour) si contaminée, sinon `S` ; `I` → un jour de plus, et `R` si `sick_days` atteint `duration` ;
+      `R` et `V` : inchangés (renvoie une copie).
+    starter_code: |
+      def next_cell(grid, x, y, p, duration):
+          """Return the new dict of the cell (x, y) after one day."""
+          pass
+    solution: |
+      def next_cell(grid, x, y, p, duration):
+          """Return the new dict of the cell (x, y) after one day."""
+          cell = grid[y][x]
+          if cell["state"] == "S":
+              if catches_infection(count_sick_neighbors(grid, x, y), p):
+                  return {"state": "I", "sick_days": 0}
+              return {"state": "S", "sick_days": 0}
+          if cell["state"] == "I":
+              days = cell["sick_days"] + 1
+              if days >= duration:
+                  return {"state": "R", "sick_days": days}
+              return {"state": "I", "sick_days": days}
+          return dict(cell)
+    tests:
+      visible:
+        - setup: "g = create_grid(2, 1)\ninfect(g, 0, 0)"
+          call: next_cell(g, 1, 0, 1.0, 3)
+          expected: "{'state': 'I', 'sick_days': 0}"
+      hidden:
+        - setup: "g = create_grid(2, 1)\ninfect(g, 0, 0)"
+          call: next_cell(g, 0, 0, 1.0, 3)
+          expected: "{'state': 'I', 'sick_days': 1}"
+        - setup: "g = create_grid(1, 1)\ng[0][0] = {'state': 'I', 'sick_days': 2}"
+          call: next_cell(g, 0, 0, 1.0, 3)
+          expected: "{'state': 'R', 'sick_days': 3}"
+          label: "guérison"
+        - setup: "g = create_grid(2, 1)\ninfect(g, 0, 0)\ng[0][1]['state'] = 'V'"
+          call: next_cell(g, 1, 0, 1.0, 3)
+          expected: "{'state': 'V', 'sick_days': 0}"
+          label: "vacciné"
+        - setup: "g = create_grid(2, 1)\ninfect(g, 0, 0)"
+          call: next_cell(g, 1, 0, 1.0, 3)
+          pure: true
+          expected: "{'state': 'I', 'sick_days': 0}"
+          label: "la grille n'est pas modifiée"
+    hints:
+      - "Trois cas selon l'état."
+      - "Pour `S` : `catches_infection(count_sick_neighbors(grid, x, y), p)`."
+      - "Toujours renvoyer un NOUVEAU dict (`dict(cell)` pour copier)."
+    points: 3
+  - fn: step
+    title: "un jour passe"
+    statement_md: "Renvoie la **nouvelle grille** (toutes les cases calculées avec `next_cell` sur l'ancienne grille)."
+    starter_code: |
+      def step(grid, p, duration):
+          """Return the grid of the next day (computed from the old grid)."""
+          pass
+    solution: |
+      def step(grid, p, duration):
+          """Return the grid of the next day (computed from the old grid)."""
+          new_grid = []
+          for y in range(len(grid)):
+              row = []
+              for x in range(len(grid[0])):
+                  row.append(next_cell(grid, x, y, p, duration))
+              new_grid.append(row)
+          return new_grid
+    tests:
+      visible:
+        - setup: "g = create_grid(3, 3)\ninfect(g, 1, 1)"
+          call: "[[c['state'] for c in row] for row in step(g, 1.0, 3)]"
+          expected: "[['S', 'I', 'S'], ['I', 'I', 'I'], ['S', 'I', 'S']]"
+      hidden:
+        - setup: "g = create_grid(5, 1)\ninfect(g, 0, 0)"
+          call: "[c['state'] for c in step(g, 1.0, 9)[0]]"
+          expected: "['I', 'I', 'S', 'S', 'S']"
+          label: "une seule case par jour (pas de contagion instantanée)"
+        - setup: "g = create_grid(3, 3)\ninfect(g, 1, 1)"
+          call: step(g, 1.0, 3)[1][1]
+          pure: true
+          expected: "{'state': 'I', 'sick_days': 1}"
+          label: "l'ancienne grille est intacte"
+    hints:
+      - "Double boucle qui construit une nouvelle grille."
+      - "Chaque case : `next_cell(grid, x, y, p, duration)` sur l'ANCIENNE grille."
+      - "Ne modifie jamais `grid`."
+    points: 3
+  - fn: count_state
+    title: "compter un état"
+    statement_md: "Nombre de cases dans l'état `state`."
+    starter_code: |
+      def count_state(grid, state):
+          """Return the number of cells in the given state."""
+          pass
+    solution: |
+      def count_state(grid, state):
+          """Return the number of cells in the given state."""
+          count = 0
+          for row in grid:
+              for cell in row:
+                  if cell["state"] == state:
+                      count += 1
+          return count
+    tests:
+      visible:
+        - setup: "g = create_grid(3, 2)\ninfect(g, 0, 0)"
+          call: (count_state(g, "S"), count_state(g, "I"))
+          expected: "(5, 1)"
+      hidden:
+        - call: count_state([], "S")
+          expected: "0"
+    hints:
+      - "Double boucle + compteur."
+      - "`cell[\"state\"] == state`"
+      - "Ou une somme avec un générateur."
+    points: 1
+  - fn: run_epidemic
+    title: "toute l'épidémie"
+    statement_md: |
+      Crée la grille, infecte la case du centre `(width // 2, height // 2)`, puis fais des étapes **tant qu'il reste des infectés**
+      (et au plus `max_steps` étapes). Renvoie l'**historique** : la liste des tuples `(S, I, R)` après chaque jour, état initial compris.
+    starter_code: |
+      def run_epidemic(width, height, p, duration, max_steps=200):
+          """Run the epidemic and return the history of (S, I, R) counts."""
+          pass
+    solution: |
+      def run_epidemic(width, height, p, duration, max_steps=200):
+          """Run the epidemic and return the history of (S, I, R) counts."""
+          grid = create_grid(width, height)
+          infect(grid, width // 2, height // 2)
+          history = [(count_state(grid, "S"), count_state(grid, "I"), count_state(grid, "R"))]
+          while count_state(grid, "I") > 0 and len(history) <= max_steps:
+              grid = step(grid, p, duration)
+              history.append((count_state(grid, "S"), count_state(grid, "I"), count_state(grid, "R")))
+          return history
+    tests:
+      visible:
+        - call: run_epidemic(3, 3, 1.0, 2)
+          expected: "[(8, 1, 0), (4, 5, 0), (0, 8, 1), (0, 4, 5), (0, 0, 9)]"
+      hidden:
+        - call: run_epidemic(1, 1, 1.0, 3)
+          expected: "[(0, 1, 0), (0, 1, 0), (0, 1, 0), (0, 0, 1)]"
+          label: "seul dans sa ville"
+        - call: "len(run_epidemic(10, 10, 1.0, 100, 5))"
+          expected: "6"
+          label: "max_steps"
+    hints:
+      - "Historique initial avec le patient zéro, puis une boucle `while`."
+      - "Deux conditions d'arrêt : plus d'infectés, ou trop d'étapes."
+      - "`grid = step(grid, p, duration)` remplace la grille à chaque tour."
+    points: 2
+  - fn: create_vaccinated_grid
+    title: "la campagne de vaccination"
+    statement_md: "Comme `create_grid`, mais chaque case est `\"V\"` avec la probabilité `rate`."
+    starter_code: |
+      def create_vaccinated_grid(width, height, rate):
+          """Return a grid where each cell is vaccinated with probability rate."""
+          pass
+    solution: |
+      def create_vaccinated_grid(width, height, rate):
+          """Return a grid where each cell is vaccinated with probability rate."""
+          grid = create_grid(width, height)
+          for row in grid:
+              for cell in row:
+                  if random.random() < rate:
+                      cell["state"] = "V"
+          return grid
+    tests:
+      visible:
+        - call: count_state(create_vaccinated_grid(5, 5, 1.0), "V")
+          expected: "25"
+      hidden:
+        - call: count_state(create_vaccinated_grid(5, 5, 0.0), "V")
+          expected: "0"
+      statistical:
+        - expr: "count_state(create_vaccinated_grid(100, 100, 0.3), 'V') / 10000"
+          approx: 0.3
+          tol: 0.02
+    hints:
+      - "Pars de `create_grid`."
+      - "Un tirage par case."
+      - "`if random.random() < rate: cell[\"state\"] = \"V\"`"
+    points: 1.5
+  - fn: epidemic_reach
+    title: "la portée de l'épidémie"
+    statement_md: |
+      Grille vaccinée avec `rate`, patient zéro au centre, simulation jusqu'à ce qu'il n'y ait plus d'infectés.
+      Renvoie la proportion de cases **non vaccinées** qui ont été malades (`R` à la fin) : `R / (cases - V)`.
+    starter_code: |
+      def epidemic_reach(width, height, p, duration, rate):
+          """Return the share of non-vaccinated cells that got sick."""
+          pass
+    solution: |
+      def epidemic_reach(width, height, p, duration, rate):
+          """Return the share of non-vaccinated cells that got sick."""
+          grid = create_vaccinated_grid(width, height, rate)
+          infect(grid, width // 2, height // 2)
+          while count_state(grid, "I") > 0:
+              grid = step(grid, p, duration)
+          not_vaccinated = width * height - count_state(grid, "V")
+          return count_state(grid, "R") / not_vaccinated
+    tests:
+      visible:
+        - call: epidemic_reach(5, 5, 1.0, 2, 0.0)
+          expected: "1.0"
+      hidden:
+        - call: epidemic_reach(3, 1, 0.0, 2, 0.0)
+          expected: "1 / 3"
+          label: "aucune transmission"
+      statistical:
+        - expr: "sum(epidemic_reach(20, 20, 0.5, 3, 0.0) for _ in range(4)) / 4"
+          approx: 1.0
+          tol: 0.03
+          label: "sans vaccin, presque tout le monde"
+        - expr: "sum(epidemic_reach(20, 20, 0.5, 3, 0.7) for _ in range(10)) / 10"
+          approx: 0.03
+          tol: 0.05
+          label: "70 % de vaccinés : l'épidémie ne décolle pas"
+    hints:
+      - "Grille vaccinée, infection du centre, boucle tant qu'il y a des I."
+      - "Compte les V et les R à la fin."
+      - "`count_state(grid, \"R\") / (width * height - count_state(grid, \"V\"))`"
+    points: 2
+  - fn: plot_history
+    title: "les courbes"
+    statement_md: "Trace S, I et R (une courbe chacune, avec `label=`), légende, axes nommés. Renvoie le nombre de jours tracés (`len(history)`)."
+    starter_code: |
+      import matplotlib.pyplot as plt
+
+
+      def plot_history(history):
+          """Plot the S, I, R curves of the history and return its length."""
+          pass
+    solution: |
+      import matplotlib.pyplot as plt
+
+
+      def plot_history(history):
+          """Plot the S, I, R curves of the history and return its length."""
+          days = range(len(history))
+          plt.plot(days, [h[0] for h in history], label="S")
+          plt.plot(days, [h[1] for h in history], label="I")
+          plt.plot(days, [h[2] for h in history], label="R")
+          plt.xlabel("jour")
+          plt.ylabel("nombre de cases")
+          plt.legend()
+          return len(history)
+    tests:
+      visible:
+        - call: plot_history([(8, 1, 0), (4, 5, 0)])
+          expected: "2"
+      hidden:
+        - setup: "import matplotlib.pyplot as plt\nplt.close('all')\nplot_history([(8, 1, 0), (4, 5, 0), (0, 8, 1)])"
+          call: "(len(plt.gca().get_lines()), plt.gca().get_legend() is not None, plt.gca().get_xlabel() != '')"
+          expected: "(3, True, True)"
+          label: "3 courbes, légende, axes"
+    hints:
+      - "Une liste par courbe, extraite de l'historique."
+      - "`plt.plot(xs, ys, label=\"S\")` trois fois."
+      - "`plt.legend()`, `plt.xlabel`, `plt.ylabel`."
+    points: 1.5

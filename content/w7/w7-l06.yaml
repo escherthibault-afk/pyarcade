@@ -1,0 +1,21 @@
+id: w7-l06
+world: 7
+type: trace
+title: "Trace la double boucle"
+concepts: [boucles_imbriquees, grilles, trace]
+difficulty: 2
+estimated_minutes: 3
+xp: 30
+story: "Les deux compteurs d'une double boucle : qui tourne le plus vite ?"
+statement_md: "Note `y`, `x` et `total` après chaque passage sur la ligne marquée."
+code: |
+  grid = [[1, 2, 3], [4, 5, 6]]
+  total = 0
+  for y in range(len(grid)):
+      for x in range(len(grid[0])):
+          total = total + grid[y][x]  # @snap
+watch: [y, x, total]
+hints:
+  - "La boucle intérieure (x) fait tous ses tours pour chaque y."
+  - "Ordre : (0,0), (0,1), (0,2), (1,0)…"
+  - "Total final : 21."

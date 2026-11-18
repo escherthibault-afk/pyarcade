@@ -1,0 +1,38 @@
+id: w8-l06
+world: 8
+type: code_fill
+title: "Le plus fréquent"
+concepts: [dict, maximum, items]
+difficulty: 3
+estimated_minutes: 4
+xp: 40
+story: "Quelle lettre sort le plus souvent ? En cas d'égalité, la première par ordre alphabétique."
+statement_md: "`counts` est un dict `{élément: nombre}` non vide. Renvoie l'élément au plus grand nombre (le plus petit élément en cas d'égalité). Sans `max`."
+starter_code: |
+  def most_common(counts):
+      """Return the key with the greatest count (smallest key on ties)."""
+      pass
+solution: |
+  def most_common(counts):
+      """Return the key with the greatest count (smallest key on ties)."""
+      best = None
+      for key in sorted(counts):
+          if best is None or counts[key] > counts[best]:
+              best = key
+      return best
+tests:
+  visible:
+    - call: 'most_common({"a": 1, "e": 4, "z": 2})'
+      expected: "'e'"
+  hidden:
+    - call: 'most_common({"b": 3, "a": 3})'
+      expected: "'a'"
+      label: "égalité"
+    - call: 'most_common({"x": 0})'
+      expected: "'x'"
+constraints:
+  forbidden: ["call:max"]
+hints:
+  - "Parcourir les clés triées règle les égalités."
+  - "Garde la meilleure clé, compare `counts[key]` à `counts[best]`."
+  - "Strictement supérieur pour garder la première."

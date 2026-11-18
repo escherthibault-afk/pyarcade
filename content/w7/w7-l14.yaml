@@ -1,0 +1,31 @@
+id: w7-l14
+world: 7
+type: copy
+title: "Mode copie : la somme d'une colonne"
+concepts: [grilles, colonne]
+difficulty: 2
+estimated_minutes: 3
+xp: 35
+story: "DS papier : une colonne, une boucle, pas d'exécution."
+statement_md: "Renvoie la somme des valeurs de la colonne `x` de la grille."
+starter_code: |
+  def column_sum(grid, x):
+      """Return the sum of the values of column x."""
+      pass
+solution: |
+  def column_sum(grid, x):
+      """Return the sum of the values of column x."""
+      total = 0
+      for row in grid:
+          total += row[x]
+      return total
+tests:
+  visible:
+    - call: column_sum([[1, 2], [3, 4], [5, 6]], 1)
+      expected: "12"
+  hidden:
+    - call: column_sum([], 0)
+      expected: "0"
+    - call: column_sum([[7]], 0)
+      expected: "7"
+hints: []

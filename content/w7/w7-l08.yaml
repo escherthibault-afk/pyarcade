@@ -1,0 +1,29 @@
+id: w7-l08
+world: 7
+type: predict_output
+title: "L'indice -1 qui ne plante pas"
+concepts: [grilles, indices_negatifs, bords]
+difficulty: 3
+estimated_minutes: 2
+xp: 30
+story: "Le bug le plus sournois des grilles : aucune erreur, juste un mauvais résultat."
+statement_md: "Qu'affiche ce programme ?"
+code: |
+  grid = [["a", "b"],
+          ["c", "d"],
+          ["e", "f"]]
+  x, y = 0, 0
+  print(grid[y - 1][x])
+  print(grid[y][x - 1])
+  print(grid[-1][-1])
+  print(len(grid[y - 1]))
+answer: |
+  e
+  b
+  f
+  2
+hints:
+  - "`grid[-1]` est la dernière ligne."
+  - "`grid[0][-1]` est la dernière case de la première ligne."
+  - "Aucune erreur n'est levée !"
+explanation_md: "Le « voisin du haut » de la ligne 0 lu sans test de bornes donne la dernière ligne. C'est pour ça qu'on vérifie `0 <= ny`."

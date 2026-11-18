@@ -1,0 +1,84 @@
+id: w8-l12
+world: 8
+type: simulation
+title: "Simulation : la rumeur et le vaccin"
+concepts: [dict, grilles, simulation, probabilite]
+difficulty: 4
+estimated_minutes: 8
+xp: 70
+story: "Une rumeur se propage de voisin en voisin. Certains y sont immunisés. À partir de quelle proportion la rumeur s'éteint-elle ?"
+statement_md: |
+  Écris la règle d'une case `next_state(state, informed_neighbors, p)` :
+  - `"I"` (informé) reste `"I"` ; `"V"` (immunisé) reste `"V"` ;
+  - `"S"` (pas encore informé) devient `"I"` si **au moins un essai** réussit : pour **chacun** des voisins informés,
+    on tire `random.random() < p`.
+
+  Une fois les tests passés, joue avec les curseurs et réponds à la question d'observation.
+given_code: |
+  import random
+starter_code: |
+  def next_state(state, informed_neighbors, p):
+      """Return the next state of a cell: S, I or V."""
+      pass
+solution: |
+  def next_state(state, informed_neighbors, p):
+      """Return the next state of a cell: S, I or V."""
+      if state != "S":
+          return state
+      for _ in range(informed_neighbors):
+          if random.random() < p:
+              return "I"
+      return "S"
+tests:
+  visible:
+    - call: next_state("I", 0, 0.5)
+      expected: "'I'"
+    - call: next_state("S", 0, 1.0)
+      expected: "'S'"
+  hidden:
+    - call: next_state("V", 4, 1.0)
+      expected: "'V'"
+      label: "immunisé"
+    - call: next_state("S", 2, 1.0)
+      expected: "'I'"
+  statistical:
+    - expr: "sum(next_state('S', 2, 0.5) == 'I' for _ in range(20000)) / 20000"
+      approx: 0.75
+      tol: 0.015
+      label: "2 voisins, p = 0.5 → 1 - 0.5² = 0.75"
+sim:
+  kind: grid
+  params:
+    - {name: vaccinated, label: "part d'immunisés", min: 0, max: 0.9, step: 0.05, default: 0.2}
+    - {name: p, label: "probabilité de transmission", min: 0.05, max: 1, step: 0.05, default: 0.5}
+  driver: |
+    import random
+    random.seed(7)
+    N = 30
+    grid = [["V" if random.random() < vaccinated else "S" for _ in range(N)] for _ in range(N)]
+    grid[N // 2][N // 2] = "I"
+    frames = [[row[:] for row in grid]]
+    for _ in range(40):
+        new = []
+        for y in range(N):
+            row = []
+            for x in range(N):
+                k = 0
+                for dx, dy in [(0, -1), (0, 1), (-1, 0), (1, 0)]:
+                    nx, ny = x + dx, y + dy
+                    if 0 <= nx < N and 0 <= ny < N and grid[ny][nx] == "I":
+                        k += 1
+                row.append(next_state(grid[y][x], k, p))
+            new.append(row)
+        grid = new
+        frames.append([r[:] for r in grid])
+  question:
+    q: "Avec p = 0.5, à partir de quelle part d'immunisés la rumeur ne touche-t-elle presque plus personne ?"
+    choices: ["environ 10 %", "environ 50 %", "environ 85 %", "jamais"]
+    answer: 1
+    explain: "Au-delà d'environ la moitié d'immunisés, les chemins entre informés se coupent : c'est l'idée de l'immunité collective."
+hints:
+  - "Les états autres que S ne changent pas."
+  - "Pour chaque voisin informé, un tirage indépendant ; un seul succès suffit."
+  - "`for _ in range(informed_neighbors): if random.random() < p: return \"I\"`"
+explanation_md: "Avec k voisins informés, la probabilité d'être informé vaut 1 − (1 − p)^k. La percolation explique le seuil observé."

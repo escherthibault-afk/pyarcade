@@ -1,0 +1,46 @@
+id: w7-l07
+world: 7
+type: code_fill
+title: "Les voisins, sans sortir du plateau"
+concepts: [grilles, voisins, bords]
+difficulty: 3
+estimated_minutes: 5
+xp: 45
+story: "Un malade contamine ses voisins du haut, du bas, de gauche et de droite… s'ils existent."
+statement_md: |
+  Renvoie la liste des coordonnées `(x, y)` des **4 voisins** de la case `(x, y)` qui sont **dans la grille**,
+  dans l'ordre : haut, bas, gauche, droite.
+starter_code: |
+  def neighbors4(grid, x, y):
+      """Return the (x, y) coordinates of the up, down, left, right neighbors inside the grid."""
+      pass
+solution: |
+  def neighbors4(grid, x, y):
+      """Return the (x, y) coordinates of the up, down, left, right neighbors inside the grid."""
+      result = []
+      for dx, dy in [(0, -1), (0, 1), (-1, 0), (1, 0)]:
+          nx = x + dx
+          ny = y + dy
+          if 0 <= ny < len(grid) and 0 <= nx < len(grid[0]):
+              result.append((nx, ny))
+      return result
+tests:
+  visible:
+    - call: neighbors4([[0] * 3 for _ in range(3)], 1, 1)
+      expected: "[(1, 0), (1, 2), (0, 1), (2, 1)]"
+  hidden:
+    - call: neighbors4([[0] * 3 for _ in range(3)], 0, 0)
+      expected: "[(0, 1), (1, 0)]"
+      label: "coin haut-gauche (pas d'indice -1 !)"
+    - call: neighbors4([[0] * 4 for _ in range(2)], 3, 1)
+      expected: "[(3, 0), (2, 1)]"
+      label: "coin bas-droit, grille rectangulaire"
+    - call: neighbors4([[0]], 0, 0)
+      expected: "[]"
+      label: "grille 1×1"
+hints:
+  - "Une liste des 4 décalages `(dx, dy)`."
+  - "Pour chaque décalage, vérifie `0 <= ny < hauteur` et `0 <= nx < largeur`."
+  - "Haut = `(0, -1)` car y augmente vers le bas."
+explanation_md: "Le test de bornes est indispensable : `grid[-1][x]` ne plante pas, il lit la **dernière** ligne ! Le bug passerait inaperçu."
+exam_tip: "Teste toujours les 4 coins et une grille 1×1."

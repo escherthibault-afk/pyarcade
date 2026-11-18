@@ -1,0 +1,30 @@
+id: w8-l02
+world: 8
+type: predict_output
+title: "Opérations sur les dicts"
+concepts: [dict, get, items, in]
+difficulty: 2
+estimated_minutes: 2
+xp: 25
+story: "Lis vite : clés, valeurs, présence."
+statement_md: "Qu'affiche ce programme ?"
+code: |
+  stock = {"pomme": 3, "poire": 0}
+  stock["kiwi"] = 5
+  stock["pomme"] += 1
+  print(len(stock))
+  print(stock.get("banane", -1))
+  print("poire" in stock, 3 in stock)
+  for k, v in stock.items():
+      if v > 0:
+          print(k, v)
+answer: |
+  3
+  -1
+  True False
+  pomme 4
+  kiwi 5
+hints:
+  - "`in` teste les clés, pas les valeurs."
+  - "L'ordre d'insertion est conservé."
+  - "La poire (0) n'est pas affichée."

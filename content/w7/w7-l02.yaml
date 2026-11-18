@@ -1,0 +1,32 @@
+id: w7-l02
+world: 7
+type: predict_output
+title: "Le piège [[0] * 3] * 3"
+concepts: [grilles, alias, mutabilite]
+difficulty: 3
+estimated_minutes: 3
+xp: 35
+story: "On modifie une case… et toute une colonne change. Sorcellerie ? Non : aliasing."
+statement_md: "Qu'affiche ce programme ?"
+code: |
+  bad = [[0] * 3] * 3
+  bad[0][0] = 1
+  print(bad)
+  good = [[0] * 3 for _ in range(3)]
+  good[0][0] = 1
+  print(good)
+  print(bad[0] is bad[1], good[0] is good[1])
+answer: |
+  [[1, 0, 0], [1, 0, 0], [1, 0, 0]]
+  [[1, 0, 0], [0, 0, 0], [0, 0, 0]]
+  True False
+hints:
+  - "`* 3` sur une liste de listes copie la **référence** de la ligne, pas la ligne."
+  - "Dans `bad`, les trois lignes sont le même objet."
+  - "La compréhension crée une nouvelle ligne à chaque tour."
+explanation_md: "`[[0] * 3] * 3` contient trois fois LA MÊME liste. La compréhension `[[0] * 3 for _ in range(3)]` en crée trois différentes."
+exam_tip: "Pour créer une grille : TOUJOURS `[[v] * w for _ in range(h)]` (ou deux boucles). Jamais `[[v] * w] * h`."
+card:
+  title: "Créer une grille sans piège"
+  body_md: |
+    ✅ `[[0] * w for _ in range(h)]`   ❌ `[[0] * w] * h` (h fois la même ligne !)

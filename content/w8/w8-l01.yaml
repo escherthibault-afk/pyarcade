@@ -1,0 +1,40 @@
+id: w8-l01
+world: 8
+type: lesson
+title: "Le dictionnaire : une fiche"
+concepts: [dict, cle, valeur]
+difficulty: 1
+estimated_minutes: 2
+xp: 15
+story: "Une case de l'épidémie a un état ET un nombre de jours de maladie. Une fiche avec des champs nommés : un dict."
+statement_md: |
+  ```python
+  cell = {"state": "S", "sick_days": 0}   # clé → valeur
+  cell["state"]            # "S"
+  cell["state"] = "I"      # modifier
+  cell["age"] = 30         # ajouter une clé
+  "age" in cell            # True (teste les CLÉS)
+  cell.get("vaccin", False)  # valeur par défaut si la clé manque
+  for key, value in cell.items():
+      print(key, value)
+  ```
+example_code: |
+  cell = {"state": "S", "sick_days": 0}
+  cell["state"] = "I"
+  print(cell)
+task_md: "Fais tomber la case malade **depuis 3 jours** : `sick_days` doit valoir 3. Affichage attendu : `{'state': 'I', 'sick_days': 3}`."
+expected_output: "{'state': 'I', 'sick_days': 3}\n"
+solution: |
+  cell = {"state": "S", "sick_days": 0}
+  cell["state"] = "I"
+  cell["sick_days"] = 3
+  print(cell)
+hints:
+  - "Une ligne d'affectation de plus."
+  - "`cell[\"sick_days\"] = ...`"
+  - "`cell[\"sick_days\"] = 3`"
+card:
+  title: "Dictionnaires"
+  body_md: |
+    `d[k]` (KeyError si absente) · `d.get(k, défaut)` · `k in d` · `d[k] = v` · `for k, v in d.items():`.
+    Compter : `d[x] = d.get(x, 0) + 1`. Un dict = une fiche (record) ou une table de correspondance.

@@ -1,0 +1,33 @@
+id: w7-l10
+world: 7
+type: code_fill
+title: "Retourner chaque ligne"
+concepts: [grilles, slicing, pure]
+difficulty: 2
+estimated_minutes: 3
+xp: 30
+story: "Déplacer à droite = retourner, déplacer à gauche, retourner. Il faut savoir retourner."
+statement_md: "Renvoie une **nouvelle** grille où chaque ligne est inversée. Ne modifie pas `grid`."
+starter_code: |
+  def reverse_grid_rows(grid):
+      """Return a new grid with every row reversed."""
+      pass
+solution: |
+  def reverse_grid_rows(grid):
+      """Return a new grid with every row reversed."""
+      return [row[::-1] for row in grid]
+tests:
+  visible:
+    - call: reverse_grid_rows([[1, 2, 3], [4, 5, 6]])
+      expected: "[[3, 2, 1], [6, 5, 4]]"
+  hidden:
+    - call: reverse_grid_rows([])
+      expected: "[]"
+    - call: reverse_grid_rows([[1, 2], [3, 4]])
+      pure: true
+      expected: "[[2, 1], [4, 3]]"
+      label: "pas de modification en place (pas de .reverse() sur les lignes d'origine)"
+hints:
+  - "`row[::-1]` crée une nouvelle ligne à l'envers."
+  - "Une compréhension sur les lignes."
+  - "`[row[::-1] for row in grid]`"
