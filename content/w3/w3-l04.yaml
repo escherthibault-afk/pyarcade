@@ -1,0 +1,44 @@
+id: w3-l04
+world: 3
+type: bug_hunt
+title: "La pièce de chance inversée"
+concepts: [random, probabilite, bug]
+difficulty: 2
+estimated_minutes: 3
+xp: 30
+story: "Cette fonction devait réussir 20 % du temps. Elle réussit 80 % du temps. Les joueurs adorent, le patron moins."
+statement_md: "`lucky(p)` doit renvoyer `True` avec une probabilité `p`. **1 bug**."
+starter_code: |
+  import random
+
+
+  def lucky(p):
+      """Return True with probability p."""
+      return random.random() > p
+solution: |
+  import random
+
+
+  def lucky(p):
+      """Return True with probability p."""
+      return random.random() < p
+bugs: 1
+tests:
+  visible:
+    - call: "any(lucky(0) for _ in range(5000))"
+      expected: "False"
+      label: "p = 0 : jamais"
+  hidden:
+    - call: "all(lucky(1) for _ in range(5000))"
+      expected: "True"
+      label: "p = 1 : toujours"
+  statistical:
+    - expr: "sum(lucky(0.2) for _ in range(20000)) / 20000"
+      approx: 0.2
+      tol: 0.015
+hints:
+  - "`random.random()` est uniforme dans [0, 1[ : quelle est la probabilité qu'il soit inférieur à 0.2 ?"
+  - "Le sens de la comparaison est inversé."
+  - "`return random.random() < p`"
+explanation_md: "P(random() < p) = p, car random() est uniforme sur [0, 1[. C'est LA façon de simuler un événement de probabilité p (TP Tennis !)."
+exam_tip: "Un point de tennis gagné avec probabilité p : `random.random() < p`. À connaître par cœur."

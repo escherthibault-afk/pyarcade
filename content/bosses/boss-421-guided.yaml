@@ -1,0 +1,493 @@
+id: boss-421-guided
+world: 3
+type: boss
+variant: guided
+project: dice421
+title: "🎲 Boss 421"
+concepts: [random, tuple, if, bool, flottants]
+difficulty: 4
+estimated_minutes: 50
+xp: 400
+min_stars: 25
+live_game: dice421
+statement_md: "Le jeu de dés du café, en 12 fonctions. À la fin, tu joues contre l'ordinateur avec ton code."
+intro_md: |
+  ## Le 421 de l'arcade (règles maison)
+
+  On lance **3 dés**. On les range toujours **du plus grand au plus petit** : un lancer est un tuple trié `(a, b, c)` avec `a >= b >= c`.
+  Chaque combinaison vaut un nombre de **jetons** :
+
+  | combinaison | exemple | jetons |
+  |---|---|---|
+  | **421** | `(4, 2, 1)` | 10 |
+  | **trois as** | `(1, 1, 1)` | 7 |
+  | **fiche** : deux as + un autre dé x | `(6, 1, 1)` | x |
+  | **brelan** de x (x ≥ 2) | `(5, 5, 5)` | x |
+  | **suite** : trois valeurs consécutives | `(6, 5, 4)`, `(3, 2, 1)` | 2 |
+  | **rien** | `(6, 3, 2)` | 1 |
+
+  Si une combinaison correspond à plusieurs lignes, on prend **la première** du tableau (`(4, 2, 1)` est un 421, pas une suite).
+
+  **L'astuce du classement** : au lieu d'un nid de `if` pour comparer deux lancers, on donne à chaque lancer
+  **une seule valeur numérique** : `jetons + abc / 1000`. `(6, 3, 2)` vaut `1 + 0.632 = 1.632`… que Python affiche `1.6320000000000001` 😱.
+  Le plus grand nombre gagne, et les décimales départagent deux lancers de même catégorie.
+
+  Pendant un tour, on peut **garder** certains dés et relancer les autres (phase 1).
+header_code: |
+  import random
+steps:
+  - fn: roll_die
+    title: "un dé"
+    statement_md: "Renvoie un entier entre 1 et 6 inclus."
+    starter_code: |
+      def roll_die():
+          """Return a random integer between 1 and 6."""
+          pass
+    solution: |
+      def roll_die():
+          """Return a random integer between 1 and 6."""
+          return random.randint(1, 6)
+    tests:
+      visible:
+        - call: "all(1 <= roll_die() <= 6 for _ in range(1000))"
+          expected: "True"
+      hidden:
+        - call: "{roll_die() for _ in range(3000)} == {1, 2, 3, 4, 5, 6}"
+          expected: "True"
+          label: "le 6 sort aussi"
+      statistical:
+        - expr: "sum(roll_die() == 6 for _ in range(30000)) / 30000"
+          approx: 0.1667
+          tol: 0.012
+    hints:
+      - "`random` est importé."
+      - "`randint` : bornes incluses."
+      - "`return random.randint(1, 6)`"
+    points: 0.5
+  - fn: sort_dice
+    title: "ranger trois dés"
+    statement_md: "Renvoie le tuple trié par ordre décroissant, **sans** `sorted`, `sort`, `max` ni `min`."
+    starter_code: |
+      def sort_dice(a, b, c):
+          """Return (a, b, c) sorted in decreasing order."""
+          pass
+    solution: |
+      def sort_dice(a, b, c):
+          """Return (a, b, c) sorted in decreasing order."""
+          if a < b:
+              a, b = b, a
+          if b < c:
+              b, c = c, b
+          if a < b:
+              a, b = b, a
+          return (a, b, c)
+    tests:
+      visible:
+        - call: sort_dice(2, 4, 1)
+          expected: "(4, 2, 1)"
+      hidden:
+        - call: sort_dice(1, 2, 4)
+          expected: "(4, 2, 1)"
+        - call: sort_dice(1, 6, 1)
+          expected: "(6, 1, 1)"
+          label: "doublon"
+        - call: sort_dice(5, 5, 6)
+          expected: "(6, 5, 5)"
+        - call: sort_dice(3, 1, 2)
+          expected: "(3, 2, 1)"
+    constraints:
+      forbidden: ["call:sorted", "method:sort", "call:max", "call:min"]
+    hints:
+      - "Trois comparaisons-échanges."
+      - "`a, b = b, a` échange deux variables."
+      - "(a, b), puis (b, c), puis à nouveau (a, b)."
+    points: 1.5
+  - fn: throw_dice
+    title: "le lancer"
+    statement_md: "Lance trois dés et renvoie le tuple **trié** (utilise `roll_die` et `sort_dice`)."
+    starter_code: |
+      def throw_dice():
+          """Return a sorted tuple of three random dice."""
+          pass
+    solution: |
+      def throw_dice():
+          """Return a sorted tuple of three random dice."""
+          return sort_dice(roll_die(), roll_die(), roll_die())
+    tests:
+      visible:
+        - call: "all(len(t) == 3 and t[0] >= t[1] >= t[2] for t in [throw_dice() for _ in range(500)])"
+          expected: "True"
+      hidden:
+        - call: "type(throw_dice()).__name__"
+          expected: "'tuple'"
+      statistical:
+        - expr: "sum(throw_dice() == (4, 2, 1) for _ in range(30000)) / 30000"
+          approx: 0.0278
+          tol: 0.004
+          label: "421 ≈ 6/216"
+    hints:
+      - "Trois appels à `roll_die()`, passés à `sort_dice`."
+      - "`sort_dice` renvoie déjà un tuple."
+      - "`return sort_dice(roll_die(), roll_die(), roll_die())`"
+    points: 1
+  - fn: are_421
+    title: "421 ?"
+    statement_md: "`dice` est trié. `True` si c'est `(4, 2, 1)`."
+    starter_code: |
+      def are_421(dice):
+          """Return True if the sorted dice are 4, 2, 1."""
+          pass
+    solution: |
+      def are_421(dice):
+          """Return True if the sorted dice are 4, 2, 1."""
+          return dice == (4, 2, 1)
+    tests:
+      visible:
+        - call: are_421((4, 2, 1))
+          expected: "True"
+      hidden:
+        - call: are_421((4, 2, 2))
+          expected: "False"
+        - call: are_421((3, 2, 1))
+          expected: "False"
+    hints:
+      - "Les tuples se comparent avec `==`."
+      - "Une seule comparaison."
+      - "`return dice == (4, 2, 1)`"
+    points: 0.5
+  - fn: are_three_aces
+    title: "trois as ?"
+    statement_md: "`True` si les trois dés valent 1."
+    starter_code: |
+      def are_three_aces(dice):
+          """Return True if the three dice are 1."""
+          pass
+    solution: |
+      def are_three_aces(dice):
+          """Return True if the three dice are 1."""
+          return dice == (1, 1, 1)
+    tests:
+      visible:
+        - call: are_three_aces((1, 1, 1))
+          expected: "True"
+      hidden:
+        - call: are_three_aces((2, 1, 1))
+          expected: "False"
+    hints:
+      - "Même idée que `are_421`."
+      - "`(1, 1, 1)`"
+      - "`return dice == (1, 1, 1)`"
+    points: 0.5
+  - fn: are_two_aces
+    title: "une fiche ?"
+    statement_md: "`True` si exactement **deux** dés valent 1 (le troisième est plus grand). Avec un tuple trié : `(x, 1, 1)` avec `x > 1`."
+    starter_code: |
+      def are_two_aces(dice):
+          """Return True if exactly two dice are aces."""
+          pass
+    solution: |
+      def are_two_aces(dice):
+          """Return True if exactly two dice are aces."""
+          return dice[1] == 1 and dice[2] == 1 and dice[0] > 1
+    tests:
+      visible:
+        - call: are_two_aces((6, 1, 1))
+          expected: "True"
+      hidden:
+        - call: are_two_aces((1, 1, 1))
+          expected: "False"
+          label: "trois as, pas deux"
+        - call: are_two_aces((2, 1, 1))
+          expected: "True"
+        - call: are_two_aces((5, 2, 1))
+          expected: "False"
+    hints:
+      - "Le tuple est trié : les as sont à la fin."
+      - "Les deux derniers valent 1 et le premier n'est pas un as."
+      - "`return dice[1] == 1 and dice[2] == 1 and dice[0] > 1`"
+    points: 1
+  - fn: are_three_of_a_kind
+    title: "brelan ?"
+    statement_md: "`True` si les trois dés sont égaux **et différents de 1** (trois as est une autre catégorie)."
+    starter_code: |
+      def are_three_of_a_kind(dice):
+          """Return True if the three dice are equal and not aces."""
+          pass
+    solution: |
+      def are_three_of_a_kind(dice):
+          """Return True if the three dice are equal and not aces."""
+          return dice[0] == dice[1] == dice[2] and dice[0] != 1
+    tests:
+      visible:
+        - call: are_three_of_a_kind((5, 5, 5))
+          expected: "True"
+      hidden:
+        - call: are_three_of_a_kind((1, 1, 1))
+          expected: "False"
+          label: "trois as"
+        - call: are_three_of_a_kind((5, 5, 4))
+          expected: "False"
+    hints:
+      - "Comparaison chaînée."
+      - "Exclure le cas des as."
+      - "`dice[0] == dice[1] == dice[2] and dice[0] != 1`"
+    points: 1
+  - fn: are_straight
+    title: "une suite ?"
+    statement_md: "`True` si les trois valeurs sont consécutives (tuple trié : `a == b + 1 == c + 2`)."
+    starter_code: |
+      def are_straight(dice):
+          """Return True if the three dice are consecutive values."""
+          pass
+    solution: |
+      def are_straight(dice):
+          """Return True if the three dice are consecutive values."""
+          a, b, c = dice
+          return a == b + 1 and b == c + 1
+    tests:
+      visible:
+        - call: are_straight((6, 5, 4))
+          expected: "True"
+      hidden:
+        - call: are_straight((3, 2, 1))
+          expected: "True"
+        - call: are_straight((6, 5, 3))
+          expected: "False"
+        - call: are_straight((4, 4, 3))
+          expected: "False"
+    hints:
+      - "Déballe le tuple : `a, b, c = dice`."
+      - "Chaque dé vaut le suivant + 1."
+      - "`return a == b + 1 and b == c + 1`"
+    points: 1
+  - fn: combination_chips
+    title: "les jetons"
+    statement_md: "Renvoie le nombre de jetons du lancer trié, en respectant **l'ordre de priorité** du tableau."
+    starter_code: |
+      def combination_chips(dice):
+          """Return the number of chips of the sorted dice."""
+          pass
+    solution: |
+      def combination_chips(dice):
+          """Return the number of chips of the sorted dice."""
+          if are_421(dice):
+              return 10
+          elif are_three_aces(dice):
+              return 7
+          elif are_two_aces(dice):
+              return dice[0]
+          elif are_three_of_a_kind(dice):
+              return dice[0]
+          elif are_straight(dice):
+              return 2
+          else:
+              return 1
+    tests:
+      visible:
+        - call: combination_chips((4, 2, 1))
+          expected: "10"
+        - call: combination_chips((6, 3, 2))
+          expected: "1"
+      hidden:
+        - call: combination_chips((1, 1, 1))
+          expected: "7"
+        - call: combination_chips((6, 1, 1))
+          expected: "6"
+        - call: combination_chips((2, 1, 1))
+          expected: "2"
+        - call: combination_chips((5, 5, 5))
+          expected: "5"
+        - call: combination_chips((3, 2, 1))
+          expected: "2"
+          label: "suite 3-2-1"
+        - call: combination_chips((6, 6, 1))
+          expected: "1"
+    hints:
+      - "Une cascade `if/elif` dans l'ordre du tableau."
+      - "Réutilise les fonctions `are_...`."
+      - "Fiche et brelan valent `dice[0]` jetons."
+    points: 2
+  - fn: combination_name
+    title: "le nom"
+    statement_md: |
+      Renvoie `"421"`, `"trois as"`, `"fiche de X"`, `"brelan de X"`, `"suite"` ou `"rien"` (X = valeur du dé concerné).
+    starter_code: |
+      def combination_name(dice):
+          """Return the name of the combination of the sorted dice."""
+          pass
+    solution: |
+      def combination_name(dice):
+          """Return the name of the combination of the sorted dice."""
+          if are_421(dice):
+              return "421"
+          elif are_three_aces(dice):
+              return "trois as"
+          elif are_two_aces(dice):
+              return f"fiche de {dice[0]}"
+          elif are_three_of_a_kind(dice):
+              return f"brelan de {dice[0]}"
+          elif are_straight(dice):
+              return "suite"
+          else:
+              return "rien"
+    tests:
+      visible:
+        - call: combination_name((6, 1, 1))
+          expected: "'fiche de 6'"
+      hidden:
+        - call: combination_name((4, 2, 1))
+          expected: "'421'"
+        - call: combination_name((3, 3, 3))
+          expected: "'brelan de 3'"
+        - call: combination_name((5, 4, 3))
+          expected: "'suite'"
+        - call: combination_name((1, 1, 1))
+          expected: "'trois as'"
+        - call: combination_name((6, 4, 1))
+          expected: "'rien'"
+    hints:
+      - "Même cascade que `combination_chips`."
+      - "Une f-string pour « fiche de X » et « brelan de X »."
+      - "`f\"brelan de {dice[0]}\"`"
+    points: 1.5
+  - fn: combination_value
+    title: "une valeur pour tout classer"
+    statement_md: |
+      Renvoie `jetons + (100*a + 10*b + c) / 1000`. Exemple : `(6, 3, 2)` → `1.632` (affiché `1.6320000000000001` : c'est normal !).
+      Les tests comparent avec une tolérance ; pour l'affichage, utilise `round(x, 3)`.
+    starter_code: |
+      def combination_value(dice):
+          """Return chips + abc / 1000, a single number to rank throws."""
+          pass
+    solution: |
+      def combination_value(dice):
+          """Return chips + abc / 1000, a single number to rank throws."""
+          a, b, c = dice
+          return combination_chips(dice) + (100 * a + 10 * b + c) / 1000
+    tests:
+      visible:
+        - call: combination_value((6, 3, 2))
+          expected: "1.632"
+      hidden:
+        - call: combination_value((4, 2, 1))
+          expected: "10.421"
+        - call: round(combination_value((5, 3, 1)), 3)
+          expected: "1.531"
+          label: "piège du flottant"
+        - call: combination_value((6, 1, 1)) > combination_value((5, 5, 5))
+          expected: "True"
+          label: "fiche de 6 > brelan de 5"
+        - call: combination_value((6, 5, 4)) > combination_value((3, 2, 1))
+          expected: "True"
+    hints:
+      - "Les jetons donnent la partie entière, les dés la partie décimale."
+      - "`(100 * a + 10 * b + c) / 1000` vaut 0.632 pour (6, 3, 2)."
+      - "`return combination_chips(dice) + (100 * a + 10 * b + c) / 1000`"
+    points: 2
+  - fn: best_player
+    title: "qui gagne ?"
+    statement_md: "Les deux lancers **ne sont pas forcément triés**. Renvoie `1` ou `2` (le meilleur), ou `0` en cas d'égalité."
+    starter_code: |
+      def best_player(dice1, dice2):
+          """Return 1 or 2 for the best throw, 0 for a tie."""
+          pass
+    solution: |
+      def best_player(dice1, dice2):
+          """Return 1 or 2 for the best throw, 0 for a tie."""
+          v1 = combination_value(sort_dice(dice1[0], dice1[1], dice1[2]))
+          v2 = combination_value(sort_dice(dice2[0], dice2[1], dice2[2]))
+          if v1 > v2:
+              return 1
+          elif v2 > v1:
+              return 2
+          return 0
+    tests:
+      visible:
+        - call: best_player((1, 2, 4), (6, 6, 6))
+          expected: "1"
+      hidden:
+        - call: best_player((6, 3, 2), (2, 3, 6))
+          expected: "0"
+          label: "égalité (ordre différent)"
+        - call: best_player((5, 5, 5), (1, 1, 6))
+          expected: "2"
+        - call: best_player((6, 4, 3), (6, 5, 2))
+          expected: "2"
+          label: "départage par les décimales"
+    hints:
+      - "Trie chaque lancer, puis compare leurs valeurs."
+      - "Le même lancer dans un autre ordre donne exactement la même valeur."
+      - "Trois cas : >, <, égal."
+    points: 2
+  - fn: play_turn_phase1
+    title: "garder et relancer"
+    statement_md: |
+      `keep` est un tuple de 3 booléens : `keep[i]` vaut `True` si on garde `dice[i]`. Relance (avec `roll_die`)
+      chaque dé non gardé et renvoie le nouveau lancer **trié**.
+    starter_code: |
+      def play_turn_phase1(dice, keep):
+          """Re-roll the dice that are not kept and return the new sorted throw."""
+          pass
+    solution: |
+      def play_turn_phase1(dice, keep):
+          """Re-roll the dice that are not kept and return the new sorted throw."""
+          a, b, c = dice
+          if not keep[0]:
+              a = roll_die()
+          if not keep[1]:
+              b = roll_die()
+          if not keep[2]:
+              c = roll_die()
+          return sort_dice(a, b, c)
+    tests:
+      visible:
+        - call: play_turn_phase1((1, 2, 4), (True, True, True))
+          expected: "(4, 2, 1)"
+          label: "tout garder"
+      hidden:
+        - call: "play_turn_phase1((6, 6, 1), (True, True, False))[:2]"
+          expected: "(6, 6)"
+        - call: "all(play_turn_phase1((5, 5, 5), (False, False, False)) != None for _ in range(10))"
+          expected: "True"
+      statistical:
+        - expr: "sum(play_turn_phase1((6, 6, 2), (True, True, False)) == (6, 6, 6) for _ in range(30000)) / 30000"
+          approx: 0.1667
+          tol: 0.012
+          label: "relancer un seul dé"
+    hints:
+      - "Déballe le tuple, relance chaque dé non gardé, puis trie."
+      - "`if not keep[0]: a = roll_die()`"
+      - "Termine par `return sort_dice(a, b, c)`."
+    points: 2
+  - fn: simulate_421
+    title: "Monte Carlo"
+    statement_md: "Lance `n` fois les dés (`throw_dice`) et renvoie la **fréquence** des 421 (nombre de 421 / n)."
+    starter_code: |
+      def simulate_421(n):
+          """Return the observed frequency of 421 over n throws."""
+          pass
+    solution: |
+      def simulate_421(n):
+          """Return the observed frequency of 421 over n throws."""
+          count = 0
+          for _ in range(n):
+              if are_421(throw_dice()):
+                  count += 1
+          return count / n
+    tests:
+      visible:
+        - call: "0 <= simulate_421(100) <= 1"
+          expected: "True"
+      hidden:
+        - call: "type(simulate_421(10)).__name__"
+          expected: "'float'"
+      statistical:
+        - expr: "simulate_421(30000)"
+          approx: 0.0278
+          tol: 0.004
+          label: "≈ 6/216"
+    hints:
+      - "Un compteur, une boucle `for _ in range(n):`."
+      - "Dans la boucle : `if are_421(throw_dice()): count += 1`."
+      - "Après la boucle : `return count / n`."
+    points: 1.5

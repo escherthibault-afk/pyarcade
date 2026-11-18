@@ -1,0 +1,42 @@
+id: w2-l12
+world: 2
+type: bug_hunt
+title: "Le panier qui se souvient"
+concepts: [defaut_mutable, listes, bug]
+difficulty: 3
+estimated_minutes: 4
+xp: 40
+story: "Chaque nouveau client trouve dans son panier les achats du client précédent. Étrange…"
+statement_md: |
+  `add_item(item, basket=None)` ajoute `item` au panier et renvoie le panier. Sans panier donné, on part d'un **nouveau** panier vide.
+  Le code utilise une valeur par défaut **mutable** : c'est le bug (1 bug, 2 vies).
+starter_code: |
+  def add_item(item, basket=[]):
+      """Add item to basket (a new empty basket if none is given) and return it."""
+      basket.append(item)
+      return basket
+solution: |
+  def add_item(item, basket=None):
+      """Add item to basket (a new empty basket if none is given) and return it."""
+      if basket is None:
+          basket = []
+      basket.append(item)
+      return basket
+bugs: 1
+tests:
+  visible:
+    - call: add_item("pomme")
+      expected: "['pomme']"
+  hidden:
+    - setup: "add_item('pomme')"
+      call: add_item("poire")
+      expected: "['poire']"
+      label: "deux clients différents"
+    - call: add_item("b", ["a"])
+      expected: "['a', 'b']"
+hints:
+  - "La liste `[]` par défaut est créée UNE seule fois, quand Python lit le `def`."
+  - "Utilise `None` comme valeur par défaut et crée la liste dans la fonction."
+  - "`def add_item(item, basket=None):` puis `if basket is None: basket = []`."
+explanation_md: "Les valeurs par défaut sont évaluées une seule fois. Une liste par défaut est donc **partagée** entre tous les appels."
+exam_tip: "Règle simple : jamais `=[]` ni `={}` dans une signature. Toujours `=None`."

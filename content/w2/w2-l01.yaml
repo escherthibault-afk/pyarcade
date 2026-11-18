@@ -1,0 +1,47 @@
+id: w2-l01
+world: 2
+type: lesson
+title: "return ou print ?"
+concepts: [fonction, return, print]
+difficulty: 1
+estimated_minutes: 2
+xp: 15
+story: "Une fonction qui affiche, c'est un haut-parleur. Une fonction qui renvoie, c'est une machine qui fabrique une pièce qu'on peut réutiliser."
+statement_md: |
+  ```python
+  def double_print(n):
+      print(n * 2)      # affiche, puis renvoie None
+
+  def double(n):
+      return n * 2      # renvoie la valeur : on peut la réutiliser
+
+  x = double(5) + 1     # 11
+  y = double_print(5)   # affiche 10, mais y vaut None !
+  ```
+example_code: |
+  def double_print(n):
+      print(n * 2)
+
+
+  y = double_print(5)
+  print("y vaut", y)
+task_md: "Transforme `double_print` pour qu'elle **renvoie** le double au lieu de l'afficher : le programme doit afficher seulement `y vaut 10`."
+expected_output: "y vaut 10\n"
+solution: |
+  def double_print(n):
+      return n * 2
+
+
+  y = double_print(5)
+  print("y vaut", y)
+hints:
+  - "Remplace `print(...)` par `return ...`."
+  - "Une fonction sans `return` renvoie `None`."
+  - "`return n * 2`"
+card:
+  title: "return vs print"
+  body_md: |
+    `return v` **renvoie** une valeur à celui qui appelle (et arrête la fonction).
+    `print(v)` **affiche** pour l'humain, et la fonction renvoie `None`.
+    Dans un TP : les fonctions **renvoient**, seule la boucle de jeu affiche.
+exam_tip: "Erreur n° 1 des débutants : `print` au lieu de `return`. Le correcteur appelle ta fonction et compare le **résultat**."

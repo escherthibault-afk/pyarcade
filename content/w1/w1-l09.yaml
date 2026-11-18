@@ -1,0 +1,43 @@
+id: w1-l09
+world: 1
+type: code_fill
+title: "Le signe d'un nombre"
+concepts: [if, elif, else, return]
+difficulty: 1
+estimated_minutes: 3
+xp: 25
+story: "Le thermomètre de l'arcade affiche « positif », « négatif » ou « nul ». Encore faut-il le coder."
+statement_md: "Renvoie `\"positif\"`, `\"négatif\"` ou `\"nul\"` selon le signe de `n`."
+starter_code: |
+  def sign(n):
+      """Return "positif", "négatif" or "nul" depending on the sign of n."""
+      pass
+solution: |
+  def sign(n):
+      """Return "positif", "négatif" or "nul" depending on the sign of n."""
+      if n > 0:
+          return "positif"
+      elif n < 0:
+          return "négatif"
+      else:
+          return "nul"
+tests:
+  visible:
+    - call: sign(5)
+      expected: "'positif'"
+    - call: sign(-3)
+      expected: "'négatif'"
+  hidden:
+    - call: sign(0)
+      expected: "'nul'"
+      label: "zéro"
+    - call: sign(-0.5)
+      expected: "'négatif'"
+    - call: sign(0.0)
+      expected: "'nul'"
+hints:
+  - "Trois cas, donc `if`, `elif`, `else`."
+  - "`if n > 0:` … `elif n < 0:` … `else:`"
+  - "Chaque branche fait un `return` de la bonne chaîne."
+explanation_md: "Avec `if/elif/else`, une seule branche s'exécute, et le `else` attrape tout le reste (ici : zéro)."
+exam_tip: "Vérifie que **chaque** branche renvoie quelque chose : une branche sans `return` renvoie `None`."

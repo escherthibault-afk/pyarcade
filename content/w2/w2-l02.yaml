@@ -1,0 +1,32 @@
+id: w2-l02
+world: 2
+type: predict_output
+title: "Où est passé mon résultat ?"
+concepts: [return, print, None]
+difficulty: 2
+estimated_minutes: 2
+xp: 20
+story: "Un classique de DS : qu'affiche ce programme… y compris les None sournois ?"
+statement_md: "Qu'affiche ce programme ?"
+code: |
+  def f(x):
+      print(x + 1)
+
+  def g(x):
+      return x + 1
+
+  a = f(1)
+  b = g(1)
+  print(a)
+  print(b)
+  print(g(g(1)))
+answer: |
+  2
+  None
+  2
+  3
+hints:
+  - "`f(1)` affiche quelque chose **pendant** son appel."
+  - "`f` n'a pas de `return` : `a` vaut `None`."
+  - "`g(g(1))` = `g(2)` = 3."
+explanation_md: "L'appel `f(1)` affiche `2` tout de suite. Ensuite `print(a)` affiche `None`. On peut composer `g(g(1))` parce que `g` renvoie une valeur."

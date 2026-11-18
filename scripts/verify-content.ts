@@ -6,7 +6,8 @@
  * (e) statistical tests pass 20 times in a row with different seeds.
  * Any failure exits with code 1 (blocks CI / the build).
  */
-import { readFileSync, readdirSync, statSync, existsSync } from 'node:fs'
+import { readFileSync, readdirSync, statSync, existsSync, writeFileSync, mkdtempSync, rmSync } from 'node:fs'
+import { tmpdir } from 'node:os'
 import { join, relative, dirname } from 'node:path'
 import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
@@ -188,17 +189,23 @@ for (const level0 of levels) {
 
 const python = existsSync(join(ROOT, '.venv/bin/python')) ? join(ROOT, '.venv/bin/python') : 'python3'
 const t0 = Date.now()
-const proc = spawnSync(python, [join(ROOT, 'scripts/verify_runner.py')], {
-  input: JSON.stringify(jobs),
+const tmp = mkdtempSync(join(tmpdir(), 'pyarcade-verify-'))
+const jobsFile = join(tmp, 'jobs.json')
+const reportFile = join(tmp, 'report.json')
+writeFileSync(jobsFile, JSON.stringify(jobs))
+const proc = spawnSync(python, [join(ROOT, 'scripts/verify_runner.py'), jobsFile, reportFile], {
   encoding: 'utf8',
+  stdio: ['ignore', 'pipe', 'pipe'],
   maxBuffer: 1 << 28,
+  timeout: 15 * 60 * 1000,
 })
 if (proc.status !== 0) {
   console.error(proc.stderr)
   console.error('❌ verify_runner.py crashed')
   process.exit(1)
 }
-const report = JSON.parse(proc.stdout) as Record<string, string[]>
+const report = JSON.parse(readFileSync(reportFile, 'utf8')) as Record<string, string[]>
+rmSync(tmp, { recursive: true, force: true })
 for (const [id, errs] of Object.entries(report)) for (const e of errs) add(id, e)
 
 const nLevels = levels.length

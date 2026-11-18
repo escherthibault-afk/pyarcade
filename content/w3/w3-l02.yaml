@@ -1,0 +1,42 @@
+id: w3-l02
+world: 3
+type: quiz
+title: "QCM éclair : le hasard"
+concepts: [random, randint, probabilite]
+difficulty: 1
+estimated_minutes: 2
+xp: 25
+story: "Le hasard a ses règles. Connais-les."
+statement_md: "10 questions, 60 secondes."
+time_limit: 60
+questions:
+  - q: "`random.randint(1, 6)` peut-il renvoyer 6 ?"
+    choices: ["Oui", "Non"]
+    answer: 0
+  - q: "`random.random()` peut-il renvoyer 1.0 ?"
+    choices: ["Oui", "Non"]
+    answer: 1
+  - q: "Comment simuler un événement qui arrive avec une probabilité de 30 % ?"
+    choices: ["random.random() < 0.3", "random.randint(0, 3) == 0", "random.random() == 0.3", "random.random() > 0.3"]
+    answer: 0
+  - q: "Quelles valeurs peut renvoyer `random.randint(0, 2)` ?"
+    choices: ["0, 1", "0, 1, 2", "1, 2", "0, 1, 2, 3"]
+    answer: 1
+  - q: "À quoi sert `random.seed(42)` ?"
+    choices: ["Rendre les tirages reproductibles", "Tirer 42 nombres", "Rendre le hasard plus aléatoire", "Arrêter random"]
+    answer: 0
+  - q: "On lance 10 fois une pièce et on obtient 7 piles. La pièce est…"
+    choices: ["sûrement truquée", "peut-être normale : 10 lancers, c'est trop peu pour conclure", "forcément normale", "cassée"]
+    answer: 1
+  - q: "Avec un dé équilibré, la fréquence des 6 sur 60 000 lancers sera proche de…"
+    choices: ["1/6 ≈ 0.167", "0.5", "6", "1/60000"]
+    answer: 0
+  - q: "`random.choice(\"\")` …"
+    choices: ["renvoie \"\"", "lève une erreur (séquence vide)", "renvoie None", "renvoie 0"]
+    answer: 1
+  - q: "Probabilité d'avoir deux 6 avec deux dés ?"
+    choices: ["1/6", "1/12", "1/36", "2/6"]
+    answer: 2
+  - q: "`random.uniform(0, 10)` renvoie…"
+    choices: ["un entier", "un float", "une liste", "un booléen"]
+    answer: 1

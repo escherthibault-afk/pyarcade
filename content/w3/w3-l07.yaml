@@ -1,0 +1,43 @@
+id: w3-l07
+world: 3
+type: code_fill
+title: "Jeter trois dés"
+concepts: [random, tuple, return]
+difficulty: 2
+estimated_minutes: 3
+xp: 30
+story: "Le gobelet de l'arcade lance trois dés d'un coup."
+statement_md: "Renvoie un **tuple** de trois lancers de dé indépendants. Utilise `roll_die()` (fournie)."
+given_code: |
+  import random
+
+
+  def roll_die():
+      return random.randint(1, 6)
+starter_code: |
+  def throw_dice():
+      """Return a tuple of three dice values."""
+      pass
+solution: |
+  def throw_dice():
+      """Return a tuple of three dice values."""
+      return (roll_die(), roll_die(), roll_die())
+tests:
+  visible:
+    - call: "type(throw_dice()).__name__"
+      expected: "'tuple'"
+    - call: "len(throw_dice())"
+      expected: "3"
+  hidden:
+    - call: "all(1 <= d <= 6 for t in [throw_dice() for _ in range(500)] for d in t)"
+      expected: "True"
+  statistical:
+    - expr: "sum(len(set(throw_dice())) == 1 for _ in range(30000)) / 30000"
+      approx: 0.0278
+      tol: 0.005
+      label: "trois dés identiques ≈ 1/36"
+hints:
+  - "Appelle `roll_die()` trois fois."
+  - "Un tuple s'écrit entre parenthèses."
+  - "`return (roll_die(), roll_die(), roll_die())`"
+explanation_md: "`(roll_die(),) * 3` serait faux : le même tirage répété trois fois. Chaque appel doit être un tirage indépendant."

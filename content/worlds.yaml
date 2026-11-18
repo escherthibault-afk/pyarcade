@@ -15,7 +15,7 @@ worlds:
     emoji: "🚦"
     color: "#ffc857"
     radar: conditions
-    bosses: []
+    bosses: [boss-videur]
   - id: 2
     title: Fonctions
     title_en: Functions
@@ -30,7 +30,7 @@ worlds:
     emoji: "🎲"
     color: "#ff8fab"
     radar: hasard
-    bosses: []
+    bosses: [boss-421-guided, boss-421-twin-yams, boss-421-exam]
   - id: 4
     title: Boucles
     title_en: Loops

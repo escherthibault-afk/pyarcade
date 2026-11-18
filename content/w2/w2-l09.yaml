@@ -1,0 +1,39 @@
+id: w2-l09
+world: 2
+type: predict_output
+title: "Portée des variables"
+concepts: [portee, locale, globale]
+difficulty: 3
+estimated_minutes: 3
+xp: 30
+story: "Deux variables `x` ? Une dans la fonction, une dehors. Qui gagne ?"
+statement_md: "Qu'affiche ce programme ?"
+code: |
+  x = 10
+
+  def change(x):
+      x = x + 5
+      return x
+
+  def read():
+      return x * 2
+
+  y = change(x)
+  print(x)
+  print(y)
+  print(read())
+answer: |
+  10
+  15
+  20
+hints:
+  - "Le paramètre `x` de `change` est une copie locale de la valeur."
+  - "Affecter `x` dans `change` ne touche pas le `x` global."
+  - "`read` lit le `x` global, toujours 10."
+explanation_md: "Une affectation dans une fonction crée une variable **locale**. Le `x` global reste 10. Une fonction peut **lire** une globale, mais c'est une mauvaise habitude : passe plutôt la valeur en paramètre."
+exam_tip: "Évite les variables globales modifiées par des fonctions : passe les données en paramètres et renvoie le résultat."
+card:
+  title: "Portée (scope)"
+  body_md: |
+    Une variable affectée dans une fonction est **locale**. Lire une variable globale est possible mais déconseillé.
+    `UnboundLocalError` : tu modifies une variable dans la fonction avant de lui avoir donné une valeur locale.

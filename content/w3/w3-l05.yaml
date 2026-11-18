@@ -1,0 +1,44 @@
+id: w3-l05
+world: 3
+type: code_fill
+title: "Une lettre au hasard"
+concepts: [random, choice, str]
+difficulty: 1
+estimated_minutes: 2
+xp: 20
+story: "Le jeu de lettres de l'arcade tire une majuscule au hasard."
+statement_md: "Renvoie une lettre majuscule (A à Z) tirée au hasard."
+starter_code: |
+  import random
+
+  ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+
+  def random_letter():
+      """Return a random uppercase letter."""
+      pass
+solution: |
+  import random
+
+  ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+
+  def random_letter():
+      """Return a random uppercase letter."""
+      return random.choice(ALPHABET)
+tests:
+  visible:
+    - call: "all(c in ALPHABET and len(c) == 1 for c in [random_letter() for _ in range(500)])"
+      expected: "True"
+  hidden:
+    - call: "len({random_letter() for _ in range(3000)})"
+      expected: "26"
+      label: "toutes les lettres possibles"
+  statistical:
+    - expr: "sum(random_letter() == 'A' for _ in range(26000)) / 26000"
+      approx: 0.0385
+      tol: 0.006
+hints:
+  - "`random.choice` marche aussi sur une chaîne."
+  - "La constante `ALPHABET` est déjà définie."
+  - "`return random.choice(ALPHABET)`"

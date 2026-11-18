@@ -48,10 +48,24 @@ def run_suite(code, job, tests, statistical, seeds=None):
     )
 
 
+def flaky_check(code, job, tests):
+    """Random-dependent tests must pass whatever the random state: rerun them with other seeds."""
+    if "random" not in code:
+        return []
+    errors = []
+    for seed in (101, 202, 303):
+        runner.random.seed(seed)
+        again = run_suite(code, job, tests, [], [1])
+        if not again["load"]["error"]:
+            errors += [f"flaky test (random state {seed}): {m}" for m in fail_summary(again["results"])]
+    return errors[:3]
+
+
 def check_code(job):
     errors = []
     tests = job["tests"]
     res = run_suite(job["solution"], job, tests, job.get("statistical", []), STAT_SEEDS)
+    errors += flaky_check(job["solution"] + job.get("given_code", ""), job, tests)
     if res["load"]["error"]:
         e = res["load"]["error"]
         return [f"solution does not load: {e['type']}: {e['message']} (line {e['line']})"]
@@ -78,6 +92,7 @@ def check_boss(job):
     if res["load"]["error"]:
         e = res["load"]["error"]
         return [f"boss solution does not load: {e['type']}: {e['message']} (line {e['line']})"]
+    errors += flaky_check(job["solution"], job, all_tests)
     errors += [f"solution fails: {m}" for m in fail_summary(res["results"])]
     for s in job["steps"]:
         if s.get("constraints"):
@@ -229,7 +244,11 @@ CHECKS = {
 
 
 def main():
-    jobs = json.load(sys.stdin)
+    if len(sys.argv) >= 3:
+        with open(sys.argv[1], encoding="utf-8") as f:
+            jobs = json.load(f)
+    else:
+        jobs = json.load(sys.stdin)
     report = {}
     start = os.getcwd()
     with tempfile.TemporaryDirectory() as tmp:
@@ -244,7 +263,12 @@ def main():
             finally:
                 os.chdir(start)
             report[job["id"]] = errors
-    sys.stdout.write(json.dumps(report, ensure_ascii=False))
+    out = json.dumps(report, ensure_ascii=False)
+    if len(sys.argv) >= 3:
+        with open(sys.argv[2], "w", encoding="utf-8") as f:
+            f.write(out)
+    else:
+        sys.stdout.write(out)
 
 
 if __name__ == "__main__":

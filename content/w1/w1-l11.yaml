@@ -1,0 +1,33 @@
+id: w1-l11
+world: 1
+type: truth_table
+title: "Le jeu est-il fini ?"
+concepts: [bool, and, or, abs, tennis]
+difficulty: 3
+estimated_minutes: 4
+xp: 35
+story: "Au tennis, un jeu se termine quand un joueur a au moins 4 points ET 2 points d'avance. Sinon : avantage !"
+statement_md: |
+  `a` et `b` sont les points gagnés par chaque joueur dans le jeu. Écris la condition « le jeu est terminé ».
+vars: [a, b]
+rows:
+  - {a: 4, b: 0}
+  - {a: 3, b: 3}
+  - {a: 4, b: 3}
+  - {a: 5, b: 3}
+  - {a: 2, b: 4}
+  - {a: 6, b: 5}
+  - {a: 0, b: 0}
+  - {a: 4, b: 2}
+solution: "(a >= 4 or b >= 4) and abs(a - b) >= 2"
+hints:
+  - "Deux conditions : quelqu'un a au moins 4 points ; l'écart est d'au moins 2."
+  - "`abs(a - b)` donne l'écart sans se soucier de qui mène."
+  - "`(a >= 4 or b >= 4) and abs(a - b) >= 2`"
+explanation_md: "Les parenthèses comptent : `and` est prioritaire sur `or`. Sans elles, `a >= 4 or b >= 4 and ...` serait lu `a >= 4 or (b >= 4 and ...)`."
+exam_tip: "Le TP Tennis repose sur cette condition. Teste-la sur 3-3, 4-3, 5-3 et 6-5 : ce sont les cas qui piègent."
+card:
+  title: "Conditions composées"
+  body_md: |
+    `not` > `and` > `or` (priorités). Mets des parenthèses pour être clair.
+    `abs(a - b) >= 2` : écart d'au moins 2, quel que soit le meneur.

@@ -1,0 +1,45 @@
+id: w3-l03
+world: 3
+type: code_fill
+title: "Lancer un dé"
+concepts: [random, randint, fonction]
+difficulty: 1
+estimated_minutes: 3
+xp: 25
+story: "Le premier outil de tout jeu de dés."
+statement_md: "Renvoie un entier au hasard entre 1 et 6 (chaque face a la même chance)."
+given_code: "import random"
+starter_code: |
+  import random
+
+
+  def roll_die():
+      """Return a random integer between 1 and 6 (both included)."""
+      pass
+solution: |
+  import random
+
+
+  def roll_die():
+      """Return a random integer between 1 and 6 (both included)."""
+      return random.randint(1, 6)
+tests:
+  visible:
+    - call: "all(1 <= roll_die() <= 6 for _ in range(2000))"
+      expected: "True"
+  hidden:
+    - call: "{roll_die() for _ in range(3000)} == {1, 2, 3, 4, 5, 6}"
+      expected: "True"
+      label: "toutes les faces sortent (6 compris !)"
+    - call: "type(roll_die()).__name__"
+      expected: "'int'"
+  statistical:
+    - expr: "sum(roll_die() for _ in range(20000)) / 20000"
+      approx: 3.5
+      tol: 0.06
+      label: "moyenne ≈ 3.5"
+hints:
+  - "Le module `random` est importé en haut."
+  - "`randint(a, b)` inclut a et b."
+  - "`return random.randint(1, 6)`"
+explanation_md: "Le test statistique lance 20 000 dés : la moyenne doit être proche de (1+2+…+6)/6 = 3,5."

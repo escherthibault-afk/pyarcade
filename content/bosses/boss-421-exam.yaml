@@ -1,0 +1,300 @@
+id: boss-421-exam
+world: 3
+type: boss
+variant: exam
+project: "dice421:exam"
+title: "🎓 Examen 421 (60 min)"
+concepts: [random, tuple, if, flottants]
+difficulty: 5
+estimated_minutes: 60
+xp: 0
+time_limit_minutes: 60
+statement_md: "Sujet en 60 minutes, sans indice. **Attention, une règle a changé par rapport au boss guidé** : lis le tableau."
+intro_md: |
+  ## Sujet : le 421 (version examen)
+
+  Un lancer est un tuple de 3 dés **trié par ordre décroissant**. Combinaisons, dans l'ordre de priorité :
+
+  | combinaison | exemple | jetons |
+  |---|---|---|
+  | 421 | `(4, 2, 1)` | 10 |
+  | trois as | `(1, 1, 1)` | 7 |
+  | fiche (deux as + x) | `(5, 1, 1)` | x |
+  | brelan de x (x ≥ 2) | `(3, 3, 3)` | x |
+  | suite | `(5, 4, 3)` | 2 |
+  | **nénette** | `(2, 2, 1)` | **0** |
+  | rien | `(6, 4, 1)` | 1 |
+
+  Valeur de classement : `jetons + (100a + 10b + c) / 1000`. Fonctions et signatures imposées ci-dessous.
+header_code: |
+  import random
+steps:
+  - fn: sort_dice
+    title: "trier"
+    statement_md: "Tuple trié décroissant, sans `sorted`/`sort`/`max`/`min`."
+    starter_code: |
+      def sort_dice(a, b, c):
+          """Return (a, b, c) sorted in decreasing order."""
+          pass
+    solution: |
+      def sort_dice(a, b, c):
+          """Return (a, b, c) sorted in decreasing order."""
+          if a < b:
+              a, b = b, a
+          if b < c:
+              b, c = c, b
+          if a < b:
+              a, b = b, a
+          return (a, b, c)
+    tests:
+      visible:
+        - call: sort_dice(1, 4, 2)
+          expected: "(4, 2, 1)"
+      hidden:
+        - call: sort_dice(1, 1, 6)
+          expected: "(6, 1, 1)"
+        - call: sort_dice(2, 3, 1)
+          expected: "(3, 2, 1)"
+        - call: sort_dice(6, 5, 6)
+          expected: "(6, 6, 5)"
+    constraints:
+      forbidden: ["call:sorted", "method:sort", "call:max", "call:min"]
+    points: 2
+  - fn: is_fiche
+    title: "fiche"
+    statement_md: "`True` si exactement deux as."
+    starter_code: |
+      def is_fiche(dice):
+          """Return True if exactly two dice are aces."""
+          pass
+    solution: |
+      def is_fiche(dice):
+          """Return True if exactly two dice are aces."""
+          return dice[1] == 1 and dice[2] == 1 and dice[0] != 1
+    tests:
+      visible:
+        - call: is_fiche((5, 1, 1))
+          expected: "True"
+      hidden:
+        - call: is_fiche((1, 1, 1))
+          expected: "False"
+        - call: is_fiche((5, 2, 1))
+          expected: "False"
+    points: 1
+  - fn: is_brelan
+    title: "brelan"
+    statement_md: "`True` si trois dés égaux différents de 1."
+    starter_code: |
+      def is_brelan(dice):
+          """Return True for three equal dice that are not aces."""
+          pass
+    solution: |
+      def is_brelan(dice):
+          """Return True for three equal dice that are not aces."""
+          return dice[0] == dice[1] == dice[2] != 1
+    tests:
+      visible:
+        - call: is_brelan((3, 3, 3))
+          expected: "True"
+      hidden:
+        - call: is_brelan((1, 1, 1))
+          expected: "False"
+        - call: is_brelan((3, 3, 2))
+          expected: "False"
+    points: 1
+  - fn: is_suite
+    title: "suite"
+    statement_md: "`True` si trois valeurs consécutives."
+    starter_code: |
+      def is_suite(dice):
+          """Return True if the dice are consecutive."""
+          pass
+    solution: |
+      def is_suite(dice):
+          """Return True if the dice are consecutive."""
+          return dice[0] - 1 == dice[1] and dice[1] - 1 == dice[2]
+    tests:
+      visible:
+        - call: is_suite((5, 4, 3))
+          expected: "True"
+      hidden:
+        - call: is_suite((5, 4, 2))
+          expected: "False"
+        - call: is_suite((3, 2, 1))
+          expected: "True"
+    points: 1
+  - fn: is_nenette
+    title: "nénette"
+    statement_md: "`True` si le lancer est `(2, 2, 1)`."
+    starter_code: |
+      def is_nenette(dice):
+          """Return True for 2, 2, 1."""
+          pass
+    solution: |
+      def is_nenette(dice):
+          """Return True for 2, 2, 1."""
+          return dice == (2, 2, 1)
+    tests:
+      visible:
+        - call: is_nenette((2, 2, 1))
+          expected: "True"
+      hidden:
+        - call: is_nenette((2, 1, 1))
+          expected: "False"
+    points: 1
+  - fn: chips
+    title: "jetons"
+    statement_md: "Nombre de jetons selon le tableau (ordre de priorité !)."
+    starter_code: |
+      def chips(dice):
+          """Return the number of chips of the sorted dice."""
+          pass
+    solution: |
+      def chips(dice):
+          """Return the number of chips of the sorted dice."""
+          if dice == (4, 2, 1):
+              return 10
+          if dice == (1, 1, 1):
+              return 7
+          if is_fiche(dice) or is_brelan(dice):
+              return dice[0]
+          if is_suite(dice):
+              return 2
+          if is_nenette(dice):
+              return 0
+          return 1
+    tests:
+      visible:
+        - call: chips((4, 2, 1))
+          expected: "10"
+      hidden:
+        - call: chips((2, 2, 1))
+          expected: "0"
+          label: "nénette"
+        - call: chips((6, 1, 1))
+          expected: "6"
+        - call: chips((4, 4, 4))
+          expected: "4"
+        - call: chips((3, 2, 1))
+          expected: "2"
+        - call: chips((6, 4, 1))
+          expected: "1"
+        - call: chips((1, 1, 1))
+          expected: "7"
+    points: 3
+  - fn: value
+    title: "valeur de classement"
+    statement_md: "`jetons + (100a + 10b + c) / 1000`."
+    starter_code: |
+      def value(dice):
+          """Return the ranking value of the sorted dice."""
+          pass
+    solution: |
+      def value(dice):
+          """Return the ranking value of the sorted dice."""
+          return chips(dice) + (100 * dice[0] + 10 * dice[1] + dice[2]) / 1000
+    tests:
+      visible:
+        - call: value((6, 3, 2))
+          expected: "1.632"
+      hidden:
+        - call: value((2, 2, 1))
+          expected: "0.221"
+        - call: value((2, 2, 1)) < value((3, 2, 1))
+          expected: "True"
+    points: 2
+  - fn: name
+    title: "nom"
+    statement_md: "`\"421\"`, `\"trois as\"`, `\"fiche de X\"`, `\"brelan de X\"`, `\"suite\"`, `\"nénette\"` ou `\"rien\"`."
+    starter_code: |
+      def name(dice):
+          """Return the name of the combination."""
+          pass
+    solution: |
+      def name(dice):
+          """Return the name of the combination."""
+          if dice == (4, 2, 1):
+              return "421"
+          if dice == (1, 1, 1):
+              return "trois as"
+          if is_fiche(dice):
+              return f"fiche de {dice[0]}"
+          if is_brelan(dice):
+              return f"brelan de {dice[0]}"
+          if is_suite(dice):
+              return "suite"
+          if is_nenette(dice):
+              return "nénette"
+          return "rien"
+    tests:
+      visible:
+        - call: name((2, 2, 1))
+          expected: "'nénette'"
+      hidden:
+        - call: name((5, 1, 1))
+          expected: "'fiche de 5'"
+        - call: name((6, 5, 4))
+          expected: "'suite'"
+        - call: name((6, 6, 1))
+          expected: "'rien'"
+    points: 2
+  - fn: best_index
+    title: "le meilleur lancer d'une liste"
+    statement_md: "`throws` est une liste de lancers **non triés**. Renvoie l'**indice** du meilleur (le premier en cas d'égalité)."
+    starter_code: |
+      def best_index(throws):
+          """Return the index of the best throw (first one on ties)."""
+          pass
+    solution: |
+      def best_index(throws):
+          """Return the index of the best throw (first one on ties)."""
+          best = 0
+          for i in range(1, len(throws)):
+              t = throws[i]
+              b = throws[best]
+              if value(sort_dice(t[0], t[1], t[2])) > value(sort_dice(b[0], b[1], b[2])):
+                  best = i
+          return best
+    tests:
+      visible:
+        - call: best_index([(1, 2, 3), (2, 4, 1), (6, 6, 6)])
+          expected: "1"
+      hidden:
+        - call: best_index([(5, 5, 5)])
+          expected: "0"
+        - call: best_index([(6, 3, 2), (2, 3, 6)])
+          expected: "0"
+          label: "égalité : le premier"
+        - call: best_index([(1, 2, 2), (1, 1, 2)])
+          expected: "1"
+    points: 3
+  - fn: reroll
+    title: "phase 1"
+    statement_md: "Relance les dés non gardés (`keep` : 3 booléens) et renvoie le lancer trié."
+    starter_code: |
+      def reroll(dice, keep):
+          """Re-roll the dice that are not kept, return the sorted throw."""
+          pass
+    solution: |
+      def reroll(dice, keep):
+          """Re-roll the dice that are not kept, return the sorted throw."""
+          values = []
+          for i in range(3):
+              if keep[i]:
+                  values.append(dice[i])
+              else:
+                  values.append(random.randint(1, 6))
+          return sort_dice(values[0], values[1], values[2])
+    tests:
+      visible:
+        - call: reroll((1, 4, 2), (True, True, True))
+          expected: "(4, 2, 1)"
+      hidden:
+        - call: "all(x in reroll((4, 2, 1), (True, True, False)) for x in (4, 2))"
+          expected: "True"
+          label: "les dés gardés restent"
+      statistical:
+        - expr: "sum(reroll((4, 2, 6), (True, True, False)) == (4, 2, 1) for _ in range(30000)) / 30000"
+          approx: 0.1667
+          tol: 0.012
+    points: 4

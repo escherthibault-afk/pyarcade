@@ -1,0 +1,32 @@
+id: w2-l06
+world: 2
+type: parsons
+title: "Deux valeurs d'un coup"
+concepts: [tuple, return, deballage]
+difficulty: 2
+estimated_minutes: 3
+xp: 25
+story: "Une fonction peut renvoyer plusieurs valeurs : elle les emballe dans un tuple."
+statement_md: "`min_max(a, b)` renvoie le tuple `(plus petit, plus grand)`. Une ligne est un leurre."
+lines:
+  - "def min_max(a, b):"
+  - "    if a <= b:"
+  - "        return (a, b)"
+  - "    else:"
+  - "        return (b, a)"
+distractors:
+  - "        return a, b, a"
+tests:
+  visible:
+    - call: min_max(3, 8)
+      expected: "(3, 8)"
+  hidden:
+    - call: min_max(8, 3)
+      expected: "(3, 8)"
+    - call: min_max(5, 5)
+      expected: "(5, 5)"
+hints:
+  - "Deux cas selon l'ordre de a et b."
+  - "On renvoie un tuple entre parenthèses."
+  - "`if a <= b: return (a, b)` sinon `return (b, a)`."
+explanation_md: "À l'appel, on déballe : `lo, hi = min_max(8, 3)` donne `lo = 3`, `hi = 8`."

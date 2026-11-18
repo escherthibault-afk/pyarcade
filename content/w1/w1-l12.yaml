@@ -1,0 +1,41 @@
+id: w1-l12
+world: 1
+type: bug_hunt
+title: "Année bissextile"
+concepts: [modulo, and, or, bug]
+difficulty: 3
+estimated_minutes: 5
+xp: 40
+story: "Le calendrier de l'arcade a oublié le 29 février 2000. Les joueurs nés ce jour-là sont furieux."
+statement_md: |
+  Une année est bissextile si elle est divisible par 4, **sauf** les années divisibles par 100,
+  **sauf** celles divisibles par 400 (qui restent bissextiles). Il y a **2 bugs**.
+starter_code: |
+  def is_leap(year):
+      """Return True if year is a leap year."""
+      return year % 4 == 0 and year % 100 != 0 and year % 400 == 0
+solution: |
+  def is_leap(year):
+      """Return True if year is a leap year."""
+      return (year % 4 == 0 and year % 100 != 0) or year % 400 == 0
+bugs: 2
+tests:
+  visible:
+    - call: is_leap(2024)
+      expected: "True"
+    - call: is_leap(2023)
+      expected: "False"
+  hidden:
+    - call: is_leap(1900)
+      expected: "False"
+      label: "divisible par 100"
+    - call: is_leap(2000)
+      expected: "True"
+      label: "divisible par 400"
+    - call: is_leap(2100)
+      expected: "False"
+hints:
+  - "Teste à la main 2024, 1900 et 2000 avec la condition actuelle."
+  - "La dernière partie (« divisible par 400 ») doit suffire à rendre l'année bissextile : ce n'est pas un `and`."
+  - "`(year % 4 == 0 and year % 100 != 0) or year % 400 == 0`"
+explanation_md: "« sauf… sauf » se traduit par un `or` avec le cas d'exception. `n % k == 0` teste la divisibilité."

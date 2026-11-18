@@ -1,0 +1,28 @@
+id: w3-l06
+world: 3
+type: predict_output
+title: "Trois dés sur la table"
+concepts: [tuple, sorted, count]
+difficulty: 2
+estimated_minutes: 2
+xp: 25
+story: "Les dés sont jetés (enfin, écrits en dur). Prédis tout."
+statement_md: "Qu'affiche ce programme ?"
+code: |
+  dice = (6, 3, 6)
+  print(dice[0] == dice[2])
+  print(sorted(dice))
+  print(sorted(dice, reverse=True))
+  print(max(dice) - min(dice))
+  print(dice.count(6))
+answer: |
+  True
+  [3, 6, 6]
+  [6, 6, 3]
+  3
+  2
+hints:
+  - "`sorted` renvoie toujours une **liste**, même à partir d'un tuple."
+  - "`reverse=True` trie dans l'ordre décroissant."
+  - "`count(6)` compte les 6."
+explanation_md: "`sorted(tuple)` donne une liste. Pour retrouver un tuple : `tuple(sorted(dice))`."

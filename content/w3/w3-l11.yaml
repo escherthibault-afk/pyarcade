@@ -1,0 +1,46 @@
+id: w3-l11
+world: 3
+type: code_fill
+title: "Un événement de probabilité p"
+concepts: [random, probabilite, bool]
+difficulty: 2
+estimated_minutes: 3
+xp: 35
+story: "La brique de base de toutes les simulations : « ça arrive avec une probabilité p »."
+statement_md: "Renvoie `True` avec une probabilité `p` (0 ≤ p ≤ 1), `False` sinon."
+starter_code: |
+  import random
+
+
+  def bernoulli(p):
+      """Return True with probability p."""
+      pass
+solution: |
+  import random
+
+
+  def bernoulli(p):
+      """Return True with probability p."""
+      return random.random() < p
+tests:
+  visible:
+    - call: "type(bernoulli(0.5)).__name__"
+      expected: "'bool'"
+  hidden:
+    - call: "any(bernoulli(0) for _ in range(5000))"
+      expected: "False"
+      label: "p = 0"
+    - call: "all(bernoulli(1) for _ in range(5000))"
+      expected: "True"
+      label: "p = 1"
+  statistical:
+    - expr: "sum(bernoulli(0.3) for _ in range(20000)) / 20000"
+      approx: 0.3
+      tol: 0.015
+    - expr: "sum(bernoulli(0.95) for _ in range(20000)) / 20000"
+      approx: 0.95
+      tol: 0.01
+hints:
+  - "`random.random()` est uniforme dans [0, 1[."
+  - "La probabilité que `random.random() < p` vaut exactement p."
+  - "`return random.random() < p`"

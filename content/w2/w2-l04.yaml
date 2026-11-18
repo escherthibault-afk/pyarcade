@@ -1,0 +1,45 @@
+id: w2-l04
+world: 2
+type: bug_hunt
+title: "La valeur absolue fantôme"
+concepts: [return, None, bug]
+difficulty: 2
+estimated_minutes: 3
+xp: 30
+story: "Cette fonction marche… une fois sur deux. L'autre fois, elle renvoie un fantôme : None."
+statement_md: "`absolute(n)` doit renvoyer la valeur absolue de `n` (sans utiliser `abs`). Il y a **2 bugs**."
+starter_code: |
+  def absolute(n):
+      """Return the absolute value of n (without abs)."""
+      if n < 0:
+          return -n
+      elif n > 0:
+          print(n)
+solution: |
+  def absolute(n):
+      """Return the absolute value of n (without abs)."""
+      if n < 0:
+          return -n
+      else:
+          return n
+bugs: 2
+tests:
+  visible:
+    - call: absolute(-4)
+      expected: "4"
+    - call: absolute(7)
+      expected: "7"
+  hidden:
+    - call: absolute(0)
+      expected: "0"
+      label: "zéro"
+    - call: absolute(-2.5)
+      expected: "2.5"
+constraints:
+  forbidden: ["call:abs"]
+hints:
+  - "Que renvoie la fonction quand `n > 0` ? Et quand `n == 0` ?"
+  - "Il manque un `return` et un cas n'est jamais traité."
+  - "Remplace `elif n > 0: print(n)` par `else: return n`."
+explanation_md: "Chaque chemin dans la fonction doit mener à un `return`. Un `if/else` (plutôt que `if/elif`) garantit qu'aucun cas n'est oublié."
+exam_tip: "Pour chaque fonction, demande-toi : « et si n vaut 0 ? et si la liste est vide ? » — chaque branche doit renvoyer."

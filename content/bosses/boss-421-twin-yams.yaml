@@ -1,0 +1,321 @@
+id: boss-421-twin-yams
+world: 3
+type: boss
+variant: twin
+project: "dice421:yams"
+title: "👯 Jumeau : le Yams express (5 dés)"
+concepts: [random, tuple, count, bool]
+difficulty: 4
+estimated_minutes: 45
+xp: 350
+statement_md: "Cinq dés, des figures, des points : même structure que le 421, nouveau jeu."
+intro_md: |
+  ## Le Yams express
+
+  On lance **5 dés** (un tuple de 5 entiers, pas forcément trié). Figures, de la plus forte à la plus faible :
+
+  | figure | condition | points |
+  |---|---|---|
+  | **yams** | 5 dés identiques | 50 |
+  | **grande suite** | 1-2-3-4-5 ou 2-3-4-5-6 (dans n'importe quel ordre) | 40 |
+  | **carré** | au moins 4 dés identiques | somme des dés |
+  | **full** | 3 identiques + 2 identiques (autre valeur) | 25 |
+  | **brelan** | au moins 3 identiques | somme des dés |
+  | **chance** | sinon | somme des dés |
+
+  Outils utiles sur un tuple : `dice.count(v)`, `sorted(dice)`, `sum(dice)`, `set(dice)`.
+header_code: |
+  import random
+steps:
+  - fn: roll_dice
+    title: "lancer n dés"
+    statement_md: "Renvoie un **tuple** de `n` dés (1 à 6)."
+    starter_code: |
+      def roll_dice(n=5):
+          """Return a tuple of n random dice."""
+          pass
+    solution: |
+      def roll_dice(n=5):
+          """Return a tuple of n random dice."""
+          dice = []
+          for _ in range(n):
+              dice.append(random.randint(1, 6))
+          return tuple(dice)
+    tests:
+      visible:
+        - call: "len(roll_dice())"
+          expected: "5"
+        - call: "type(roll_dice()).__name__"
+          expected: "'tuple'"
+      hidden:
+        - call: "len(roll_dice(2))"
+          expected: "2"
+        - call: "{d for _ in range(800) for d in roll_dice()} == {1, 2, 3, 4, 5, 6}"
+          expected: "True"
+      statistical:
+        - expr: "sum(len(set(roll_dice())) == 1 for _ in range(60000)) / 60000"
+          approx: 0.00077
+          tol: 0.0005
+          label: "yams ≈ 6/7776"
+    hints:
+      - "Construis une liste dans une boucle, puis `tuple(liste)`."
+      - "`random.randint(1, 6)` pour chaque dé."
+      - "`return tuple(dice)`"
+    points: 1.5
+  - fn: max_same
+    title: "le plus grand groupe"
+    statement_md: "Renvoie le nombre de dés de la valeur la plus fréquente : `(2, 5, 2, 2, 1)` → `3`."
+    starter_code: |
+      def max_same(dice):
+          """Return the size of the biggest group of equal dice."""
+          pass
+    solution: |
+      def max_same(dice):
+          """Return the size of the biggest group of equal dice."""
+          best = 0
+          for value in dice:
+              if dice.count(value) > best:
+                  best = dice.count(value)
+          return best
+    tests:
+      visible:
+        - call: max_same((2, 5, 2, 2, 1))
+          expected: "3"
+      hidden:
+        - call: max_same((1, 2, 3, 4, 5))
+          expected: "1"
+        - call: max_same((6, 6, 6, 6, 6))
+          expected: "5"
+        - call: max_same((3, 4, 4, 3, 1))
+          expected: "2"
+    hints:
+      - "`dice.count(v)` compte les dés valant v."
+      - "Garde le maximum dans une variable."
+      - "Parcours les valeurs du tuple lui-même."
+    points: 1.5
+  - fn: is_yams
+    title: "yams ?"
+    statement_md: "`True` si les 5 dés sont identiques."
+    starter_code: |
+      def is_yams(dice):
+          """Return True if all dice are equal."""
+          pass
+    solution: |
+      def is_yams(dice):
+          """Return True if all dice are equal."""
+          return max_same(dice) == 5
+    tests:
+      visible:
+        - call: is_yams((4, 4, 4, 4, 4))
+          expected: "True"
+      hidden:
+        - call: is_yams((4, 4, 4, 4, 1))
+          expected: "False"
+    hints:
+      - "Réutilise `max_same`."
+      - "`== 5`"
+      - "`return max_same(dice) == 5`"
+    points: 0.5
+  - fn: is_large_straight
+    title: "grande suite ?"
+    statement_md: "`True` si les dés triés valent `[1, 2, 3, 4, 5]` ou `[2, 3, 4, 5, 6]`."
+    starter_code: |
+      def is_large_straight(dice):
+          """Return True if the dice are 1-2-3-4-5 or 2-3-4-5-6 in any order."""
+          pass
+    solution: |
+      def is_large_straight(dice):
+          """Return True if the dice are 1-2-3-4-5 or 2-3-4-5-6 in any order."""
+          ordered = sorted(dice)
+          return ordered == [1, 2, 3, 4, 5] or ordered == [2, 3, 4, 5, 6]
+    tests:
+      visible:
+        - call: is_large_straight((3, 5, 1, 2, 4))
+          expected: "True"
+      hidden:
+        - call: is_large_straight((6, 2, 5, 3, 4))
+          expected: "True"
+        - call: is_large_straight((1, 2, 3, 4, 6))
+          expected: "False"
+        - call: is_large_straight((2, 2, 3, 4, 5))
+          expected: "False"
+    hints:
+      - "`sorted` renvoie une liste triée."
+      - "Compare avec deux listes."
+      - "`ordered == [1, 2, 3, 4, 5] or ordered == [2, 3, 4, 5, 6]`"
+    points: 1.5
+  - fn: is_full
+    title: "full ?"
+    statement_md: "`True` s'il y a exactement 3 dés d'une valeur et 2 d'une **autre** valeur."
+    starter_code: |
+      def is_full(dice):
+          """Return True for three of one value and two of another."""
+          pass
+    solution: |
+      def is_full(dice):
+          """Return True for three of one value and two of another."""
+          has_three = False
+          has_two = False
+          for value in set(dice):
+              if dice.count(value) == 3:
+                  has_three = True
+              elif dice.count(value) == 2:
+                  has_two = True
+          return has_three and has_two
+    tests:
+      visible:
+        - call: is_full((2, 5, 2, 5, 2))
+          expected: "True"
+      hidden:
+        - call: is_full((2, 2, 2, 2, 5))
+          expected: "False"
+          label: "carré, pas full"
+        - call: is_full((3, 3, 3, 3, 3))
+          expected: "False"
+          label: "yams, pas full"
+        - call: is_full((1, 1, 2, 2, 3))
+          expected: "False"
+    hints:
+      - "Parcours les valeurs distinctes (`set(dice)`) et regarde leur nombre."
+      - "Il faut un groupe de 3 ET un groupe de 2."
+      - "Deux booléens `has_three`, `has_two`."
+    points: 2
+  - fn: best_figure
+    title: "la meilleure figure"
+    statement_md: "Renvoie `\"yams\"`, `\"grande suite\"`, `\"carré\"`, `\"full\"`, `\"brelan\"` ou `\"chance\"` (ordre du tableau)."
+    starter_code: |
+      def best_figure(dice):
+          """Return the name of the best figure."""
+          pass
+    solution: |
+      def best_figure(dice):
+          """Return the name of the best figure."""
+          if is_yams(dice):
+              return "yams"
+          elif is_large_straight(dice):
+              return "grande suite"
+          elif max_same(dice) >= 4:
+              return "carré"
+          elif is_full(dice):
+              return "full"
+          elif max_same(dice) >= 3:
+              return "brelan"
+          return "chance"
+    tests:
+      visible:
+        - call: best_figure((5, 5, 5, 5, 5))
+          expected: "'yams'"
+        - call: best_figure((2, 5, 2, 5, 2))
+          expected: "'full'"
+      hidden:
+        - call: best_figure((4, 4, 4, 4, 1))
+          expected: "'carré'"
+        - call: best_figure((4, 4, 4, 2, 1))
+          expected: "'brelan'"
+        - call: best_figure((5, 4, 3, 2, 1))
+          expected: "'grande suite'"
+        - call: best_figure((6, 4, 3, 2, 1))
+          expected: "'chance'"
+    hints:
+      - "Cascade `if/elif` dans l'ordre du tableau."
+      - "Carré : `max_same(dice) >= 4`."
+      - "Le full doit être testé avant le brelan."
+    points: 2.5
+  - fn: figure_points
+    title: "les points"
+    statement_md: "Renvoie les points de la meilleure figure : 50, 40, 25, ou la **somme des dés**."
+    starter_code: |
+      def figure_points(dice):
+          """Return the points of the best figure."""
+          pass
+    solution: |
+      def figure_points(dice):
+          """Return the points of the best figure."""
+          figure = best_figure(dice)
+          if figure == "yams":
+              return 50
+          elif figure == "grande suite":
+              return 40
+          elif figure == "full":
+              return 25
+          return sum(dice)
+    tests:
+      visible:
+        - call: figure_points((6, 6, 6, 6, 6))
+          expected: "50"
+      hidden:
+        - call: figure_points((2, 5, 2, 5, 2))
+          expected: "25"
+        - call: figure_points((4, 4, 4, 4, 1))
+          expected: "17"
+        - call: figure_points((1, 3, 2, 5, 4))
+          expected: "40"
+        - call: figure_points((6, 4, 3, 2, 1))
+          expected: "16"
+    hints:
+      - "Réutilise `best_figure`."
+      - "`sum(dice)` pour les autres figures."
+      - "Quatre cas."
+    points: 1.5
+  - fn: reroll
+    title: "relancer certains dés"
+    statement_md: "`keep` est un tuple de booléens (même longueur que `dice`). Relance les dés non gardés, renvoie le **tuple** (non trié)."
+    starter_code: |
+      def reroll(dice, keep):
+          """Re-roll the dice that are not kept and return the new tuple."""
+          pass
+    solution: |
+      def reroll(dice, keep):
+          """Re-roll the dice that are not kept and return the new tuple."""
+          new = []
+          for i in range(len(dice)):
+              if keep[i]:
+                  new.append(dice[i])
+              else:
+                  new.append(random.randint(1, 6))
+          return tuple(new)
+    tests:
+      visible:
+        - call: reroll((1, 2, 3, 4, 5), (True,) * 5)
+          expected: "(1, 2, 3, 4, 5)"
+      hidden:
+        - call: "reroll((6, 6, 6, 6, 1), (True, True, True, True, False))[:4]"
+          expected: "(6, 6, 6, 6)"
+      statistical:
+        - expr: "sum(reroll((6, 6, 6, 6, 1), (True, True, True, True, False)) == (6, 6, 6, 6, 6) for _ in range(30000)) / 30000"
+          approx: 0.1667
+          tol: 0.012
+    hints:
+      - "Une boucle sur les indices."
+      - "Garder : on recopie le dé ; sinon on tire un nouveau dé."
+      - "Termine par `tuple(new)`."
+    points: 2
+  - fn: estimate_figure
+    title: "probabilité d'une figure"
+    statement_md: "Lance `n` fois 5 dés et renvoie la fréquence de la figure `name` (`best_figure`)."
+    starter_code: |
+      def estimate_figure(name, n):
+          """Return the observed frequency of the figure name over n throws."""
+          pass
+    solution: |
+      def estimate_figure(name, n):
+          """Return the observed frequency of the figure name over n throws."""
+          count = 0
+          for _ in range(n):
+              if best_figure(roll_dice()) == name:
+                  count += 1
+          return count / n
+    tests:
+      visible:
+        - call: "0 <= estimate_figure('full', 100) <= 1"
+          expected: "True"
+      statistical:
+        - expr: "estimate_figure('full', 30000)"
+          approx: 0.0386
+          tol: 0.006
+          label: "full ≈ 3.86 %"
+    hints:
+      - "Même schéma que `simulate_421`."
+      - "Compteur + boucle + division."
+      - "`return count / n`"
+    points: 1

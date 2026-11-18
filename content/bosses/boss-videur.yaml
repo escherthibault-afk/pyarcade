@@ -1,0 +1,294 @@
+id: boss-videur
+world: 1
+type: boss
+variant: guided
+project: videur
+title: "🕴️ Boss : le videur de boîte"
+concepts: [if, and, or, not, bool]
+difficulty: 3
+estimated_minutes: 35
+xp: 250
+min_stars: 25
+statement_md: "8 fonctions, que des conditions. Le videur ne laisse rien passer."
+intro_md: |
+  ## Le Pixel Club
+
+  Tu programmes le portique d'entrée d'une boîte de nuit d'arcade. Règles du club :
+
+  | règle | détail |
+  |---|---|
+  | horaires | ouvert de **22 h** (incluse) à **5 h** (exclue) — l'heure est un entier de 0 à 23 |
+  | âge | **18 ans** au moins |
+  | capacité | on entre s'il reste de la place : `inside < capacity` |
+  | VIP | un VIP entre même si c'est complet (mais pas si c'est fermé, et il doit être majeur) |
+  | prix | 15 € ; étudiants 10 € ; **avant 23 h** (de 22 h à 22 h 59) : moitié prix ; VIP : gratuit |
+
+  Chaque fonction est petite : un `return` de condition, ou une cascade `if/elif/else`.
+steps:
+  - fn: is_open
+    title: "le club est-il ouvert ?"
+    statement_md: "`True` de 22 h à 4 h 59 inclus (l'intervalle passe par minuit !)."
+    starter_code: |
+      def is_open(hour):
+          """Return True if the club is open at this hour (22h to 5h, 5h excluded)."""
+          pass
+    solution: |
+      def is_open(hour):
+          """Return True if the club is open at this hour (22h to 5h, 5h excluded)."""
+          return hour >= 22 or hour < 5
+    tests:
+      visible:
+        - call: is_open(23)
+          expected: "True"
+        - call: is_open(15)
+          expected: "False"
+      hidden:
+        - call: is_open(22)
+          expected: "True"
+          label: "22 h pile"
+        - call: is_open(5)
+          expected: "False"
+          label: "5 h pile"
+        - call: is_open(0)
+          expected: "True"
+          label: "minuit"
+        - call: is_open(4)
+          expected: "True"
+    hints:
+      - "L'intervalle traverse minuit : un seul `and` ne peut pas marcher."
+      - "Ouvert le soir (`hour >= 22`) OU la nuit (`hour < 5`)."
+      - "`return hour >= 22 or hour < 5`"
+  - fn: is_adult
+    title: "majeur ?"
+    statement_md: "`True` si `age` vaut au moins 18."
+    starter_code: |
+      def is_adult(age):
+          """Return True if age is at least 18."""
+          pass
+    solution: |
+      def is_adult(age):
+          """Return True if age is at least 18."""
+          return age >= 18
+    tests:
+      visible:
+        - call: is_adult(20)
+          expected: "True"
+      hidden:
+        - call: is_adult(18)
+          expected: "True"
+        - call: is_adult(17)
+          expected: "False"
+    hints:
+      - "Une comparaison."
+      - "Attention à 18 pile."
+      - "`return age >= 18`"
+  - fn: has_room
+    title: "reste-t-il de la place ?"
+    statement_md: "`True` si `inside < capacity`."
+    starter_code: |
+      def has_room(inside, capacity):
+          """Return True if one more person can come in."""
+          pass
+    solution: |
+      def has_room(inside, capacity):
+          """Return True if one more person can come in."""
+          return inside < capacity
+    tests:
+      visible:
+        - call: has_room(10, 100)
+          expected: "True"
+      hidden:
+        - call: has_room(100, 100)
+          expected: "False"
+          label: "plein pile"
+        - call: has_room(99, 100)
+          expected: "True"
+    hints:
+      - "S'il y a déjà `capacity` personnes, c'est plein."
+      - "Strictement inférieur."
+      - "`return inside < capacity`"
+  - fn: can_enter
+    title: "la décision du videur"
+    statement_md: |
+      `True` si le club est ouvert, la personne majeure, et (il reste de la place **ou** c'est un VIP).
+      Réutilise les fonctions précédentes.
+    starter_code: |
+      def can_enter(age, is_vip, hour, inside, capacity):
+          """Return True if this person can enter the club now."""
+          pass
+    solution: |
+      def can_enter(age, is_vip, hour, inside, capacity):
+          """Return True if this person can enter the club now."""
+          return is_open(hour) and is_adult(age) and (has_room(inside, capacity) or is_vip)
+    tests:
+      visible:
+        - call: can_enter(25, False, 23, 10, 100)
+          expected: "True"
+        - call: can_enter(16, False, 23, 10, 100)
+          expected: "False"
+      hidden:
+        - call: can_enter(25, False, 23, 100, 100)
+          expected: "False"
+          label: "complet"
+        - call: can_enter(25, True, 23, 100, 100)
+          expected: "True"
+          label: "VIP et complet"
+        - call: can_enter(25, True, 12, 10, 100)
+          expected: "False"
+          label: "VIP mais fermé"
+        - call: can_enter(16, True, 23, 10, 100)
+          expected: "False"
+          label: "VIP mineur"
+    hints:
+      - "Trois conditions obligatoires, la dernière est elle-même un « ou »."
+      - "Parenthèses autour du `or` !"
+      - "`return is_open(hour) and is_adult(age) and (has_room(inside, capacity) or is_vip)`"
+  - fn: entry_price
+    title: "le prix d'entrée"
+    statement_md: "15 €, 10 € pour un étudiant, gratuit pour un VIP ; à 22 h (avant 23 h) le prix est divisé par 2. Renvoie un nombre (un `float` est accepté pour la moitié)."
+    starter_code: |
+      def entry_price(is_student, is_vip, hour):
+          """Return the entry price in euros."""
+          pass
+    solution: |
+      def entry_price(is_student, is_vip, hour):
+          """Return the entry price in euros."""
+          if is_vip:
+              return 0
+          if is_student:
+              price = 10
+          else:
+              price = 15
+          if hour == 22:
+              price = price / 2
+          return price
+    tests:
+      visible:
+        - call: entry_price(False, False, 23)
+          expected: "15"
+        - call: entry_price(True, False, 23)
+          expected: "10"
+      hidden:
+        - call: entry_price(False, False, 22)
+          expected: "7.5"
+          label: "happy hour"
+        - call: entry_price(True, False, 22)
+          expected: "5.0"
+        - call: entry_price(True, True, 22)
+          expected: "0"
+          label: "VIP"
+        - call: entry_price(False, False, 2)
+          expected: "15"
+    hints:
+      - "Commence par le cas VIP, qui court-circuite tout."
+      - "Calcule un prix de base, puis applique la réduction de 22 h."
+      - "`if hour == 22: price = price / 2`"
+  - fn: refusal_reason
+    title: "pourquoi tu n'entres pas"
+    statement_md: |
+      Renvoie la **première** raison de refus dans cet ordre : `"fermé"`, `"trop jeune"`, `"complet"` ;
+      ou `"bienvenue"` si la personne peut entrer.
+    starter_code: |
+      def refusal_reason(age, is_vip, hour, inside, capacity):
+          """Return "fermé", "trop jeune", "complet" or "bienvenue"."""
+          pass
+    solution: |
+      def refusal_reason(age, is_vip, hour, inside, capacity):
+          """Return "fermé", "trop jeune", "complet" or "bienvenue"."""
+          if not is_open(hour):
+              return "fermé"
+          elif not is_adult(age):
+              return "trop jeune"
+          elif not has_room(inside, capacity) and not is_vip:
+              return "complet"
+          else:
+              return "bienvenue"
+    tests:
+      visible:
+        - call: refusal_reason(30, False, 12, 0, 100)
+          expected: "'fermé'"
+        - call: refusal_reason(30, False, 23, 0, 100)
+          expected: "'bienvenue'"
+      hidden:
+        - call: refusal_reason(15, False, 12, 0, 100)
+          expected: "'fermé'"
+          label: "l'ordre compte"
+        - call: refusal_reason(15, False, 23, 100, 100)
+          expected: "'trop jeune'"
+        - call: refusal_reason(30, False, 1, 100, 100)
+          expected: "'complet'"
+        - call: refusal_reason(30, True, 1, 100, 100)
+          expected: "'bienvenue'"
+          label: "VIP"
+    hints:
+      - "Une cascade `if/elif/else` dans l'ordre de l'énoncé."
+      - "« complet » seulement si pas de place ET pas VIP (De Morgan de `has_room or is_vip`)."
+      - "`elif not has_room(inside, capacity) and not is_vip:`"
+  - fn: is_suspicious
+    title: "faux ticket ?"
+    statement_md: |
+      Un ticket est un code entier à 4 chiffres (1000 à 9999). Il est **suspect** s'il n'est pas dans cet intervalle,
+      **ou** si la somme de son premier et de son dernier chiffre n'est pas égale à 10.
+    starter_code: |
+      def is_suspicious(ticket):
+          """Return True if the ticket code looks fake."""
+          pass
+    solution: |
+      def is_suspicious(ticket):
+          """Return True if the ticket code looks fake."""
+          if ticket < 1000 or ticket > 9999:
+              return True
+          first = ticket // 1000
+          last = ticket % 10
+          return first + last != 10
+    tests:
+      visible:
+        - call: is_suspicious(3127)
+          expected: "False"
+        - call: is_suspicious(3128)
+          expected: "True"
+      hidden:
+        - call: is_suspicious(999)
+          expected: "True"
+          label: "3 chiffres"
+        - call: is_suspicious(10009)
+          expected: "True"
+        - call: is_suspicious(9001)
+          expected: "False"
+        - call: is_suspicious(5005)
+          expected: "False"
+    hints:
+      - "Premier chiffre : division entière par 1000. Dernier chiffre : reste de la division par 10."
+      - "Hors de l'intervalle → suspect tout de suite."
+      - "`return ticket // 1000 + ticket % 10 != 10`"
+  - fn: door_message
+    title: "le message affiché"
+    statement_md: |
+      Renvoie `"Bienvenue ! Entrée : X €"` (X = `entry_price`) si la personne entre, sinon `"Désolé : <raison>"`.
+      Le prix s'affiche tel que renvoyé par `entry_price` (ex. `7.5`).
+    starter_code: |
+      def door_message(age, is_student, is_vip, hour, inside, capacity):
+          """Return the message shown on the door screen."""
+          pass
+    solution: |
+      def door_message(age, is_student, is_vip, hour, inside, capacity):
+          """Return the message shown on the door screen."""
+          reason = refusal_reason(age, is_vip, hour, inside, capacity)
+          if reason == "bienvenue":
+              return f"Bienvenue ! Entrée : {entry_price(is_student, is_vip, hour)} €"
+          return f"Désolé : {reason}"
+    tests:
+      visible:
+        - call: door_message(20, True, False, 23, 10, 100)
+          expected: "'Bienvenue ! Entrée : 10 €'"
+      hidden:
+        - call: door_message(20, False, False, 22, 10, 100)
+          expected: "'Bienvenue ! Entrée : 7.5 €'"
+        - call: door_message(16, False, False, 23, 10, 100)
+          expected: "'Désolé : trop jeune'"
+        - call: door_message(30, False, True, 2, 500, 100)
+          expected: "'Bienvenue ! Entrée : 0 €'"
+    hints:
+      - "Réutilise `refusal_reason` et `entry_price`."
+      - "Une f-string pour chaque message."
+      - "`f\"Désolé : {reason}\"`"

@@ -1,0 +1,32 @@
+id: w1-l10
+world: 1
+type: predict_output
+title: "Le chemin des if"
+concepts: [if, elif, else]
+difficulty: 2
+estimated_minutes: 2
+xp: 20
+story: "Suis le curseur dans la cascade de if… sans te tromper de branche."
+statement_md: "Qu'affiche ce programme ?"
+code: |
+  score = 75
+  if score >= 50:
+      print("A")
+  if score >= 70:
+      print("B")
+  elif score >= 60:
+      print("C")
+  else:
+      print("D")
+  if score > 100 or score < 0:
+      print("E")
+  print("F")
+answer: |
+  A
+  B
+  F
+hints:
+  - "Il y a trois blocs `if` indépendants : chacun est testé."
+  - "Dans `if/elif/else`, seule la première branche vraie s'exécute."
+  - "`score > 100 or score < 0` est faux."
+explanation_md: "Deux `if` séparés sont **tous les deux** testés ; un `elif` n'est testé que si ce qui précède était faux."

@@ -1,0 +1,29 @@
+id: w3-l12
+world: 3
+type: predict_output
+title: "Speed Read : la graine"
+concepts: [random, seed]
+difficulty: 2
+estimated_minutes: 2
+xp: 25
+story: "Même graine, mêmes tirages. Ce n'est plus du hasard, c'est de la mémoire."
+statement_md: "Speed Read : qu'affiche ce programme ? (Indice : pas besoin de connaître les tirages.)"
+timed_seconds: 40
+code: |
+  import random
+
+  random.seed(7)
+  a = random.randint(1, 100)
+  random.seed(7)
+  b = random.randint(1, 100)
+  print(a == b)
+  print(1 <= a <= 100)
+  print(random.random() < 1)
+answer: |
+  True
+  True
+  True
+hints:
+  - "Avec la même graine, la suite de tirages recommence à l'identique."
+  - "`randint(1, 100)` est toujours entre 1 et 100."
+  - "`random()` est toujours < 1."

@@ -1,0 +1,44 @@
+id: w1-l15
+world: 1
+type: quiz
+title: "QCM éclair : vrai, faux et priorités"
+concepts: [bool, priorite, truthy]
+difficulty: 2
+estimated_minutes: 2
+xp: 30
+story: "Dernier contrôle avant le videur."
+statement_md: "10 questions, 60 secondes."
+time_limit: 60
+questions:
+  - q: "Que vaut `3 > 2 and 2 > 3` ?"
+    choices: ["True", "False"]
+    answer: 1
+  - q: "Que vaut `not 0` ?"
+    choices: ["True", "False", "0", "Erreur"]
+    answer: 0
+  - q: "Que vaut `True + True` ?"
+    choices: ["2", "True", "Erreur", "1"]
+    answer: 0
+    explain: "En Python, `True` vaut 1 et `False` vaut 0 dans un calcul."
+  - q: "Que vaut `5 == 5 == 5` ?"
+    choices: ["True", "False", "Erreur"]
+    answer: 0
+  - q: "Quelle condition teste si `x` est pair ?"
+    choices: ["x % 2 == 0", "x / 2 == 0", "x // 2 == 1", "x % 2 == 1"]
+    answer: 0
+  - q: "Que vaut `\"\" or \"défaut\"` ?"
+    choices: ["\"défaut\"", "\"\"", "True", "False"]
+    answer: 0
+    explain: "`or` renvoie la première valeur « vraie » (ou la dernière)."
+  - q: "`if x = 3:` provoque…"
+    choices: ["une SyntaxError", "x vaut 3", "True", "rien"]
+    answer: 0
+  - q: "Que vaut `not True and False` ?"
+    choices: ["True", "False"]
+    answer: 1
+  - q: "Que vaut `(not True) or (not False)` ?"
+    choices: ["True", "False"]
+    answer: 0
+  - q: "Que vaut `bool([])` ?"
+    choices: ["True", "False"]
+    answer: 1

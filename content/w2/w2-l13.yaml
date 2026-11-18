@@ -1,0 +1,45 @@
+id: w2-l13
+world: 2
+type: write_test
+title: "Démasque les fausses moyennes"
+concepts: [assert, tests, cas_limites]
+difficulty: 3
+estimated_minutes: 5
+xp: 40
+story: "Trois imposteurs se cachent parmi quatre fonctions `average3`. Tes assert sont le détecteur."
+statement_md: "Écris des `assert` qui passent sur la bonne version et échouent sur chacune des 3 fausses."
+signature: |
+  def average3(a, b, c):
+      """Return the average of three numbers."""
+implementations:
+  - label: A
+    correct: false
+    code: |
+      def average3(a, b, c):
+          return a + b + c / 3
+  - label: B
+    correct: false
+    code: |
+      def average3(a, b, c):
+          return (a + b + c) // 3
+  - label: C
+    correct: true
+    code: |
+      def average3(a, b, c):
+          return (a + b + c) / 3
+  - label: D
+    correct: false
+    code: |
+      def average3(a, b, c):
+          return (a + b + b) / 3
+starter_code: |
+  assert average3(3, 3, 3) == 3
+solution: |
+  assert average3(3, 3, 3) == 3
+  assert average3(1, 2, 4) == 7 / 3
+  assert average3(0, 0, 3) == 1
+hints:
+  - "Des valeurs toutes égales ne démasquent personne : varie-les."
+  - "B fait une division entière : choisis une somme qui n'est pas un multiple de 3. D confond deux paramètres : rends-les différents."
+  - "`assert average3(1, 2, 4) == 7 / 3`"
+explanation_md: "Un bon test change **chaque** paramètre et vise les opérations piégeuses (priorités, `//`)."

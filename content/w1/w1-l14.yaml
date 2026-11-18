@@ -1,0 +1,32 @@
+id: w1-l14
+world: 1
+type: robot
+title: "Le robot qui regarde devant lui"
+concepts: [if, robot]
+difficulty: 1
+estimated_minutes: 3
+xp: 25
+story: "Le même programme doit marcher sur deux cartes : parfois un mur bloque le passage."
+statement_md: |
+  Écris **un seul programme** qui amène le robot sur 🏁 dans les **deux** cartes (onglets Carte 1 / Carte 2).
+  `wall_ahead()` vaut `True` s'il y a un mur juste devant le robot.
+grids:
+  - ["######", "#>..G#", "######"]
+  - ["####", "#>##", "#.##", "#.##", "#G##", "####"]
+starter_code: |
+  move()
+  move()
+  move()
+solution: |
+  if wall_ahead():
+      turn_right()
+  move()
+  move()
+  move()
+constraints:
+  required: [If]
+hints:
+  - "Dans la carte 2, le robot doit d'abord tourner."
+  - "Tourner seulement s'il y a un mur devant : `if wall_ahead():`."
+  - "`if wall_ahead():` puis `turn_right()` (indenté), puis les trois `move()`."
+explanation_md: "Un `if` permet au **même** code de s'adapter à des situations différentes : c'est tout l'intérêt des conditions."

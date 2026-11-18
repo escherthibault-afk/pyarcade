@@ -1,0 +1,32 @@
+id: w2-l14
+world: 2
+type: copy
+title: "Mode copie : l'IMC"
+concepts: [fonction, round, return]
+difficulty: 2
+estimated_minutes: 4
+xp: 30
+story: "Comme en DS : pas d'exécution, une seule soumission. Concentre-toi."
+statement_md: |
+  Renvoie l'indice de masse corporelle `poids / taille²` **arrondi à 1 décimale** (`round(x, 1)`).
+  `bmi(70, 1.75)` → `22.9`.
+starter_code: |
+  def bmi(weight, height):
+      """Return weight / height**2 rounded to 1 decimal."""
+      pass
+solution: |
+  def bmi(weight, height):
+      """Return weight / height**2 rounded to 1 decimal."""
+      return round(weight / height ** 2, 1)
+tests:
+  visible:
+    - call: bmi(70, 1.75)
+      expected: "22.9"
+  hidden:
+    - call: bmi(50, 1.6)
+      expected: "19.5"
+    - call: bmi(100, 2)
+      expected: "25.0"
+hints: []
+explanation_md: "`**` est prioritaire sur `/` : `weight / height ** 2` divise bien par le carré."
+exam_tip: "En DS papier, relis ta ligne en vérifiant les priorités : `**` avant `* /` avant `+ -`."

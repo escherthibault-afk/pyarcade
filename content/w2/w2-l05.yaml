@@ -1,0 +1,41 @@
+id: w2-l05
+world: 2
+type: code_fill
+title: "Paramètre par défaut"
+concepts: [parametres, defaut, fstring]
+difficulty: 2
+estimated_minutes: 3
+xp: 25
+story: "Le message d'accueil dit « Bonjour » par défaut, mais on peut le personnaliser."
+statement_md: |
+  Renvoie la chaîne `"<greeting>, <name> !"`. Si on ne donne pas `greeting`, il vaut `"Bonjour"`.
+  `welcome("Ada")` → `"Bonjour, Ada !"` ; `welcome("Ada", "Salut")` → `"Salut, Ada !"`.
+starter_code: |
+  def welcome(name, greeting="Bonjour"):
+      """Return '<greeting>, <name> !'."""
+      pass
+solution: |
+  def welcome(name, greeting="Bonjour"):
+      """Return '<greeting>, <name> !'."""
+      return f"{greeting}, {name} !"
+tests:
+  visible:
+    - call: welcome("Ada")
+      expected: "'Bonjour, Ada !'"
+    - call: welcome("Ada", "Salut")
+      expected: "'Salut, Ada !'"
+  hidden:
+    - call: welcome(greeting="Hey", name="Linus")
+      expected: "'Hey, Linus !'"
+      label: "arguments nommés"
+    - call: welcome("")
+      expected: "'Bonjour,  !'"
+hints:
+  - "Le paramètre par défaut est déjà écrit dans la signature."
+  - "Une f-string avec deux variables."
+  - "`return f\"{greeting}, {name} !\"`"
+card:
+  title: "Paramètres par défaut"
+  body_md: |
+    `def f(x, y=3):` → `f(1)` utilise `y = 3`, `f(1, 5)` utilise `y = 5`. On peut nommer : `f(y=5, x=1)`.
+    ⚠️ Jamais de valeur par défaut **mutable** (`def f(l=[])`) : utilise `None`.

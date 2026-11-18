@@ -177,6 +177,7 @@ function BossFight({ level, copyMode, onPhase, phase }: { level: BossLevel; copy
       files: files.current,
       constraints: level.steps.map((s) => (s.constraints ? { ...s.constraints, scope: s.constraints.scope ?? s.fn } : undefined)),
       packages: level.packages,
+      perTestMs: 10_000,
       onResult: (r, i) => {
         acc[i] = r
         setPartial([...acc])

@@ -1,0 +1,58 @@
+id: w2-l11
+world: 2
+type: assemble
+title: "Assemble le thermomètre"
+concepts: [composition, fonction]
+difficulty: 2
+estimated_minutes: 4
+xp: 35
+story: "Trois fonctions existent déjà. Il ne manque que celle qui les branche ensemble."
+statement_md: |
+  Les fonctions `to_fahrenheit(celsius)`, `is_freezing(celsius)` et `label(temp_f, frozen)` sont fournies (voir « Code fourni »).
+  Écris `describe(celsius)` qui les **compose** : convertit, teste le gel, et renvoie l'étiquette.
+  `describe(-5)` → `"23.0°F (gel)"` ; `describe(20)` → `"68.0°F"`.
+given_code: |
+  def to_fahrenheit(celsius):
+      """Return the temperature in Fahrenheit."""
+      return celsius * 9 / 5 + 32
+
+
+  def is_freezing(celsius):
+      """Return True if water freezes at this temperature."""
+      return celsius <= 0
+
+
+  def label(temp_f, frozen):
+      """Return the text shown on the thermometer."""
+      if frozen:
+          return f"{temp_f}°F (gel)"
+      return f"{temp_f}°F"
+starter_code: |
+  def describe(celsius):
+      """Return the thermometer text for a temperature in Celsius."""
+      pass
+solution: |
+  def describe(celsius):
+      """Return the thermometer text for a temperature in Celsius."""
+      temp_f = to_fahrenheit(celsius)
+      frozen = is_freezing(celsius)
+      return label(temp_f, frozen)
+tests:
+  visible:
+    - call: describe(-5)
+      expected: "'23.0°F (gel)'"
+    - call: describe(20)
+      expected: "'68.0°F'"
+  hidden:
+    - call: describe(0)
+      expected: "'32.0°F (gel)'"
+      label: "pile 0"
+    - call: describe(100)
+      expected: "'212.0°F'"
+constraints:
+  required: ["call:to_fahrenheit", "call:is_freezing", "call:label"]
+hints:
+  - "N'écris aucun calcul : appelle les trois fonctions."
+  - "Garde les résultats intermédiaires dans des variables."
+  - "`return label(to_fahrenheit(celsius), is_freezing(celsius))`"
+explanation_md: "Découper en petites fonctions testables puis les assembler : c'est exactement l'organisation d'un TP."

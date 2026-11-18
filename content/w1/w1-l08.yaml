@@ -1,0 +1,18 @@
+id: w1-l08
+world: 1
+type: truth_table
+title: "Une porte sur deux"
+concepts: [bool, and, or, not]
+difficulty: 2
+estimated_minutes: 3
+xp: 25
+story: "L'alarme de l'arcade sonne si exactement UNE des deux portes est ouverte (un courant d'air suspect)."
+statement_md: "Écris la condition qui vaut `True` quand **exactement une** des deux portes `a` et `b` est ouverte."
+vars: [a, b]
+solution: "a != b"
+simple_len: 8
+hints:
+  - "Vrai pour (True, False) et (False, True), faux sinon."
+  - "Version longue : `(a or b) and not (a and b)`."
+  - "Deux booléens différents… `a != b` !"
+explanation_md: "C'est le « ou exclusif » (XOR). Pour des booléens, `a != b` l'écrit en 6 caractères."

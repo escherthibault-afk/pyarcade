@@ -1,0 +1,48 @@
+id: w1-l13
+world: 1
+type: code_fill
+title: "Le plus grand des trois"
+concepts: [if, comparaison, return]
+difficulty: 2
+estimated_minutes: 4
+xp: 35
+story: "Trois dés roulent. Le plus haut gagne. Mais `max()` est en panne !"
+statement_md: "Renvoie le plus grand des trois nombres **sans utiliser `max`** (ni `sorted`)."
+starter_code: |
+  def max3(a, b, c):
+      """Return the greatest of a, b and c (without max)."""
+      pass
+solution: |
+  def max3(a, b, c):
+      """Return the greatest of a, b and c (without max)."""
+      if a >= b and a >= c:
+          return a
+      elif b >= c:
+          return b
+      else:
+          return c
+tests:
+  visible:
+    - call: max3(1, 5, 3)
+      expected: "5"
+    - call: max3(6, 2, 4)
+      expected: "6"
+  hidden:
+    - call: max3(2, 3, 9)
+      expected: "9"
+    - call: max3(4, 4, 1)
+      expected: "4"
+      label: "égalité"
+    - call: max3(7, 7, 7)
+      expected: "7"
+    - call: max3(-1, -5, -3)
+      expected: "-1"
+      label: "négatifs"
+constraints:
+  forbidden: ["call:max", "call:sorted", "method:sort"]
+hints:
+  - "a est le plus grand s'il est supérieur ou égal aux deux autres."
+  - "Sinon, le plus grand est b ou c : une seule comparaison suffit."
+  - "`if a >= b and a >= c: return a` / `elif b >= c: return b` / `else: return c`"
+explanation_md: "Variante : `best = a`, puis `if b > best: best = b`, `if c > best: best = c`. C'est le motif du maximum qu'on retrouvera avec les listes."
+exam_tip: "Les égalités (4, 4, 1) cassent souvent les solutions écrites avec `>` au lieu de `>=`."

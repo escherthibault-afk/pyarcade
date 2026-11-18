@@ -1,0 +1,50 @@
+id: w3-l09
+world: 3
+type: code_fill
+title: "Trier trois dés à la main"
+concepts: [if, tuple, tri]
+difficulty: 3
+estimated_minutes: 6
+xp: 45
+story: "Pour reconnaître une combinaison, on range les dés du plus grand au plus petit. Sans `sorted`, s'il te plaît."
+statement_md: "Renvoie le tuple `(a, b, c)` trié **par ordre décroissant**, sans `sorted`, `sort`, `max` ni `min`."
+starter_code: |
+  def sort_dice(a, b, c):
+      """Return the tuple of a, b, c sorted in decreasing order."""
+      pass
+solution: |
+  def sort_dice(a, b, c):
+      """Return the tuple of a, b, c sorted in decreasing order."""
+      if a < b:
+          a, b = b, a
+      if b < c:
+          b, c = c, b
+      if a < b:
+          a, b = b, a
+      return (a, b, c)
+tests:
+  visible:
+    - call: sort_dice(2, 4, 1)
+      expected: "(4, 2, 1)"
+    - call: sort_dice(1, 2, 4)
+      expected: "(4, 2, 1)"
+  hidden:
+    - call: sort_dice(6, 6, 1)
+      expected: "(6, 6, 1)"
+    - call: sort_dice(1, 6, 6)
+      expected: "(6, 6, 1)"
+      label: "doubles"
+    - call: sort_dice(3, 3, 3)
+      expected: "(3, 3, 3)"
+    - call: sort_dice(5, 1, 3)
+      expected: "(5, 3, 1)"
+    - call: sort_dice(2, 5, 4)
+      expected: "(5, 4, 2)"
+constraints:
+  forbidden: ["call:sorted", "method:sort", "call:max", "call:min"]
+hints:
+  - "Échanger deux variables en Python : `a, b = b, a`."
+  - "Trois comparaisons-échanges suffisent (comme un mini tri à bulles) : (a,b), (b,c), puis encore (a,b)."
+  - "`if a < b: a, b = b, a` puis `if b < c: b, c = c, b` puis de nouveau la première."
+explanation_md: "C'est un tri à bulles sur 3 éléments. L'échange `a, b = b, a` utilise un tuple temporaire."
+exam_tip: "Teste les 6 ordres possibles de trois valeurs distinctes, plus les cas avec des doublons."

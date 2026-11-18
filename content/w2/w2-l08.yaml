@@ -1,0 +1,23 @@
+id: w2-l08
+world: 2
+type: trace
+title: "Trace les appels"
+concepts: [fonction, appel, trace]
+difficulty: 2
+estimated_minutes: 3
+xp: 30
+story: "Chaque appel de fonction a ses propres variables. Suis-les."
+statement_md: "Après chaque passage sur la ligne marquée, note `n` et `total` (variables du programme principal)."
+code: |
+  def bump(x):
+      return x * 2 + 1
+
+  total = 0
+  for n in range(1, 4):
+      total = total + bump(n)  # @snap
+watch: [n, total]
+hints:
+  - "`bump(1)` = 3, `bump(2)` = 5, `bump(3)` = 7."
+  - "`total` accumule : 3, puis 3 + 5…"
+  - "Ligne 3 : n = 3, total = 15."
+explanation_md: "Le paramètre `x` de `bump` est une variable **locale** : elle n'existe que pendant l'appel."

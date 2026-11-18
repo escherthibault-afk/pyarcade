@@ -1,0 +1,42 @@
+id: w2-l10
+world: 2
+type: quiz
+title: "QCM éclair : fonctions"
+concepts: [fonction, return, parametres, portee]
+difficulty: 2
+estimated_minutes: 2
+xp: 30
+story: "10 questions sur les fonctions. Le combo n'attend que toi."
+statement_md: "60 secondes."
+time_limit: 60
+questions:
+  - q: "Que renvoie une fonction sans `return` ?"
+    choices: ["0", "None", "\"\"", "Une erreur"]
+    answer: 1
+  - q: "Que se passe-t-il après un `return` dans une fonction ?"
+    choices: ["La fonction continue", "La fonction s'arrête", "Python plante", "Le programme s'arrête"]
+    answer: 1
+  - q: "`def f(a, b=2): return a * b`. Que vaut `f(3)` ?"
+    choices: ["3", "6", "5", "Erreur"]
+    answer: 1
+  - q: "`def f(): return 1, 2`. Que vaut `f()` ?"
+    choices: ["1", "(1, 2)", "[1, 2]", "Erreur"]
+    answer: 1
+  - q: "`a, b = (4, 9)`. Que vaut `b` ?"
+    choices: ["4", "9", "(4, 9)", "Erreur"]
+    answer: 1
+  - q: "Comment s'appelle la chaîne entre `\"\"\"` sous `def` ?"
+    choices: ["un commentaire", "une docstring", "un print", "un return"]
+    answer: 1
+  - q: "`def f(x): x = 0` puis `n = 5; f(n)`. Que vaut `n` ?"
+    choices: ["0", "5", "None", "Erreur"]
+    answer: 1
+  - q: "Une fonction « pure »…"
+    choices: ["ne modifie pas ses paramètres ni de variable globale", "affiche toujours quelque chose", "n'a pas de paramètre", "utilise global"]
+    answer: 0
+  - q: "`def f(n): if n > 0: return 1`. Que vaut `f(-1)` ?"
+    choices: ["0", "-1", "None", "1"]
+    answer: 2
+  - q: "Que vaut `len(\"abc\") + abs(-2)` ?"
+    choices: ["5", "1", "Erreur", "3"]
+    answer: 0

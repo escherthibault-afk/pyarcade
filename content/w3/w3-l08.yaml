@@ -1,0 +1,23 @@
+id: w3-l08
+world: 3
+type: truth_table
+title: "Brelan !"
+concepts: [comparaison, chaine_comparaison]
+difficulty: 1
+estimated_minutes: 2
+xp: 20
+story: "Trois dés identiques : un brelan. La condition la plus courte gagne une étoile."
+statement_md: "Écris la condition « les trois dés `a`, `b`, `c` sont égaux »."
+vars: [a, b, c]
+rows:
+  - {a: 3, b: 3, c: 3}
+  - {a: 3, b: 3, c: 2}
+  - {a: 1, b: 2, c: 1}
+  - {a: 6, b: 6, c: 6}
+  - {a: 5, b: 4, c: 5}
+solution: "a == b == c"
+simple_len: 8
+hints:
+  - "Il faut a égal à b ET b égal à c."
+  - "`a == b and b == c` marche."
+  - "Python accepte les comparaisons chaînées : `a == b == c`."

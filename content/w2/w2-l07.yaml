@@ -1,0 +1,36 @@
+id: w2-l07
+world: 2
+type: code_fill
+title: "Quotient et reste"
+concepts: [tuple, return, division, modulo]
+difficulty: 2
+estimated_minutes: 3
+xp: 30
+story: "Partager des jetons : combien chacun, combien de restes ? La fonction renvoie les deux."
+statement_md: "Renvoie le tuple `(quotient, reste)` de la division entière de `a` par `b` (sans `divmod`)."
+starter_code: |
+  def share(a, b):
+      """Return (a // b, a % b) as a tuple."""
+      pass
+solution: |
+  def share(a, b):
+      """Return (a // b, a % b) as a tuple."""
+      return (a // b, a % b)
+tests:
+  visible:
+    - call: share(17, 5)
+      expected: "(3, 2)"
+  hidden:
+    - call: share(10, 5)
+      expected: "(2, 0)"
+    - call: share(3, 7)
+      expected: "(0, 3)"
+    - call: share(0, 4)
+      expected: "(0, 0)"
+constraints:
+  forbidden: ["call:divmod"]
+hints:
+  - "`//` puis `%`."
+  - "Deux valeurs séparées par une virgule, entre parenthèses."
+  - "`return (a // b, a % b)`"
+exam_tip: "Si la signature dit « renvoie un tuple », renvoie `(x, y)` et pas `[x, y]` : un test strict fera la différence."

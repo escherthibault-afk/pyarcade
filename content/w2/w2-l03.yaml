@@ -1,0 +1,33 @@
+id: w2-l03
+world: 2
+type: code_fill
+title: "Le périmètre"
+concepts: [fonction, parametres, return]
+difficulty: 1
+estimated_minutes: 3
+xp: 20
+story: "Le cadre lumineux de l'arcade : combien de mètres de néon faut-il ?"
+statement_md: "Renvoie le périmètre d'un rectangle de largeur `width` et de hauteur `height`."
+starter_code: |
+  def perimeter(width, height):
+      """Return the perimeter of a width x height rectangle."""
+      pass
+solution: |
+  def perimeter(width, height):
+      """Return the perimeter of a width x height rectangle."""
+      return 2 * (width + height)
+tests:
+  visible:
+    - call: perimeter(3, 2)
+      expected: "10"
+  hidden:
+    - call: perimeter(0, 0)
+      expected: "0"
+    - call: perimeter(1.5, 2)
+      expected: "7.0"
+    - call: perimeter(10, 1)
+      expected: "22"
+hints:
+  - "Deux largeurs et deux hauteurs."
+  - "2 × (largeur + hauteur)."
+  - "`return 2 * (width + height)`"
