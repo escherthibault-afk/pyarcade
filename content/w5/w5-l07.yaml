@@ -1,0 +1,50 @@
+id: w5-l07
+world: 5
+type: quiz
+title: "QCM éclair : listes"
+concepts: [listes, mutabilite, sorted, alias]
+difficulty: 2
+estimated_minutes: 2
+xp: 30
+story: "Les listes sont modifiables… et ça réserve des surprises."
+statement_md: "10 questions, 60 secondes."
+time_limit: 60
+questions:
+  - q: "`a = [1, 2]`, `b = a`, `b.append(3)`. Que vaut `a` ?"
+    choices: ["[1, 2]", "[1, 2, 3]", "[3]", "Erreur"]
+    answer: 1
+    explain: "`b = a` ne copie pas : a et b sont la MÊME liste. Copie : `b = a[:]` ou `list(a)`."
+  - q: "Que vaut `sorted([3, 1, 2])` ?"
+    choices: ["[1, 2, 3]", "None", "[3, 2, 1]", "(1, 2, 3)"]
+    answer: 0
+  - q: "Que vaut `[3, 1, 2].sort()` ?"
+    choices: ["[1, 2, 3]", "None", "Erreur", "True"]
+    answer: 1
+    explain: "`.sort()` trie sur place et renvoie None. `sorted(...)` renvoie une nouvelle liste."
+  - q: "Que vaut `[1, 2] + [3]` ?"
+    choices: ["[1, 2, 3]", "[4, 5]", "Erreur", "[[1, 2], 3]"]
+    answer: 0
+  - q: "Que vaut `[0] * 3` ?"
+    choices: ["[0, 0, 0]", "[0]", "0", "[3]"]
+    answer: 0
+  - q: "Que vaut `len([[1, 2], [3]])` ?"
+    choices: ["2", "3", "1", "Erreur"]
+    answer: 0
+  - q: "`l = [1, 2, 3]` ; que vaut `l[3]` ?"
+    choices: ["3", "IndexError", "None", "[]"]
+    answer: 1
+  - q: "`l = [1, 2, 3]` ; que vaut `l[1:10]` ?"
+    choices: ["IndexError", "[2, 3]", "[1, 2, 3]", "[]"]
+    answer: 1
+    explain: "Une tranche ne lève jamais d'erreur : elle s'arrête au bout de la liste."
+  - q: "Que vaut `[x * 2 for x in [1, 2, 3]]` ?"
+    choices: ["[2, 4, 6]", "[1, 2, 3, 1, 2, 3]", "6", "Erreur"]
+    answer: 0
+  - q: "Que vaut `[x for x in range(6) if x % 2 == 0]` ?"
+    choices: ["[0, 2, 4]", "[1, 3, 5]", "[2, 4, 6]", "[0, 2, 4, 6]"]
+    answer: 0
+card:
+  title: "sorted vs sort, alias"
+  body_md: |
+    `sorted(l)` → nouvelle liste triée. `l.sort()` → trie l sur place, renvoie `None`.
+    `b = a` : même liste (alias). Copie : `a[:]` ou `list(a)`.

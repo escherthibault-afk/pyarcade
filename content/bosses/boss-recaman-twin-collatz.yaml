@@ -1,0 +1,268 @@
+id: boss-recaman-twin-collatz
+world: 5
+type: boss
+variant: twin
+project: "recaman:collatz"
+title: "👯 Jumeau : la suite de Syracuse (Collatz)"
+concepts: [listes, while, dict, complexite]
+difficulty: 4
+estimated_minutes: 45
+xp: 350
+statement_md: "Une autre suite célèbre, même démarche : construire, interroger, accélérer."
+intro_md: |
+  ## Syracuse
+
+  Partant d'un entier `n ≥ 1` : s'il est pair on le divise par 2, sinon on le remplace par `3n + 1`.
+  On s'arrête en arrivant à **1**. Exemple : `6 → 3 → 10 → 5 → 16 → 8 → 4 → 2 → 1`.
+
+  Conjecture (non démontrée !) : on arrive toujours à 1. La **longueur** d'une suite = son nombre de termes (`6` → 9 termes).
+  Pour aller vite sur beaucoup de nombres, on mémorise les longueurs déjà connues dans un **dictionnaire**.
+header_code: ""
+steps:
+  - fn: next_collatz
+    title: "terme suivant"
+    statement_md: "`n // 2` si `n` est pair, `3 * n + 1` sinon."
+    starter_code: |
+      def next_collatz(n):
+          """Return the next term of the Collatz sequence."""
+          pass
+    solution: |
+      def next_collatz(n):
+          """Return the next term of the Collatz sequence."""
+          if n % 2 == 0:
+              return n // 2
+          return 3 * n + 1
+    tests:
+      visible:
+        - call: next_collatz(6)
+          expected: "3"
+        - call: next_collatz(3)
+          expected: "10"
+      hidden:
+        - call: next_collatz(1)
+          expected: "4"
+        - call: next_collatz(16)
+          expected: "8"
+          label: "entier, pas float"
+    hints:
+      - "Pair : `n % 2 == 0`."
+      - "Division **entière** `//`, sinon on obtient un float."
+      - "Deux `return`."
+    points: 1.5
+  - fn: collatz
+    title: "la suite complète"
+    statement_md: "Renvoie la liste des termes de `n` jusqu'à 1 inclus."
+    starter_code: |
+      def collatz(n):
+          """Return the Collatz sequence from n down to 1."""
+          pass
+    solution: |
+      def collatz(n):
+          """Return the Collatz sequence from n down to 1."""
+          sequence = [n]
+          while n != 1:
+              n = next_collatz(n)
+              sequence.append(n)
+          return sequence
+    tests:
+      visible:
+        - call: collatz(6)
+          expected: "[6, 3, 10, 5, 16, 8, 4, 2, 1]"
+      hidden:
+        - call: collatz(1)
+          expected: "[1]"
+        - call: len(collatz(27))
+          expected: "112"
+    hints:
+      - "Commence avec `[n]`."
+      - "`while n != 1:`"
+      - "Ajoute chaque nouveau terme."
+    points: 2
+  - fn: peak
+    title: "l'altitude maximale"
+    statement_md: "Renvoie le plus grand terme de la suite partant de `n` (sans `max`)."
+    starter_code: |
+      def peak(n):
+          """Return the greatest term of the Collatz sequence from n."""
+          pass
+    solution: |
+      def peak(n):
+          """Return the greatest term of the Collatz sequence from n."""
+          best = n
+          for x in collatz(n):
+              if x > best:
+                  best = x
+          return best
+    tests:
+      visible:
+        - call: peak(6)
+          expected: "16"
+      hidden:
+        - call: peak(27)
+          expected: "9232"
+        - call: peak(1)
+          expected: "1"
+    constraints:
+      forbidden: ["call:max"]
+    hints:
+      - "Motif du maximum."
+      - "Sur la liste `collatz(n)`."
+      - "Initialise avec n."
+    points: 1.5
+  - fn: longest_below
+    title: "le plus long voyage"
+    statement_md: "Parmi `1 … limit-1`, renvoie le nombre dont la suite est la **plus longue** (le plus petit en cas d'égalité)."
+    starter_code: |
+      def longest_below(limit):
+          """Return the number below limit with the longest Collatz sequence."""
+          pass
+    solution: |
+      def longest_below(limit):
+          """Return the number below limit with the longest Collatz sequence."""
+          best = 1
+          best_length = 1
+          for n in range(1, limit):
+              length = len(collatz(n))
+              if length > best_length:
+                  best = n
+                  best_length = length
+          return best
+    tests:
+      visible:
+        - call: longest_below(10)
+          expected: "9"
+      hidden:
+        - call: longest_below(100)
+          expected: "97"
+        - call: longest_below(2)
+          expected: "1"
+    hints:
+      - "Garde le meilleur nombre ET sa longueur."
+      - "Strictement plus long pour garder le plus petit en cas d'égalité."
+      - "`len(collatz(n))`"
+    points: 2.5
+  - fn: length_memo
+    title: "longueur avec mémoire"
+    statement_md: |
+      `cache` est un dictionnaire `{nombre: longueur}`. Calcule la longueur de la suite de `n` en t'arrêtant dès que tu tombes sur un nombre **déjà dans `cache`** :
+      longueur = pas parcourus + `cache[ce nombre]`. Ajoute ensuite `n` (au moins) dans `cache`, et renvoie la longueur.
+      Au départ, `cache` contient `{1: 1}`.
+    starter_code: |
+      def length_memo(n, cache):
+          """Return the Collatz length of n, using and filling the dict cache."""
+          pass
+    solution: |
+      def length_memo(n, cache):
+          """Return the Collatz length of n, using and filling the dict cache."""
+          steps = 0
+          x = n
+          while x not in cache:
+              x = next_collatz(x)
+              steps += 1
+          length = steps + cache[x]
+          cache[n] = length
+          return length
+    tests:
+      visible:
+        - call: "length_memo(6, {1: 1})"
+          expected: "9"
+      hidden:
+        - setup: "c = {1: 1}\nlength_memo(5, c)"
+          call: "(length_memo(10, c), c[5])"
+          expected: "(7, 6)"
+          label: "réutilise le cache"
+        - call: "length_memo(27, {1: 1})"
+          expected: "112"
+    hints:
+      - "Avance jusqu'à trouver un nombre connu du cache."
+      - "Longueur = pas faits + longueur connue."
+      - "N'oublie pas `cache[n] = length`."
+    points: 3
+  - fn: longest_below_fast
+    title: "rapide avec un dict"
+    statement_md: "Comme `longest_below`, mais avec `length_memo` et un **seul** dictionnaire partagé. Le test caché va jusqu'à 300 000."
+    starter_code: |
+      def longest_below_fast(limit):
+          """Return the number below limit with the longest sequence, using a cache."""
+          pass
+    solution: |
+      def longest_below_fast(limit):
+          """Return the number below limit with the longest sequence, using a cache."""
+          cache = {1: 1}
+          best = 1
+          best_length = 1
+          for n in range(1, limit):
+              length = length_memo(n, cache)
+              if length > best_length:
+                  best = n
+                  best_length = length
+          return best
+    tests:
+      visible:
+        - call: longest_below_fast(100)
+          expected: "97"
+      hidden:
+        - call: longest_below_fast(10000)
+          expected: "6171"
+        - call: longest_below_fast(300000)
+          expected: "230631"
+          timeout_ms: 10000
+          label: "300 000"
+    hints:
+      - "Un dictionnaire `cache = {1: 1}` créé une fois, avant la boucle."
+      - "`length_memo(n, cache)` pour chaque n."
+      - "Même logique de meilleur que `longest_below`."
+    points: 3
+  - fn: count_reaching
+    title: "combien passent par là ?"
+    statement_md: "Combien de nombres de `1` à `limit - 1` ont une suite qui **passe par** `target` ?"
+    starter_code: |
+      def count_reaching(target, limit):
+          """Return how many n in range(1, limit) have target in their sequence."""
+          pass
+    solution: |
+      def count_reaching(target, limit):
+          """Return how many n in range(1, limit) have target in their sequence."""
+          count = 0
+          for n in range(1, limit):
+              if target in collatz(n):
+                  count += 1
+          return count
+    tests:
+      visible:
+        - call: count_reaching(16, 10)
+          expected: "5"
+      hidden:
+        - call: count_reaching(1, 50)
+          expected: "49"
+        - call: count_reaching(9232, 30)
+          expected: "1"
+    hints:
+      - "Compteur + boucle."
+      - "`target in collatz(n)`"
+      - "Renvoie le compteur."
+    points: 2
+  - fn: lengths
+    title: "liste des longueurs"
+    statement_md: "Renvoie la liste des longueurs pour `n = 1 … limit-1` (compréhension autorisée)."
+    starter_code: |
+      def lengths(limit):
+          """Return [length of the sequence of n for n in 1..limit-1]."""
+          pass
+    solution: |
+      def lengths(limit):
+          """Return [length of the sequence of n for n in 1..limit-1]."""
+          cache = {1: 1}
+          return [length_memo(n, cache) for n in range(1, limit)]
+    tests:
+      visible:
+        - call: lengths(7)
+          expected: "[1, 2, 8, 3, 6, 9]"
+      hidden:
+        - call: lengths(1)
+          expected: "[]"
+    hints:
+      - "Une compréhension sur `range(1, limit)`."
+      - "Réutilise `length_memo` avec un cache."
+      - "Ou `len(collatz(n))`."
+    points: 2.5

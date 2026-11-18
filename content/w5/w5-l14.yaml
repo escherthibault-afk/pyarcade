@@ -1,0 +1,50 @@
+id: w5-l14
+world: 5
+type: write_test
+title: "Démasque les faux seconds"
+concepts: [assert, tests, cas_limites, listes]
+difficulty: 3
+estimated_minutes: 5
+xp: 45
+story: "Qui est deuxième du classement ? Trois fonctions se trompent, une seule a raison."
+statement_md: "Écris des `assert` qui gardent la bonne version et éliminent les trois autres."
+signature: |
+  def second_largest(items):
+      """Return the second greatest DISTINCT value of items (at least two distinct values)."""
+implementations:
+  - label: A
+    correct: false
+    code: |
+      def second_largest(items):
+          return sorted(items)[-2]
+  - label: B
+    correct: true
+    code: |
+      def second_largest(items):
+          return sorted(set(items))[-2]
+  - label: C
+    correct: false
+    code: |
+      def second_largest(items):
+          return items[1]
+  - label: D
+    correct: false
+    code: |
+      def second_largest(items):
+          best = max(items)
+          second = 0
+          for x in items:
+              if x > second and x != best:
+                  second = x
+          return second
+starter_code: |
+  assert second_largest([1, 5, 3]) == 3
+solution: |
+  assert second_largest([1, 5, 3]) == 3
+  assert second_largest([5, 5, 2]) == 2
+  assert second_largest([9, 1, 4]) == 4
+  assert second_largest([-1, -5, -3]) == -3
+hints:
+  - "A ne gère pas les égalités, C suppose la liste triée, D suppose des nombres positifs."
+  - "Un test avec un maximum en double, un test non trié, un test avec des négatifs."
+  - "`assert second_largest([5, 5, 2]) == 2`"

@@ -1,0 +1,23 @@
+id: w5-l08
+world: 5
+type: trace
+title: "Trace la pile"
+concepts: [listes, append, pop, trace]
+difficulty: 2
+estimated_minutes: 3
+xp: 30
+story: "Une pile d'assiettes : on pose sur le dessus, on retire du dessus."
+statement_md: "Après chaque passage sur la ligne marquée, note `c` et `stack`."
+code: |
+  stack = []
+  for c in "ab-c--":
+      if c == "-":
+          stack.pop()
+      else:
+          stack.append(c)
+      size = len(stack)  # @snap
+watch: [c, stack]
+hints:
+  - "Une lettre s'ajoute à la fin, un `-` retire le dernier."
+  - "Après `a`, `b`, `-` : `['a']`."
+  - "À la fin la pile est vide."

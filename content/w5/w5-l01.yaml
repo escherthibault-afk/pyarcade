@@ -1,0 +1,42 @@
+id: w5-l01
+world: 5
+type: lesson
+title: "Les listes"
+concepts: [listes, indexation, append, len]
+difficulty: 1
+estimated_minutes: 2
+xp: 15
+story: "Le tableau des scores de l'arcade : une liste, qui grandit à chaque partie."
+statement_md: |
+  ```python
+  scores = [120, 45, 300]
+  scores[0]          # 120   (premier)
+  scores[-1]         # 300   (dernier)
+  len(scores)        # 3
+  scores.append(80)  # ajoute à la fin : [120, 45, 300, 80]
+  scores[1] = 50     # une liste est MODIFIABLE (contrairement à une chaîne)
+  80 in scores       # True
+  ```
+example_code: |
+  scores = [120, 45, 300]
+  scores.append(80)
+  print(scores)
+  print(len(scores), scores[-1])
+task_md: "Ajoute le score `999`, puis remplace le **premier** score par `0` : le programme doit afficher `[0, 45, 300, 80, 999]` puis `5 999`."
+expected_output: "[0, 45, 300, 80, 999]\n5 999\n"
+solution: |
+  scores = [120, 45, 300]
+  scores.append(80)
+  scores.append(999)
+  scores[0] = 0
+  print(scores)
+  print(len(scores), scores[-1])
+hints:
+  - "Deux lignes à ajouter avant les `print`."
+  - "`scores.append(999)` et `scores[0] = 0`."
+  - "L'ordre des deux lignes n'a pas d'importance ici."
+card:
+  title: "Listes"
+  body_md: |
+    `l[i]`, `l[-1]`, `len(l)`, `l.append(x)`, `x in l`, `l[i] = v` (modifiable), `l.pop()`, `l.insert(i, x)`.
+    Parcours : `for x in l:` (valeurs) ou `for i in range(len(l)):` (indices) ou `for i, x in enumerate(l):`.

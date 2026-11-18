@@ -1,0 +1,28 @@
+id: w5-l11
+world: 5
+type: predict_output
+title: "Le piège du sort"
+concepts: [sort, sorted, None, alias]
+difficulty: 3
+estimated_minutes: 3
+xp: 35
+story: "Un grand classique de DS : qui a été trié, qui vaut None ?"
+statement_md: "Qu'affiche ce programme ?"
+code: |
+  a = [3, 1, 2]
+  b = sorted(a)
+  print(a, b)
+  c = a.sort()
+  print(a, c)
+  d = a
+  d.append(0)
+  print(a)
+answer: |
+  [3, 1, 2] [1, 2, 3]
+  [1, 2, 3] None
+  [1, 2, 3, 0]
+hints:
+  - "`sorted` ne modifie pas `a`."
+  - "`a.sort()` modifie `a` et renvoie `None`."
+  - "`d = a` : d et a sont la même liste."
+explanation_md: "`c = a.sort()` est le piège classique : c vaut None. Et `d = a` est un alias, pas une copie."

@@ -1,0 +1,360 @@
+id: boss-recaman-guided
+world: 5
+type: boss
+variant: guided
+project: recaman
+title: "♾️ Boss Recamán"
+concepts: [listes, in, set, abs, complexite]
+difficulty: 4
+estimated_minutes: 50
+xp: 400
+min_stars: 30
+live_game: recaman
+packages: [matplotlib]
+statement_md: "Construis une suite étrange terme à terme, puis interroge-la… et découvre pourquoi `in` sur une liste coûte cher."
+intro_md: |
+  ## La suite de Recamán
+
+  On part de `a(0) = 0`. Pour `n ≥ 1`, on essaie de **reculer** de `n` :
+  - si `a(n-1) - n` est **strictement positif** et **pas déjà dans la suite**, alors `a(n) = a(n-1) - n` ;
+  - sinon, on **avance** : `a(n) = a(n-1) + n`.
+
+  Début : `0, 1, 3, 6, 2, 7, 13, 20, 12, 21, 11, 22, 10, 23, 9, 24, 8, 25, 43, 62, 42, 63, 41, 18, 42, …`
+  (oui, 42 revient : la suite n'est pas injective !)
+
+  Questions ouvertes (même les mathématiciens ne savent pas !) : tous les entiers apparaissent-ils un jour ?
+  Tu vas écrire les outils pour explorer la suite, puis une version **rapide** avec un `set`.
+header_code: ""
+steps:
+  - fn: next_term
+    title: "le terme suivant"
+    statement_md: "Renvoie le terme d'indice `step`, sachant le terme précédent `previous` et la liste `sequence` des termes déjà calculés."
+    starter_code: |
+      def next_term(previous, step, sequence):
+          """Return the next Recaman term: previous - step if allowed, else previous + step."""
+          pass
+    solution: |
+      def next_term(previous, step, sequence):
+          """Return the next Recaman term: previous - step if allowed, else previous + step."""
+          back = previous - step
+          if back > 0 and back not in sequence:
+              return back
+          return previous + step
+    tests:
+      visible:
+        - call: next_term(6, 4, [0, 1, 3, 6])
+          expected: "2"
+        - call: next_term(2, 5, [0, 1, 3, 6, 2])
+          expected: "7"
+      hidden:
+        - call: next_term(0, 1, [0])
+          expected: "1"
+          label: "recul négatif"
+        - call: next_term(1, 2, [0, 1])
+          expected: "3"
+        - call: next_term(63, 21, [0, 1, 3, 6, 2, 7, 13, 20, 12, 21, 11, 22, 10, 23, 9, 24, 8, 25, 43, 62, 42])
+          expected: "84"
+          label: "42 déjà présent"
+    hints:
+      - "Calcule d'abord le candidat en reculant."
+      - "Deux conditions pour reculer : `> 0` et `not in sequence`."
+      - "Sinon, `previous + step`."
+    points: 2
+  - fn: recaman
+    title: "les n premiers termes"
+    statement_md: "Renvoie la liste des `n` premiers termes (`recaman(0)` → `[]`, `recaman(1)` → `[0]`)."
+    starter_code: |
+      def recaman(n):
+          """Return the list of the first n Recaman terms."""
+          pass
+    solution: |
+      def recaman(n):
+          """Return the list of the first n Recaman terms."""
+          if n == 0:
+              return []
+          sequence = [0]
+          for step in range(1, n):
+              sequence.append(next_term(sequence[-1], step, sequence))
+          return sequence
+    tests:
+      visible:
+        - call: recaman(10)
+          expected: "[0, 1, 3, 6, 2, 7, 13, 20, 12, 21]"
+      hidden:
+        - call: recaman(0)
+          expected: "[]"
+        - call: recaman(1)
+          expected: "[0]"
+        - call: recaman(25)[-5:]
+          expected: "[42, 63, 41, 18, 42]"
+        - call: len(recaman(300))
+          expected: "300"
+    hints:
+      - "On part de `[0]` et on ajoute n-1 termes."
+      - "`for step in range(1, n):`"
+      - "`sequence.append(next_term(sequence[-1], step, sequence))`"
+    points: 2
+  - fn: check_differences
+    title: "vérifier la suite"
+    statement_md: "Renvoie `True` si, pour chaque indice `k ≥ 1`, l'écart `|a(k) - a(k-1)|` vaut exactement `k`."
+    starter_code: |
+      def check_differences(sequence):
+          """Return True if |a(k) - a(k-1)| == k for every k >= 1."""
+          pass
+    solution: |
+      def check_differences(sequence):
+          """Return True if |a(k) - a(k-1)| == k for every k >= 1."""
+          for k in range(1, len(sequence)):
+              if abs(sequence[k] - sequence[k - 1]) != k:
+                  return False
+          return True
+    tests:
+      visible:
+        - call: check_differences([0, 1, 3, 6, 2])
+          expected: "True"
+        - call: check_differences([0, 1, 3, 5])
+          expected: "False"
+      hidden:
+        - call: check_differences([])
+          expected: "True"
+        - call: check_differences(recaman(200))
+          expected: "True"
+        - call: check_differences([0, 2])
+          expected: "False"
+    hints:
+      - "Boucle sur les indices à partir de 1."
+      - "`abs(...)` pour l'écart."
+      - "Renvoie False dès qu'un écart est faux."
+    points: 1.5
+  - fn: first_duplicate
+    title: "le premier doublon"
+    statement_md: "Renvoie la **première valeur** qui apparaît une deuxième fois (en lisant de gauche à droite), ou `None`."
+    starter_code: |
+      def first_duplicate(sequence):
+          """Return the first value seen twice, or None."""
+          pass
+    solution: |
+      def first_duplicate(sequence):
+          """Return the first value seen twice, or None."""
+          seen = []
+          for x in sequence:
+              if x in seen:
+                  return x
+              seen.append(x)
+          return None
+    tests:
+      visible:
+        - call: first_duplicate([5, 3, 8, 3, 5])
+          expected: "3"
+      hidden:
+        - call: first_duplicate([1, 2, 3])
+          expected: "None"
+        - call: first_duplicate(recaman(100))
+          expected: "42"
+          label: "dans Recamán"
+        - call: first_duplicate([])
+          expected: "None"
+    hints:
+      - "Garde les valeurs déjà vues."
+      - "Dès qu'une valeur est déjà vue, c'est elle."
+      - "`None` si on arrive au bout."
+    points: 1.5
+  - fn: first_missing
+    title: "le premier absent"
+    statement_md: "Renvoie le plus petit entier `≥ 0` absent de la suite."
+    starter_code: |
+      def first_missing(sequence):
+          """Return the smallest non-negative integer that is not in sequence."""
+          pass
+    solution: |
+      def first_missing(sequence):
+          """Return the smallest non-negative integer that is not in sequence."""
+          k = 0
+          while k in sequence:
+              k += 1
+          return k
+    tests:
+      visible:
+        - call: first_missing([0, 1, 3])
+          expected: "2"
+      hidden:
+        - call: first_missing([])
+          expected: "0"
+        - call: first_missing(recaman(100))
+          expected: "4"
+        - call: first_missing(recaman(1000))
+          expected: "19"
+          label: "plus loin"
+    hints:
+      - "Commence à 0 et avance tant que k est présent."
+      - "`while k in sequence: k += 1`"
+      - "Renvoie k."
+    points: 1.5
+  - fn: count_present
+    title: "combien sont là ?"
+    statement_md: "Renvoie combien d'entiers de `0` à `limit - 1` apparaissent dans la suite."
+    starter_code: |
+      def count_present(sequence, limit):
+          """Return how many integers in range(limit) appear in sequence."""
+          pass
+    solution: |
+      def count_present(sequence, limit):
+          """Return how many integers in range(limit) appear in sequence."""
+          count = 0
+          for k in range(limit):
+              if k in sequence:
+                  count += 1
+          return count
+    tests:
+      visible:
+        - call: count_present([0, 1, 3, 6], 4)
+          expected: "3"
+      hidden:
+        - call: count_present(recaman(100), 50)
+          expected: "43"
+        - call: count_present([], 10)
+          expected: "0"
+    hints:
+      - "Boucle sur `range(limit)`."
+      - "Compte ceux qui sont `in sequence`."
+      - "Un compteur, comme toujours."
+    points: 1.5
+  - fn: max_term
+    title: "le record"
+    statement_md: "Renvoie le plus grand terme de la suite (non vide), **sans** `max`."
+    starter_code: |
+      def max_term(sequence):
+          """Return the greatest term of the non-empty sequence."""
+          pass
+    solution: |
+      def max_term(sequence):
+          """Return the greatest term of the non-empty sequence."""
+          best = sequence[0]
+          for x in sequence:
+              if x > best:
+                  best = x
+          return best
+    tests:
+      visible:
+        - call: max_term(recaman(10))
+          expected: "21"
+      hidden:
+        - call: max_term(recaman(100))
+          expected: "228"
+        - call: max_term([7])
+          expected: "7"
+    constraints:
+      forbidden: ["call:max", "call:sorted"]
+    hints:
+      - "Initialise avec le premier terme."
+      - "Garde le plus grand rencontré."
+      - "Motif du maximum."
+    points: 1
+  - fn: recaman_fast
+    title: "la version rapide"
+    statement_md: |
+      Même résultat que `recaman(n)`, mais en gardant **aussi** un `set` des termes déjà vus pour tester l'appartenance.
+      Le test caché demande **200 000 termes** en moins de 10 s : avec `in` sur une liste, c'est des dizaines de minutes.
+      (N'appelle pas `next_term`, qui teste sur la liste.)
+    starter_code: |
+      def recaman_fast(n):
+          """Return the first n Recaman terms, using a set for membership tests."""
+          pass
+    solution: |
+      def recaman_fast(n):
+          """Return the first n Recaman terms, using a set for membership tests."""
+          if n == 0:
+              return []
+          sequence = [0]
+          seen = {0}
+          for step in range(1, n):
+              back = sequence[-1] - step
+              if back > 0 and back not in seen:
+                  term = back
+              else:
+                  term = sequence[-1] + step
+              sequence.append(term)
+              seen.add(term)
+          return sequence
+    tests:
+      visible:
+        - call: recaman_fast(25) == recaman(25)
+          expected: "True"
+      hidden:
+        - call: recaman_fast(0)
+          expected: "[]"
+        - call: recaman_fast(200000)[-1]
+          expected: "361078"
+          label: "200 000 termes"
+          timeout_ms: 10000
+        - call: len(set(recaman_fast(200000)))
+          expected: "146145"
+          timeout_ms: 10000
+    constraints:
+      required: [Set]
+    hints:
+      - "Un `set` vide `seen = {0}` en plus de la liste."
+      - "Teste `back not in seen` (instantané) au lieu de `not in sequence`."
+      - "À chaque nouveau terme : `sequence.append(term)` ET `seen.add(term)`."
+    points: 3
+  - fn: terms_between
+    title: "zoom sur un intervalle"
+    statement_md: "Renvoie, **dans l'ordre de la suite**, les termes compris entre `low` et `high` inclus (compréhension autorisée)."
+    starter_code: |
+      def terms_between(sequence, low, high):
+          """Return the terms t of sequence with low <= t <= high, in order."""
+          pass
+    solution: |
+      def terms_between(sequence, low, high):
+          """Return the terms t of sequence with low <= t <= high, in order."""
+          return [t for t in sequence if low <= t <= high]
+    tests:
+      visible:
+        - call: terms_between(recaman(10), 5, 15)
+          expected: "[6, 7, 13, 12]"
+      hidden:
+        - call: terms_between([], 0, 5)
+          expected: "[]"
+        - call: terms_between(recaman(30), 40, 45)
+          expected: "[43, 42, 41, 42, 43, 44]"
+          label: "doublons conservés"
+    hints:
+      - "Un filtre : on garde t si `low <= t <= high`."
+      - "Compréhension : `[t for t in sequence if ...]`."
+      - "L'ordre de la suite est conservé automatiquement."
+    points: 1.5
+  - fn: plot_recaman
+    title: "dessiner la suite"
+    statement_md: "Trace les `n` premiers termes (`plt.plot(range(n), termes, \".\")`), nomme les axes et renvoie la liste tracée."
+    starter_code: |
+      import matplotlib.pyplot as plt
+
+
+      def plot_recaman(n):
+          """Plot the first n terms and return them."""
+          pass
+    solution: |
+      import matplotlib.pyplot as plt
+
+
+      def plot_recaman(n):
+          """Plot the first n terms and return them."""
+          terms = recaman_fast(n)
+          plt.plot(range(n), terms, ".")
+          plt.xlabel("n")
+          plt.ylabel("a(n)")
+          plt.title("Suite de Recamán")
+          return terms
+    tests:
+      visible:
+        - call: len(plot_recaman(50))
+          expected: "50"
+      hidden:
+        - setup: "import matplotlib.pyplot as plt\nplt.close('all')\nplot_recaman(20)"
+          call: "(plt.gca().get_xlabel() != '', plt.gca().get_ylabel() != '', len(plt.gca().get_lines()))"
+          expected: "(True, True, 1)"
+    hints:
+      - "Calcule les termes avec `recaman_fast`."
+      - "`plt.plot(xs, ys, \".\")` trace des points."
+      - "`plt.xlabel(...)`, `plt.ylabel(...)`."
+    points: 1

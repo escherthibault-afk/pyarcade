@@ -1,0 +1,222 @@
+id: boss-recaman-exam
+world: 5
+type: boss
+variant: exam
+project: "recaman:exam"
+title: "🎓 Examen : une suite « à la Recamán » (60 min)"
+concepts: [listes, in, set, complexite]
+difficulty: 5
+estimated_minutes: 60
+xp: 0
+time_limit_minutes: 60
+statement_md: "Sujet en 60 minutes, sans indice. La règle de la suite est **légèrement différente** : lis bien."
+intro_md: |
+  ## Sujet : la suite des sauts doubles
+
+  On part de `u(0) = 1`. Pour `n ≥ 1`, on essaie de reculer de `2n` :
+  - si `u(n-1) - 2n` est **strictement positif** et **pas déjà dans la suite**, alors `u(n) = u(n-1) - 2n` ;
+  - sinon `u(n) = u(n-1) + 2n`.
+
+  Début : `1, 3, 7, 13, 5, 15, 27, 41, 25, 43, …`
+header_code: ""
+steps:
+  - fn: next_term
+    title: "terme suivant"
+    statement_md: "Renvoie `u(step)` connaissant `previous = u(step-1)` et la liste `sequence` des termes déjà calculés."
+    starter_code: |
+      def next_term(previous, step, sequence):
+          """Return the next term (jump back 2*step if allowed, else forward)."""
+          pass
+    solution: |
+      def next_term(previous, step, sequence):
+          """Return the next term (jump back 2*step if allowed, else forward)."""
+          back = previous - 2 * step
+          if back > 0 and back not in sequence:
+              return back
+          return previous + 2 * step
+    tests:
+      visible:
+        - call: next_term(13, 4, [1, 3, 7, 13])
+          expected: "5"
+      hidden:
+        - call: next_term(1, 1, [1])
+          expected: "3"
+        - call: next_term(5, 5, [1, 3, 7, 13, 5])
+          expected: "15"
+    points: 2.5
+  - fn: sequence
+    title: "les n premiers termes"
+    statement_md: "Liste des `n` premiers termes (`[]` pour `n = 0`)."
+    starter_code: |
+      def sequence(n):
+          """Return the first n terms."""
+          pass
+    solution: |
+      def sequence(n):
+          """Return the first n terms."""
+          if n == 0:
+              return []
+          terms = [1]
+          for step in range(1, n):
+              terms.append(next_term(terms[-1], step, terms))
+          return terms
+    tests:
+      visible:
+        - call: sequence(10)
+          expected: "[1, 3, 7, 13, 5, 15, 27, 41, 25, 43]"
+      hidden:
+        - call: sequence(0)
+          expected: "[]"
+        - call: sequence(1)
+          expected: "[1]"
+    points: 2.5
+  - fn: all_odd
+    title: "tous impairs ?"
+    statement_md: "`True` si tous les termes sont impairs."
+    starter_code: |
+      def all_odd(terms):
+          """Return True if every term is odd."""
+          pass
+    solution: |
+      def all_odd(terms):
+          """Return True if every term is odd."""
+          for t in terms:
+              if t % 2 == 0:
+                  return False
+          return True
+    tests:
+      visible:
+        - call: all_odd(sequence(100))
+          expected: "True"
+      hidden:
+        - call: all_odd([1, 3, 4])
+          expected: "False"
+        - call: all_odd([])
+          expected: "True"
+    points: 1.5
+  - fn: first_duplicate
+    title: "premier doublon"
+    statement_md: "Première valeur vue deux fois, ou `None`."
+    starter_code: |
+      def first_duplicate(terms):
+          """Return the first value seen twice, or None."""
+          pass
+    solution: |
+      def first_duplicate(terms):
+          """Return the first value seen twice, or None."""
+          seen = set()
+          for t in terms:
+              if t in seen:
+                  return t
+              seen.add(t)
+          return None
+    tests:
+      visible:
+        - call: first_duplicate([4, 2, 4])
+          expected: "4"
+      hidden:
+        - call: first_duplicate([1, 2])
+          expected: "None"
+        - call: first_duplicate(sequence(60))
+          expected: "85"
+    points: 2.5
+  - fn: first_missing_odd
+    title: "premier impair absent"
+    statement_md: "Plus petit **impair** `≥ 1` absent des termes."
+    starter_code: |
+      def first_missing_odd(terms):
+          """Return the smallest odd number >= 1 missing from terms."""
+          pass
+    solution: |
+      def first_missing_odd(terms):
+          """Return the smallest odd number >= 1 missing from terms."""
+          present = set(terms)
+          k = 1
+          while k in present:
+              k += 2
+          return k
+    tests:
+      visible:
+        - call: first_missing_odd([1, 3, 7])
+          expected: "5"
+      hidden:
+        - call: first_missing_odd([])
+          expected: "1"
+        - call: first_missing_odd(sequence(500))
+          expected: "39"
+    points: 2.5
+  - fn: sequence_fast
+    title: "version rapide"
+    statement_md: "Même résultat que `sequence(n)` avec un `set` ; test caché : 150 000 termes."
+    starter_code: |
+      def sequence_fast(n):
+          """Return the first n terms, using a set for membership tests."""
+          pass
+    solution: |
+      def sequence_fast(n):
+          """Return the first n terms, using a set for membership tests."""
+          if n == 0:
+              return []
+          terms = [1]
+          seen = {1}
+          for step in range(1, n):
+              back = terms[-1] - 2 * step
+              term = back if back > 0 and back not in seen else terms[-1] + 2 * step
+              terms.append(term)
+              seen.add(term)
+          return terms
+    tests:
+      visible:
+        - call: sequence_fast(50) == sequence(50)
+          expected: "True"
+      hidden:
+        - call: sequence_fast(150000)[-1]
+          expected: "687969"
+          timeout_ms: 10000
+    points: 4
+  - fn: count_below
+    title: "combien en dessous"
+    statement_md: "Nombre de **valeurs distinctes** strictement inférieures à `limit`."
+    starter_code: |
+      def count_below(terms, limit):
+          """Return how many distinct values are lower than limit."""
+          pass
+    solution: |
+      def count_below(terms, limit):
+          """Return how many distinct values are lower than limit."""
+          return len({t for t in terms if t < limit})
+    tests:
+      visible:
+        - call: count_below([1, 3, 3, 9], 5)
+          expected: "2"
+      hidden:
+        - call: count_below([], 5)
+          expected: "0"
+        - call: count_below(sequence(200), 100)
+          expected: "46"
+    points: 2.5
+  - fn: jumps_back
+    title: "nombre de reculs"
+    statement_md: "Combien de fois la suite **recule** (`u(n) < u(n-1)`) ?"
+    starter_code: |
+      def jumps_back(terms):
+          """Return how many times the sequence goes down."""
+          pass
+    solution: |
+      def jumps_back(terms):
+          """Return how many times the sequence goes down."""
+          count = 0
+          for i in range(1, len(terms)):
+              if terms[i] < terms[i - 1]:
+                  count += 1
+          return count
+    tests:
+      visible:
+        - call: jumps_back([1, 3, 2, 5, 4])
+          expected: "2"
+      hidden:
+        - call: jumps_back([])
+          expected: "0"
+        - call: jumps_back(sequence(10))
+          expected: "2"
+    points: 2

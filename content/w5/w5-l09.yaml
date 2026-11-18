@@ -1,0 +1,40 @@
+id: w5-l09
+world: 5
+type: code_fill
+title: "À l'envers, sans toucher"
+concepts: [listes, pure, parcours]
+difficulty: 2
+estimated_minutes: 4
+xp: 35
+story: "Afficher le classement à l'envers… sans abîmer le classement original."
+statement_md: "Renvoie une **nouvelle** liste à l'envers. Interdit : `reversed`, `.reverse()`, `[::-1]`. La liste reçue ne doit **pas** être modifiée."
+starter_code: |
+  def reverse_list(items):
+      """Return a new list with the elements of items in reverse order."""
+      pass
+solution: |
+  def reverse_list(items):
+      """Return a new list with the elements of items in reverse order."""
+      result = []
+      for i in range(len(items) - 1, -1, -1):
+          result.append(items[i])
+      return result
+tests:
+  visible:
+    - call: reverse_list([1, 2, 3])
+      expected: "[3, 2, 1]"
+  hidden:
+    - call: reverse_list([])
+      expected: "[]"
+    - call: reverse_list([1, 2, 3])
+      pure: true
+      expected: "[3, 2, 1]"
+      label: "la liste d'origine n'est pas modifiée"
+    - call: reverse_list(["x"])
+      expected: "['x']"
+constraints:
+  forbidden: ["call:reversed", "method:reverse", "Slice"]
+hints:
+  - "Parcours les indices du dernier au premier."
+  - "`range(len(items) - 1, -1, -1)` va de len-1 à 0."
+  - "Variante : `result.insert(0, x)` pour chaque x."

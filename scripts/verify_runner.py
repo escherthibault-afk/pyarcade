@@ -80,6 +80,8 @@ def check_code(job):
     # the starter must fail at least one test (or a constraint)
     st = run_suite(job["starter"], job, tests, job.get("statistical", []), [1], starter=True)
     starter_fails = bool(st["load"]["error"]) or any(not r.get("passed") for r in st["results"])
+    # a constraint the starter breaks counts as a failed check (golf, refactor...)
+    starter_fails = starter_fails or any(runner.check_constraints(job["starter"], c) for c in job.get("constraints", []))
     if not starter_fails:
         errors.append("starter_code passes every test (tests are too weak)")
     return errors

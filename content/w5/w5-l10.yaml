@@ -1,0 +1,46 @@
+id: w5-l10
+world: 5
+type: golf
+title: "Golf : les pairs"
+concepts: [comprehension, golf]
+difficulty: 3
+estimated_minutes: 4
+xp: 40
+story: "Code Golf : la solution la plus courte gagne. Les compréhensions de listes sont tes clubs."
+statement_md: |
+  Renvoie la liste des nombres **pairs** de `items`, dans l'ordre. Le code entier (`def` compris) doit faire au plus **par**
+  caractères pour la 3e étoile. Indice : une compréhension `[x for x in l if ...]`.
+starter_code: |
+  def evens(items):
+      result = []
+      for x in items:
+          if x % 2 == 0:
+              result.append(x)
+      return result
+solution: |
+  def evens(l):
+      return [x for x in l if x % 2 == 0]
+par_chars: 55
+tests:
+  visible:
+    - call: evens([1, 2, 3, 4])
+      expected: "[2, 4]"
+  hidden:
+    - call: evens([])
+      expected: "[]"
+    - call: evens([-2, 7, 0])
+      expected: "[-2, 0]"
+    - call: evens([3, 5])
+      expected: "[]"
+constraints:
+  required: [Comprehension]
+hints:
+  - "Une compréhension remplace la boucle + append."
+  - "`[x for x in items if x % 2 == 0]`"
+  - "Raccourcis le nom du paramètre et supprime les espaces inutiles."
+explanation_md: "Une compréhension `[expr for x in l if cond]` construit une liste en une ligne. En dehors du golf, garde des noms lisibles !"
+card:
+  title: "Compréhensions de listes"
+  body_md: |
+    `[f(x) for x in l]` (transformer) · `[x for x in l if cond]` (filtrer).
+    Équivaut à une boucle avec `append`, en plus court.

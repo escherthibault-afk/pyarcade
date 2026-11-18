@@ -1,0 +1,47 @@
+id: w5-l12
+world: 5
+type: bug_hunt
+title: "Supprimer en parcourant"
+concepts: [listes, modification_parcours, bug]
+difficulty: 3
+estimated_minutes: 5
+xp: 40
+story: "On voulait retirer tous les zéros du tableau. Certains ont survécu…"
+statement_md: |
+  `without_zeros(items)` renvoie une **nouvelle** liste sans les zéros, et ne modifie pas `items`.
+  Le code supprime pendant qu'il parcourt : **1 bug** (2 vies).
+starter_code: |
+  def without_zeros(items):
+      """Return a new list with the elements of items that are not 0."""
+      for x in items:
+          if x == 0:
+              items.remove(x)
+      return items
+solution: |
+  def without_zeros(items):
+      """Return a new list with the elements of items that are not 0."""
+      result = []
+      for x in items:
+          if x != 0:
+              result.append(x)
+      return result
+bugs: 1
+tests:
+  visible:
+    - call: without_zeros([1, 0, 0, 2])
+      expected: "[1, 2]"
+  hidden:
+    - call: without_zeros([0, 0, 0])
+      expected: "[]"
+    - call: without_zeros([1, 0, 0, 2])
+      pure: true
+      expected: "[1, 2]"
+      label: "liste d'origine intacte"
+    - call: without_zeros([])
+      expected: "[]"
+hints:
+  - "Que devient l'élément qui suit un zéro supprimé ?"
+  - "Ne modifie pas la liste que tu parcours : construis-en une nouvelle."
+  - "Une liste `result` et `append` des éléments non nuls."
+explanation_md: "Supprimer décale les éléments suivants : la boucle saute celui qui prend la place. Construire une nouvelle liste évite le problème (et respecte la pureté)."
+exam_tip: "Ne modifie jamais une liste pendant que tu la parcours avec `for`."

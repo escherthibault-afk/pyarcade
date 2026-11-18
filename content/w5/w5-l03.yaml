@@ -1,0 +1,35 @@
+id: w5-l03
+world: 5
+type: code_fill
+title: "Le dernier, prudemment"
+concepts: [listes, indexation, cas_limites]
+difficulty: 1
+estimated_minutes: 2
+xp: 20
+story: "Afficher le dernier score… quand il y en a un."
+statement_md: "Renvoie le dernier élément de la liste, ou `None` si elle est vide."
+starter_code: |
+  def last(items):
+      """Return the last element of items, or None if items is empty."""
+      pass
+solution: |
+  def last(items):
+      """Return the last element of items, or None if items is empty."""
+      if len(items) == 0:
+          return None
+      return items[-1]
+tests:
+  visible:
+    - call: last([3, 7, 1])
+      expected: "1"
+  hidden:
+    - call: last([])
+      expected: "None"
+      label: "liste vide"
+    - call: last(["solo"])
+      expected: "'solo'"
+hints:
+  - "Que se passe-t-il avec `[][-1]` ?"
+  - "Traite le cas vide d'abord."
+  - "`if len(items) == 0: return None` puis `return items[-1]`."
+exam_tip: "« Et si la liste est vide ? » est LE test caché le plus fréquent."

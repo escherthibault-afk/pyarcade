@@ -1,0 +1,39 @@
+id: w5-l15
+world: 5
+type: copy
+title: "Mode copie : la moyenne"
+concepts: [listes, moyenne, cas_limites]
+difficulty: 2
+estimated_minutes: 4
+xp: 35
+story: "DS papier : une seule copie, pas d'exécution."
+statement_md: "Renvoie la moyenne des éléments de la liste, ou `0` si elle est vide. **Sans** `sum`."
+starter_code: |
+  def average(items):
+      """Return the mean of items, or 0 for an empty list."""
+      pass
+solution: |
+  def average(items):
+      """Return the mean of items, or 0 for an empty list."""
+      if len(items) == 0:
+          return 0
+      total = 0
+      for x in items:
+          total += x
+      return total / len(items)
+tests:
+  visible:
+    - call: average([2, 4, 6])
+      expected: "4.0"
+  hidden:
+    - call: average([])
+      expected: "0"
+      label: "liste vide"
+    - call: average([5])
+      expected: "5.0"
+    - call: average([1, 2])
+      expected: "1.5"
+constraints:
+  forbidden: ["call:sum"]
+hints: []
+exam_tip: "Division par la longueur → pense à la liste vide (ZeroDivisionError)."

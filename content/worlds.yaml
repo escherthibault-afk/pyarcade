@@ -46,7 +46,7 @@ worlds:
     emoji: "📚"
     color: "#5dade2"
     radar: listes
-    bosses: []
+    bosses: [boss-recaman-guided, boss-recaman-twin-collatz, boss-recaman-exam]
   - id: 6
     title: Tuples & vecteurs
     title_en: Tuples & vectors

@@ -1,0 +1,47 @@
+id: w5-l05
+world: 5
+type: bug_hunt
+title: "Le maximum qui aime le zéro"
+concepts: [listes, maximum, bug]
+difficulty: 2
+estimated_minutes: 4
+xp: 35
+story: "Les températures de l'hiver sont toutes négatives… mais le maximum affiché est 0°C. Bizarre."
+statement_md: "`find_max(items)` renvoie le plus grand élément d'une liste **non vide**, sans `max`. **2 bugs**."
+starter_code: |
+  def find_max(items):
+      """Return the greatest element of the non-empty list items."""
+      best = 0
+      for x in items:
+          if x < best:
+              best = x
+      return best
+solution: |
+  def find_max(items):
+      """Return the greatest element of the non-empty list items."""
+      best = items[0]
+      for x in items:
+          if x > best:
+              best = x
+      return best
+bugs: 2
+tests:
+  visible:
+    - call: find_max([3, 9, 2])
+      expected: "9"
+  hidden:
+    - call: find_max([-5, -2, -9])
+      expected: "-2"
+      label: "que des négatifs"
+    - call: find_max([7])
+      expected: "7"
+    - call: find_max([1, 1, 1])
+      expected: "1"
+constraints:
+  forbidden: ["call:max", "call:sorted"]
+hints:
+  - "Avec que des négatifs, qui gagne contre le 0 de départ ?"
+  - "On part du premier élément, et on garde x s'il est plus GRAND."
+  - "`best = items[0]` et `if x > best:`."
+explanation_md: "Initialiser le maximum avec le premier élément évite de supposer quoi que ce soit sur les valeurs."
+exam_tip: "N'initialise jamais un max à 0 (ni un min à 1000) : prends le premier élément."

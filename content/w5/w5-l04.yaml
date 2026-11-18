@@ -1,0 +1,39 @@
+id: w5-l04
+world: 5
+type: code_fill
+title: "Compter à la main"
+concepts: [listes, for, compteur]
+difficulty: 2
+estimated_minutes: 3
+xp: 30
+story: "Combien de fois le 6 est-il sorti ? Compte-le toi-même, `count` est en grève."
+statement_md: "Renvoie le nombre d'éléments de `items` égaux à `value`, **sans** `.count()`."
+starter_code: |
+  def count_value(items, value):
+      """Return how many elements of items are equal to value."""
+      pass
+solution: |
+  def count_value(items, value):
+      """Return how many elements of items are equal to value."""
+      count = 0
+      for x in items:
+          if x == value:
+              count += 1
+      return count
+tests:
+  visible:
+    - call: count_value([6, 2, 6, 6, 1], 6)
+      expected: "3"
+  hidden:
+    - call: count_value([], 6)
+      expected: "0"
+    - call: count_value([1, 2, 3], 4)
+      expected: "0"
+    - call: count_value(["a", "b", "a"], "a")
+      expected: "2"
+constraints:
+  forbidden: ["method:count"]
+hints:
+  - "Compteur à 0, boucle sur les éléments."
+  - "`if x == value: count += 1`"
+  - "Renvoie après la boucle."
