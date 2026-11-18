@@ -1,0 +1,35 @@
+id: w0-l11
+world: 0
+type: parsons
+title: "Le ticket de caisse"
+concepts: [input, conversion, fstring]
+difficulty: 2
+estimated_minutes: 3
+xp: 25
+story: "La caisse de la boutique de l'arcade a perdu ses lignes de code. Remets-les dans l'ordre !"
+statement_md: |
+  Le programme lit un **prix unitaire** (à virgule) puis une **quantité** (entière),
+  et affiche le total avec deux chiffres après la virgule : saisies `2.5` puis `4` → `Total : 10.00 €`.
+  Attention aux deux lignes **leurres**.
+lines:
+  - "prix = float(input(\"Prix ? \"))"
+  - "quantite = int(input(\"Quantité ? \"))"
+  - "total = prix * quantite"
+  - "print(f\"Total : {total:.2f} €\")"
+distractors:
+  - "total = prix + quantite"
+  - "quantite = input(\"Quantité ? \")"
+tests:
+  visible:
+    - script: true
+      stdin: ["2.5", "4"]
+      output: "Total : 10.00 €\n"
+  hidden:
+    - script: true
+      stdin: ["0.99", "3"]
+      output: "Total : 2.97 €\n"
+hints:
+  - "On ne peut calculer qu'après avoir lu les deux valeurs."
+  - "Une quantité se multiplie, et `input` renvoie du texte."
+  - "Ordre : lire prix, lire quantité, calculer, afficher."
+explanation_md: "Un programme se lit de haut en bas : chaque variable doit exister avant d'être utilisée. `:.2f` arrondit l'**affichage** à 2 décimales."

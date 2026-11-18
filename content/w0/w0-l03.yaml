@@ -1,0 +1,39 @@
+id: w0-l03
+world: 0
+type: lesson
+title: "Les variables, des boîtes étiquetées"
+concepts: [variables, affectation]
+difficulty: 1
+estimated_minutes: 2
+xp: 10
+story: "Ton score doit survivre d'une partie à l'autre. Il lui faut une boîte avec une étiquette."
+statement_md: |
+  `score = 10` crée une **variable** : une étiquette `score` collée sur la valeur `10`.
+  Le `=` veut dire « range à droite dans la boîte de gauche » (ce n'est **pas** une égalité mathématique).
+
+  ```python
+  score = 10
+  score = score + 5   # on lit l'ancienne valeur, on ajoute 5, on range : score vaut 15
+  ```
+example_code: |
+  score = 10
+  bonus = 5
+  score = score + bonus
+  print(score)
+task_md: "Change **une seule valeur** pour que le programme affiche `25`."
+expected_output: "25\n"
+solution: |
+  score = 10
+  bonus = 15
+  score = score + bonus
+  print(score)
+hints:
+  - "Le résultat est `score + bonus`."
+  - "10 + ? = 25"
+  - "Remplace `bonus = 5` par `bonus = 15`."
+card:
+  title: "Variables et affectation"
+  body_md: |
+    `x = valeur` range une valeur sous le nom `x`. `x = x + 1` lit l'ancienne valeur puis la remplace.
+    Noms en minuscules avec `_` : `nb_essais`, `score_max`.
+exam_tip: "Choisis des noms parlants (`nb_essais` plutôt que `n2`) : la lisibilité fait partie du barème."

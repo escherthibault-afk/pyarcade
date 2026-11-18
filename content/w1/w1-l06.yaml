@@ -1,0 +1,62 @@
+id: w1-l06
+world: 1
+type: parsons
+title: "Les mentions"
+concepts: [if, elif, else, indentation]
+difficulty: 2
+estimated_minutes: 4
+xp: 30
+story: "Le jury de l'arcade distribue des mentions. Ses lignes de code sont tombées par terre."
+statement_md: |
+  Remets la fonction dans l'ordre **et** à la bonne indentation (flèches ← →).
+  `grade(note)` renvoie `"TB"` (≥ 16), `"B"` (≥ 14), `"AB"` (≥ 12), `"Passable"` (≥ 10), sinon `"Ajourné"`.
+  Une ligne est un leurre.
+lines:
+  - "def grade(note):"
+  - "    if note >= 16:"
+  - "        return \"TB\""
+  - "    elif note >= 14:"
+  - "        return \"B\""
+  - "    elif note >= 12:"
+  - "        return \"AB\""
+  - "    elif note >= 10:"
+  - "        return \"Passable\""
+  - "    else:"
+  - "        return \"Ajourné\""
+distractors:
+  - "    elif note > 14:"
+tests:
+  visible:
+    - call: grade(17)
+      expected: "'TB'"
+    - call: grade(11)
+      expected: "'Passable'"
+  hidden:
+    - call: grade(16)
+      expected: "'TB'"
+    - call: grade(14)
+      expected: "'B'"
+    - call: grade(12)
+      expected: "'AB'"
+    - call: grade(10)
+      expected: "'Passable'"
+    - call: grade(9.5)
+      expected: "'Ajourné'"
+hints:
+  - "On teste du plus haut seuil au plus bas : le premier `if` vrai gagne."
+  - "Tous les `return` sont décalés d'un cran de plus que leur `if`/`elif`/`else`."
+  - "Ordre : 16, 14, 12, 10, puis `else`. Le leurre utilise `>` au lieu de `>=`."
+explanation_md: "Dans une cascade `if/elif/else`, Python s'arrête au **premier** test vrai. Si on testait `>= 10` en premier, tout le monde aurait « Passable » !"
+exam_tip: "Ordonne les `elif` du cas le plus restrictif au plus large. Et vérifie chaque seuil avec une note pile égale."
+card:
+  title: "if / elif / else"
+  body_md: |
+    ```python
+    if cond1:
+        ...
+    elif cond2:   # testé seulement si cond1 est fausse
+        ...
+    else:         # aucune n'était vraie
+        ...
+    ```
+    Le premier test vrai gagne : ordonne du plus restrictif au plus large.

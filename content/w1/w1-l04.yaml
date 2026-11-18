@@ -1,0 +1,43 @@
+id: w1-l04
+world: 1
+type: code_fill
+title: "Majeur ?"
+concepts: [comparaison, return, bool]
+difficulty: 1
+estimated_minutes: 3
+xp: 20
+story: "Le videur veut une fonction qui répond vite : majeur ou pas ?"
+statement_md: |
+  Complète `is_adult(age)` : elle renvoie `True` si `age` vaut au moins 18, `False` sinon.
+  Défi : **pas de `if`** ! Une comparaison est déjà un booléen : renvoie-la directement.
+starter_code: |
+  def is_adult(age):
+      """Return True if age is at least 18, else False."""
+      pass
+solution: |
+  def is_adult(age):
+      """Return True if age is at least 18, else False."""
+      return age >= 18
+tests:
+  visible:
+    - call: is_adult(30)
+      expected: "True"
+    - call: is_adult(12)
+      expected: "False"
+  hidden:
+    - call: is_adult(18)
+      expected: "True"
+      label: "pile 18 ans"
+    - call: is_adult(17)
+      expected: "False"
+      label: "17 ans"
+    - call: is_adult(0)
+      expected: "False"
+constraints:
+  forbidden: [If]
+hints:
+  - "`age >= 18` vaut déjà `True` ou `False`."
+  - "Une seule ligne suffit : `return <comparaison>`."
+  - "`return age >= 18`"
+explanation_md: "Écrire `if age >= 18: return True else: return False` marche, mais c'est trois fois plus long pour rien : la comparaison **est** le booléen."
+exam_tip: "Les correcteurs apprécient `return condition` au lieu d'un `if` qui renvoie `True`/`False` : c'est plus lisible."

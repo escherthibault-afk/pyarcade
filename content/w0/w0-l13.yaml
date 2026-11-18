@@ -1,0 +1,43 @@
+id: w0-l13
+world: 0
+type: bug_hunt
+title: "La moyenne qui ment"
+concepts: [priorite, conversion, bug]
+difficulty: 2
+estimated_minutes: 4
+xp: 30
+story: "Le bulletin de l'arcade calcule ta moyenne… et te met 20 alors que tu as eu 12. Suspect."
+statement_md: |
+  Le programme lit trois notes (à virgule) et affiche leur moyenne : `12`, `15`, `9` → `Moyenne : 12.0`.
+  Il y a **2 bugs**, donc 3 vies.
+starter_code: |
+  n1 = float(input("Note 1 ? "))
+  n2 = float(input("Note 2 ? "))
+  n3 = input("Note 3 ? ")
+  moyenne = n1 + n2 + n3 / 3
+  print(f"Moyenne : {moyenne}")
+solution: |
+  n1 = float(input("Note 1 ? "))
+  n2 = float(input("Note 2 ? "))
+  n3 = float(input("Note 3 ? "))
+  moyenne = (n1 + n2 + n3) / 3
+  print(f"Moyenne : {moyenne}")
+bugs: 2
+tests:
+  visible:
+    - script: true
+      stdin: ["12", "15", "9"]
+      output: "Moyenne : 12.0\n"
+  hidden:
+    - script: true
+      stdin: ["10", "10", "10"]
+      output: "Moyenne : 10.0\n"
+    - script: true
+      stdin: ["0", "0", "3"]
+      output: "Moyenne : 1.0\n"
+hints:
+  - "Un des trois `input` n'est pas converti. Et la division : que divise-t-elle exactement ?"
+  - "La division est prioritaire sur l'addition, comme en maths."
+  - "Il faut `float(...)` sur la 3e note et des parenthèses : `(n1 + n2 + n3) / 3`."
+explanation_md: "Priorité des opérateurs : `**` puis `* / // %` puis `+ -`. `n1 + n2 + n3 / 3` divise seulement `n3`. Les parenthèses forcent l'ordre."
+exam_tip: "Mets des parenthèses dès que tu as un doute : elles ne coûtent rien et évitent des points perdus."

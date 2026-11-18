@@ -1,0 +1,29 @@
+id: w0-l07
+world: 0
+type: predict_output
+title: "Speed Read : opérateurs"
+concepts: [division, modulo, puissance]
+difficulty: 2
+estimated_minutes: 2
+xp: 20
+story: "Le chrono tourne. Lis vite, mais lis bien."
+statement_md: "Speed Read : tape la sortie avant la fin du temps pour la 3e étoile."
+timed_seconds: 45
+code: |
+  print(7 // 2)
+  print(7 % 2)
+  print(2 ** 5)
+  print(10 / 4)
+  print(-7 // 2)
+answer: |
+  3
+  1
+  32
+  2.5
+  -4
+hints:
+  - "`//` arrondit vers le **bas** (vers moins l'infini)."
+  - "-7 / 2 = -3.5, arrondi vers le bas : -4."
+  - "`10 / 4` donne un float : 2.5."
+explanation_md: "`//` arrondit **vers le bas**, même pour les négatifs : `-7 // 2` vaut `-4`, pas `-3`. Et `-7 % 2` vaut `1` (le reste est toujours du signe du diviseur)."
+exam_tip: "Piège classique de DS : `//` et `%` sur des nombres négatifs. Retiens : `a == (a // b) * b + a % b`."

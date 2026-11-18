@@ -1,0 +1,38 @@
+id: w0-l10
+world: 0
+type: lesson
+title: "Les f-strings"
+concepts: [fstring]
+difficulty: 1
+estimated_minutes: 2
+xp: 10
+story: "Ton tableau des scores veut des phrases, pas des nombres en vrac."
+statement_md: |
+  Une **f-string** commence par `f` avant les guillemets. Ce qui est entre `{}` est **remplacé par sa valeur** :
+
+  ```python
+  nom = "Ada"
+  score = 42
+  print(f"{nom} a {score} points")       # Ada a 42 points
+  print(f"Moyenne : {7 / 3:.2f}")        # Moyenne : 2.33  (2 chiffres après la virgule)
+  ```
+example_code: |
+  nom = "Ada"
+  age = 36
+  print(f"Bonjour {nom} !")
+task_md: "Remplace la dernière ligne pour afficher exactement `Ada a 36 ans.` en utilisant les variables `nom` et `age` dans une f-string."
+expected_output: "Ada a 36 ans.\n"
+solution: |
+  nom = "Ada"
+  age = 36
+  print(f"{nom} a {age} ans.")
+hints:
+  - "Mets les variables entre accolades dans la chaîne."
+  - "f\"{nom} a ... ans.\""
+  - "`print(f\"{nom} a {age} ans.\")`"
+card:
+  title: "f-strings"
+  body_md: |
+    `f"Score : {score}"` insère la valeur de `score`.
+    `{x:.2f}` : 2 chiffres après la virgule. Plus simple et plus sûr que `"Score : " + str(score)`.
+exam_tip: "Les f-strings évitent l'erreur `can only concatenate str (not \"int\") to str`."

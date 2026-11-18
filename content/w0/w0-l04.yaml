@@ -1,0 +1,35 @@
+id: w0-l04
+world: 0
+type: code_fill
+title: "Ton premier calcul"
+concepts: [variables, operateurs, print]
+difficulty: 1
+estimated_minutes: 3
+xp: 20
+story: "L'écran de l'arcade fait 7 cases de large et 3 de haut. Combien de cases à allumer ?"
+statement_md: |
+  Complète le programme : calcule l'**aire** du rectangle dans la variable `aire`
+  en utilisant `largeur` et `hauteur` (pas le nombre écrit à la main !), puis affiche-la.
+starter_code: |
+  largeur = 7
+  hauteur = 3
+  aire = 0  # à remplacer par le calcul
+  print(aire)
+solution: |
+  largeur = 7
+  hauteur = 3
+  aire = largeur * hauteur
+  print(aire)
+tests:
+  visible:
+    - script: true
+      output: "21\n"
+  hidden: []
+constraints:
+  required: ["name:largeur", "name:hauteur", Mult]
+hints:
+  - "La multiplication s'écrit avec `*`."
+  - "aire = largeur fois hauteur"
+  - "`aire = largeur * hauteur`"
+explanation_md: "Écrire `largeur * hauteur` plutôt que `21` rend le programme **réutilisable** : change `largeur` et l'aire suit."
+exam_tip: "Un calcul « en dur » (`print(21)`) peut donner le bon affichage mais vaut zéro : le correcteur vérifie que ton code calcule."

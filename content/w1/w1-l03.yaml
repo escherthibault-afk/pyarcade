@@ -1,0 +1,49 @@
+id: w1-l03
+world: 1
+type: lesson
+title: "Remplacer pass : le format de l'examen"
+concepts: [fonction, return]
+difficulty: 1
+estimated_minutes: 2
+xp: 15
+story: "À l'examen, on te donne des coquilles vides : à toi de mettre le moteur dedans."
+statement_md: |
+  À l'examen, chaque exercice ressemble à ça :
+
+  ```python
+  def double(n):
+      """Return twice n."""
+      pass
+  ```
+
+  - `def` crée une **fonction** ; `n` est son **paramètre** (la valeur qu'on lui donne).
+  - La chaîne entre `"""` est la **docstring** : elle dit ce que la fonction doit faire. Garde-la.
+  - `pass` veut dire « ne rien faire ». Ton travail : le **remplacer** par du code qui fait un `return` du résultat.
+
+  On teste ensuite la fonction en l'appelant : `double(21)` doit valoir `42`.
+example_code: |
+  def double(n):
+      """Return twice n."""
+      return n * 2
+
+
+  print(double(21))
+task_md: "Transforme la fonction pour qu'elle renvoie le **triple** de `n` (garde son nom) : le programme doit afficher `63`."
+expected_output: "63\n"
+solution: |
+  def double(n):
+      """Return three times n."""
+      return n * 3
+
+
+  print(double(21))
+hints:
+  - "Seule la ligne du `return` change."
+  - "Le triple de n, c'est n fois 3."
+  - "`return n * 3`"
+card:
+  title: "Le format d'examen"
+  body_md: |
+    Signature `def nom(param):` + docstring + `pass` à remplacer.
+    Une fonction **renvoie** son résultat avec `return` ; elle n'affiche rien (pas de `print` dedans, sauf si c'est demandé).
+exam_tip: "Ne modifie **jamais** la signature imposée (nom de la fonction, noms et ordre des paramètres) : les tests du correcteur l'appellent exactement comme ça."

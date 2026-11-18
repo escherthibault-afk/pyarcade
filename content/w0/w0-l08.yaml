@@ -1,0 +1,56 @@
+id: w0-l08
+world: 0
+type: code_fill
+title: "Convertisseur de minutes"
+concepts: [input, division, modulo]
+difficulty: 2
+estimated_minutes: 4
+xp: 30
+story: "Ta session d'arcade a duré 135 minutes. Ça fait combien d'heures, au juste ?"
+statement_md: |
+  Le programme lit un nombre de minutes (entier) au clavier.
+  Affiche-le sous la forme `H h M min`.
+
+  | saisie | affichage |
+  |---|---|
+  | `135` | `2 h 15 min` |
+  | `60` | `1 h 0 min` |
+starter_code: |
+  minutes = int(input("Nombre de minutes ? "))
+  # calcule heures et reste, puis affiche
+solution: |
+  minutes = int(input("Nombre de minutes ? "))
+  heures = minutes // 60
+  reste = minutes % 60
+  print(f"{heures} h {reste} min")
+tests:
+  visible:
+    - script: true
+      stdin: ["135"]
+      output: "2 h 15 min\n"
+    - script: true
+      stdin: ["60"]
+      output: "1 h 0 min\n"
+  hidden:
+    - script: true
+      stdin: ["59"]
+      output: "0 h 59 min\n"
+      label: "moins d'une heure"
+    - script: true
+      stdin: ["0"]
+      output: "0 h 0 min\n"
+      label: "zéro"
+    - script: true
+      stdin: ["1441"]
+      output: "24 h 1 min\n"
+hints:
+  - "Le nombre d'heures, c'est un quotient ; les minutes restantes, un reste."
+  - "heures = minutes // 60 ; reste = minutes % 60"
+  - "`print(heures, \"h\", reste, \"min\")` marche aussi (les virgules mettent des espaces)."
+explanation_md: "`//` et `%` vont toujours ensemble : quotient et reste. Variante : `heures, reste = divmod(minutes, 60)`."
+exam_tip: "Les tests comparent l'affichage **exact** : espaces et minuscules comptent. Recopie le format de l'énoncé caractère par caractère."
+card:
+  title: "input()"
+  body_md: |
+    `texte = input("Question ? ")` lit une ligne au clavier et renvoie **toujours** une chaîne.
+    `n = int(input())` pour un entier, `float(input())` pour un nombre à virgule.

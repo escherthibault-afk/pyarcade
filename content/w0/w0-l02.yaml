@@ -1,0 +1,26 @@
+id: w0-l02
+world: 0
+type: predict_output
+title: "Ce que print affiche vraiment"
+concepts: [print, str, int]
+difficulty: 1
+estimated_minutes: 2
+xp: 15
+story: "Le premier boss de ta vie de codeuse ou codeur : lire du code sans l'exécuter."
+statement_md: "Lis le programme et tape **exactement** ce qu'il affiche (une ligne par `print`)."
+code: |
+  print("3 + 4")
+  print(3 + 4)
+  print("Score", 10)
+  print("A" + "B")
+answer: |
+  3 + 4
+  7
+  Score 10
+  AB
+hints:
+  - "Entre guillemets, c'est du texte : Python ne calcule pas."
+  - "Plusieurs valeurs dans un `print` sont séparées par un espace ; `+` entre deux textes les colle sans espace."
+  - "Ligne 1 : le texte tel quel. Ligne 2 : le résultat du calcul."
+explanation_md: "`\"3 + 4\"` est une chaîne : elle s'affiche telle quelle. `3 + 4` est un calcul : `7`. La virgule dans `print` ajoute un espace ; le `+` entre deux chaînes les **concatène** sans espace."
+exam_tip: "Dans un exercice « qu'affiche ce programme ? », écris la sortie ligne par ligne, sans guillemets : `print` n'affiche jamais les guillemets d'une chaîne."

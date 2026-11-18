@@ -1,0 +1,38 @@
+id: w1-l01
+world: 1
+type: lesson
+title: "Vrai ou faux ?"
+concepts: [comparaison, bool]
+difficulty: 1
+estimated_minutes: 2
+xp: 10
+story: "Le videur de la salle d'arcade ne connaît que deux mots : True et False."
+statement_md: |
+  Une **comparaison** donne un booléen, `True` ou `False` :
+
+  | opérateur | sens | exemple |
+  |---|---|---|
+  | `==` | égal | `3 == 3` → `True` |
+  | `!=` | différent | `3 != 3` → `False` |
+  | `<` `>` | strictement inférieur / supérieur | `17 > 18` → `False` |
+  | `<=` `>=` | inférieur / supérieur **ou égal** | `18 >= 18` → `True` |
+
+  ⚠️ `=` range une valeur, `==` compare.
+example_code: |
+  age = 18
+  print(age > 18)
+task_md: "Le videur doit laisser entrer les personnes de **18 ans ou plus**. Change l'opérateur pour que le programme affiche `True` avec `age = 18`."
+expected_output: "True\n"
+solution: |
+  age = 18
+  print(age >= 18)
+hints:
+  - "18 n'est pas strictement plus grand que 18."
+  - "Il faut l'opérateur « supérieur ou égal »."
+  - "`print(age >= 18)`"
+card:
+  title: "Comparaisons"
+  body_md: |
+    `==` `!=` `<` `>` `<=` `>=` donnent `True`/`False`. Ne confonds pas `=` (affectation) et `==` (comparaison).
+    `a < b < c` est autorisé en Python.
+exam_tip: "Lis l'énoncé au mot près : « au moins 18 ans » → `>= 18`, « plus de 18 ans » → `> 18`. Les cas d'égalité sont les tests cachés préférés des correcteurs."

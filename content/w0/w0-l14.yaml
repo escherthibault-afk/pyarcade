@@ -1,0 +1,57 @@
+id: w0-l14
+world: 0
+type: code_fill
+title: "Le distributeur de billets"
+concepts: [division, modulo, input, fstring]
+difficulty: 3
+estimated_minutes: 6
+xp: 40
+story: "Le distributeur de l'arcade doit rendre une somme avec le moins de billets possible."
+statement_md: |
+  Le programme lit une somme entière (multiple de 10). Rends-la avec des billets de **50**, **20** et **10**,
+  en commençant par les plus gros, et affiche le nombre de chaque billet :
+
+  ```
+  saisie : 180
+  50 : 3
+  20 : 1
+  10 : 1
+  ```
+starter_code: |
+  somme = int(input("Somme ? "))
+  # à toi : combien de billets de 50, puis de 20, puis de 10 ?
+solution: |
+  somme = int(input("Somme ? "))
+  b50 = somme // 50
+  somme = somme % 50
+  b20 = somme // 20
+  somme = somme % 20
+  b10 = somme // 10
+  print(f"50 : {b50}")
+  print(f"20 : {b20}")
+  print(f"10 : {b10}")
+tests:
+  visible:
+    - script: true
+      stdin: ["180"]
+      output: "50 : 3\n20 : 1\n10 : 1\n"
+  hidden:
+    - script: true
+      stdin: ["0"]
+      output: "50 : 0\n20 : 0\n10 : 0\n"
+      label: "somme nulle"
+    - script: true
+      stdin: ["40"]
+      output: "50 : 0\n20 : 2\n10 : 0\n"
+    - script: true
+      stdin: ["90"]
+      output: "50 : 1\n20 : 2\n10 : 0\n"
+    - script: true
+      stdin: ["1000"]
+      output: "50 : 20\n20 : 0\n10 : 0\n"
+hints:
+  - "Nombre de billets de 50 = combien de fois 50 rentre dans la somme. Ce qui reste passe aux billets de 20."
+  - "`b50 = somme // 50` puis `somme = somme % 50`, et pareil pour 20 puis 10."
+  - "Trois blocs identiques : quotient, puis on garde le reste."
+explanation_md: "C'est un algorithme **glouton** : on prend toujours le plus gros billet possible. `//` donne le nombre de billets, `%` ce qu'il reste à rendre."
+exam_tip: "Quand un énoncé répète le même calcul, écris-le une fois proprement puis recopie-le : moins d'erreurs. (Au monde 4, une boucle le fera pour toi.)"

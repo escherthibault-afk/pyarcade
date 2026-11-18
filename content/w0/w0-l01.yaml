@@ -1,0 +1,34 @@
+id: w0-l01
+world: 0
+type: lesson
+title: "Bonjour, Python !"
+concepts: [print]
+difficulty: 1
+estimated_minutes: 1
+xp: 10
+story: "Ta borne d'arcade s'allume. Elle attend une seule chose : que tu la salues."
+statement_md: |
+  `print(...)` **affiche** ce qu'on lui donne entre parenthèses.
+  Un texte (une *chaîne*) s'écrit entre guillemets : `"Bonjour"`.
+
+  ```python
+  print("Bonjour !")      # affiche : Bonjour !
+  print("Je", "code")     # plusieurs valeurs séparées par des virgules -> un espace entre elles
+  ```
+example_code: |
+  # Clique sur « Exécuter » pour voir ce qui s'affiche.
+  print("Bonjour !")
+task_md: "Modifie le texte pour afficher exactement `Bonjour, PyArcade !` puis exécute."
+expected_output: "Bonjour, PyArcade !\n"
+solution: |
+  print("Bonjour, PyArcade !")
+hints:
+  - "Seul le texte entre les guillemets change."
+  - "Attention à la virgule, à l'espace et au point d'exclamation : tout doit être identique."
+  - "`print(\"Bonjour, PyArcade !\")`"
+card:
+  title: "print"
+  body_md: |
+    `print(a, b, c)` affiche les valeurs séparées par un espace puis passe à la ligne.
+    Un texte s'écrit entre guillemets `"..."` ou `'...'`.
+exam_tip: "À l'examen, `print` sert à **montrer** un résultat à l'écran. Une fonction qui doit *calculer* une valeur la **renvoie** avec `return` (tu verras ça au monde 2)."

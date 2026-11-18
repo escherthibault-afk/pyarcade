@@ -1,0 +1,30 @@
+id: w1-l02
+world: 1
+type: predict_output
+title: "Comparaisons express"
+concepts: [comparaison, bool, str]
+difficulty: 1
+estimated_minutes: 2
+xp: 15
+story: "Six verdicts, un seul juge : toi."
+statement_md: "Qu'affiche ce programme ?"
+code: |
+  print(3 < 5)
+  print(5 == 5.0)
+  print("Ana" == "ana")
+  print(3 != 3)
+  print(1 < 2 < 3)
+  print("b" > "a")
+answer: |
+  True
+  True
+  False
+  False
+  True
+  True
+hints:
+  - "`5` et `5.0` ont la même valeur, même si leurs types diffèrent."
+  - "Les majuscules comptent dans une comparaison de chaînes."
+  - "Les chaînes se comparent dans l'ordre alphabétique (du dictionnaire)."
+explanation_md: "`5 == 5.0` est vrai (même valeur). `\"Ana\" == \"ana\"` est faux : `A` et `a` sont des caractères différents. D'où l'intérêt de `.lower()` avant de comparer des mots (Wordle !)."
+exam_tip: "Pour comparer des mots sans tenir compte des majuscules : `mot1.lower() == mot2.lower()`."

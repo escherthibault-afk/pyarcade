@@ -1,0 +1,37 @@
+id: w0-l06
+world: 0
+type: lesson
+title: "Diviser : /, // et %"
+concepts: [division, modulo]
+difficulty: 1
+estimated_minutes: 2
+xp: 10
+story: "17 jetons à partager entre 5 joueurs. Combien chacun, et combien en reste-t-il ?"
+statement_md: |
+  - `a / b` : division « normale », donne toujours un `float` (`17 / 5` → `3.4`)
+  - `a // b` : division **entière** (le quotient, `17 // 5` → `3`)
+  - `a % b` : le **reste** de la division entière (`17 % 5` → `2`)
+  - `a ** b` : puissance (`2 ** 3` → `8`)
+example_code: |
+  jetons = 17
+  joueurs = 5
+  print(jetons / joueurs)
+  print(jetons // joueurs)
+  print(jetons % joueurs)
+task_md: "Modifie le programme pour qu'il affiche seulement le **quotient** puis le **reste** de la division de `47` par `6` (deux lignes)."
+expected_output: "7\n5\n"
+solution: |
+  jetons = 47
+  joueurs = 6
+  print(jetons // joueurs)
+  print(jetons % joueurs)
+hints:
+  - "Il faut changer les valeurs et supprimer la ligne avec `/`."
+  - "47 = 6 × 7 + 5"
+  - "Garde seulement `print(jetons // joueurs)` et `print(jetons % joueurs)`."
+card:
+  title: "/, //, % et **"
+  body_md: |
+    `/` → float · `//` → quotient entier · `%` → reste · `**` → puissance.
+    `n % 2 == 0` teste si `n` est pair. `n % 10` donne le dernier chiffre.
+exam_tip: "Pour un indice de liste ou un nombre de jetons, utilise `//` : `/` donne un float (`3.0`), refusé comme indice."

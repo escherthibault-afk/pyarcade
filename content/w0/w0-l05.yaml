@@ -1,0 +1,52 @@
+id: w0-l05
+world: 0
+type: quiz
+title: "QCM éclair : les types"
+concepts: [int, float, str, bool]
+difficulty: 1
+estimated_minutes: 2
+xp: 20
+story: "Chaque valeur Python porte un badge : int, float, str ou bool. Reconnais-les en un clin d'œil."
+statement_md: "Réponds vite : les bonnes réponses d'affilée font monter le combo."
+time_limit: 60
+questions:
+  - q: "Quel est le type de `42` ?"
+    choices: ["int", "float", "str", "bool"]
+    answer: 0
+  - q: "Quel est le type de `4.0` ?"
+    choices: ["int", "float", "str", "bool"]
+    answer: 1
+    explain: "Dès qu'il y a un point décimal, c'est un `float`, même si la partie décimale vaut 0."
+  - q: "Quel est le type de `\"42\"` ?"
+    choices: ["int", "float", "str", "bool"]
+    answer: 2
+    explain: "Entre guillemets, c'est toujours du texte (`str`)."
+  - q: "Quel est le type de `True` ?"
+    choices: ["int", "str", "bool", "Ce n'est pas du Python"]
+    answer: 2
+  - q: "Que vaut `int(\"12\") + 1` ?"
+    choices: ["13", "\"121\"", "Erreur", "12.1"]
+    answer: 0
+  - q: "Que vaut `\"ha\" * 3` ?"
+    choices: ["\"hahaha\"", "Erreur", "\"ha3\"", "9"]
+    answer: 0
+    explain: "Multiplier une chaîne par un entier la répète."
+  - q: "Que vaut `\"12\" + \"1\"` ?"
+    choices: ["13", "\"121\"", "Erreur", "\"13\""]
+    answer: 1
+    explain: "Deux chaînes + : on les colle (concaténation)."
+  - q: "Que renvoie `input()` quand on tape `7` ?"
+    choices: ["L'entier 7", "La chaîne \"7\"", "Le flottant 7.0", "True"]
+    answer: 1
+    explain: "`input()` renvoie **toujours** une chaîne. Il faut `int(input())` pour obtenir un nombre."
+  - q: "Que vaut `float(\"2.5\") * 2` ?"
+    choices: ["5.0", "\"2.52.5\"", "5", "Erreur"]
+    answer: 0
+  - q: "Que vaut `str(3) + \"3\"` ?"
+    choices: ["6", "\"33\"", "Erreur", "33"]
+    answer: 1
+card:
+  title: "Les 4 types de base"
+  body_md: |
+    `int` (entier) · `float` (à virgule) · `str` (texte) · `bool` (`True`/`False`).
+    Conversions : `int("12")`, `float("2.5")`, `str(3)`. `type(x)` donne le type.

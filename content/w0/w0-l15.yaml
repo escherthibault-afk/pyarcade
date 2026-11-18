@@ -1,0 +1,45 @@
+id: w0-l15
+world: 0
+type: quiz
+title: "QCM éclair : bilan des premiers pas"
+concepts: [print, variables, operateurs, input, fstring]
+difficulty: 2
+estimated_minutes: 2
+xp: 30
+story: "Dernière épreuve du monde 0 : 10 questions, 60 secondes."
+statement_md: "Le combo multiplie tes points. Il faut 60 % pour valider."
+time_limit: 60
+questions:
+  - q: "Après `x = 5` puis `x = x * 2`, que vaut `x` ?"
+    choices: ["5", "10", "25", "x * 2"]
+    answer: 1
+  - q: "Que vaut `17 % 5` ?"
+    choices: ["3", "2", "3.4", "12"]
+    answer: 1
+  - q: "Que vaut `2 ** 10` ?"
+    choices: ["20", "1024", "100", "12"]
+    answer: 1
+  - q: "Que vaut `9 / 3` ?"
+    choices: ["3", "3.0", "\"3\"", "0"]
+    answer: 1
+    explain: "`/` renvoie toujours un float."
+  - q: "Qu'affiche `print(f\"{2 + 3} = 5\")` ?"
+    choices: ["{2 + 3} = 5", "5 = 5", "2 + 3 = 5", "Erreur"]
+    answer: 1
+  - q: "Comment lire un entier au clavier ?"
+    choices: ["input(int)", "int(input())", "input()", "int.input()"]
+    answer: 1
+  - q: "Que vaut `-7 // 2` ?"
+    choices: ["-3", "-4", "-3.5", "3"]
+    answer: 1
+    explain: "`//` arrondit vers le bas : -3.5 devient -4."
+  - q: "Que vaut `0.1 + 0.2 == 0.3` ?"
+    choices: ["True", "False", "Erreur", "0.3"]
+    answer: 1
+  - q: "Quelle ligne provoque une erreur ?"
+    choices: ["\"a\" * 3", "\"a\" + 3", "\"a\" + \"3\"", "str(3)"]
+    answer: 1
+    explain: "On ne peut pas additionner un texte et un nombre."
+  - q: "Que vaut `3 + 4 * 2` ?"
+    choices: ["14", "11", "10", "9"]
+    answer: 1

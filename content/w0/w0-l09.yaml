@@ -1,0 +1,36 @@
+id: w0-l09
+world: 0
+type: bug_hunt
+title: "L'âge dans 10 ans"
+concepts: [input, conversion, bug]
+difficulty: 2
+estimated_minutes: 3
+xp: 25
+story: "Un programme qui prédit ton âge dans 10 ans… et qui plante à chaque fois."
+statement_md: |
+  Ce programme devrait afficher l'âge dans 10 ans, par exemple `Dans 10 ans tu auras 27 ans.` si on tape `17`.
+  Lance-le, lis l'erreur, corrige le bug. **1 bug = 2 vies** : chaque essai raté coûte un cœur.
+starter_code: |
+  age = input("Ton âge ? ")
+  futur = age + 10
+  print(f"Dans 10 ans tu auras {futur} ans.")
+solution: |
+  age = int(input("Ton âge ? "))
+  futur = age + 10
+  print(f"Dans 10 ans tu auras {futur} ans.")
+bugs: 1
+tests:
+  visible:
+    - script: true
+      stdin: ["17"]
+      output: "Dans 10 ans tu auras 27 ans.\n"
+  hidden:
+    - script: true
+      stdin: ["0"]
+      output: "Dans 10 ans tu auras 10 ans.\n"
+hints:
+  - "Que renvoie `input()` : un nombre ou un texte ?"
+  - "On ne peut pas additionner un texte et un nombre : il faut convertir."
+  - "`age = int(input(\"Ton âge ? \"))`"
+explanation_md: "`input()` renvoie la **chaîne** `\"17\"`. `\"17\" + 10` est impossible (`TypeError`). `int(...)` convertit en entier."
+exam_tip: "Lire un nombre au clavier = `int(input(...))`. C'est aussi le piège n° 1 de la lecture de fichiers CSV : tout est du texte."

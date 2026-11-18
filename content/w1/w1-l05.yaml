@@ -1,0 +1,48 @@
+id: w1-l05
+world: 1
+type: bug_hunt
+title: "Le portier distrait"
+concepts: [and, or, comparaison, bug]
+difficulty: 2
+estimated_minutes: 4
+xp: 30
+story: "Le portier laisse entrer n'importe qui avec un ticket, même un enfant de 8 ans. Panique dans la salle."
+statement_md: |
+  `can_enter(age, has_ticket)` doit renvoyer `True` seulement si la personne a **au moins 18 ans ET** un ticket.
+  Il y a **2 bugs** (3 vies).
+starter_code: |
+  def can_enter(age, has_ticket):
+      """Return True if age >= 18 and the person has a ticket."""
+      if age > 18 or has_ticket:
+          return True
+      else:
+          return False
+solution: |
+  def can_enter(age, has_ticket):
+      """Return True if age >= 18 and the person has a ticket."""
+      if age >= 18 and has_ticket:
+          return True
+      else:
+          return False
+bugs: 2
+tests:
+  visible:
+    - call: can_enter(25, True)
+      expected: "True"
+    - call: can_enter(8, True)
+      expected: "False"
+  hidden:
+    - call: can_enter(18, True)
+      expected: "True"
+      label: "pile 18 ans"
+    - call: can_enter(30, False)
+      expected: "False"
+      label: "sans ticket"
+    - call: can_enter(10, False)
+      expected: "False"
+hints:
+  - "Relis la docstring mot à mot, puis la condition symbole par symbole."
+  - "« et » se dit `and` ; « au moins 18 » se dit `>= 18`."
+  - "`if age >= 18 and has_ticket:`"
+explanation_md: "`or` est vrai dès qu'**une** des conditions est vraie, `and` seulement si **les deux** le sont. Et `> 18` exclut les personnes de 18 ans pile."
+exam_tip: "Teste toujours tes conditions sur les cas limites : l'égalité (18 pile) et chaque combinaison True/False."

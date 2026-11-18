@@ -1,0 +1,30 @@
+id: w0-l12
+world: 0
+type: predict_output
+title: "Le piège du flottant"
+concepts: [float, arrondi]
+difficulty: 2
+estimated_minutes: 2
+xp: 20
+story: "L'ordinateur calcule en binaire. Certaines fractions décimales ne tombent jamais juste…"
+statement_md: "Qu'affiche ce programme ? (Indice : il y a un piège sur la première ligne.)"
+code: |
+  print(0.1 + 0.2)
+  print(0.1 + 0.2 == 0.3)
+  print(round(0.1 + 0.2, 2) == 0.3)
+  print(1 + 0.632)
+answer: |
+  0.30000000000000004
+  False
+  True
+  1.6320000000000001
+hints:
+  - "0.1 et 0.2 ne sont pas représentés exactement en machine."
+  - "La somme vaut 0.30000000000000004 : elle n'est donc pas égale à 0.3."
+  - "`round(x, 2)` arrondit à 2 décimales : 0.3."
+explanation_md: "Les flottants sont stockés en binaire : `0.1 + 0.2` donne `0.30000000000000004`. On ne teste **jamais** `==` entre flottants : on compare avec `round(x, 2)` ou `math.isclose(a, b)`."
+exam_tip: "Dans le TP 421, une valeur comme `1.632` peut s'afficher `1.6320000000000001`. Pour comparer des flottants : `round(...)` ou `math.isclose(...)`."
+card:
+  title: "Comparer des flottants"
+  body_md: |
+    `0.1 + 0.2 == 0.3` est `False` ! Utilise `math.isclose(a, b)` ou `round(a, 2) == round(b, 2)`.

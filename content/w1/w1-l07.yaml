@@ -1,0 +1,53 @@
+id: w1-l07
+world: 1
+type: quiz
+title: "QCM éclair : and, or, not"
+concepts: [and, or, not, bool]
+difficulty: 2
+estimated_minutes: 2
+xp: 25
+story: "Logique booléenne à toute vitesse."
+statement_md: "10 questions, 60 secondes, combo à la clé."
+time_limit: 60
+questions:
+  - q: "Que vaut `True and False` ?"
+    choices: ["True", "False"]
+    answer: 1
+  - q: "Que vaut `True or False` ?"
+    choices: ["True", "False"]
+    answer: 0
+  - q: "Que vaut `not (3 > 2)` ?"
+    choices: ["True", "False"]
+    answer: 1
+  - q: "Que vaut `not True or True` ?"
+    choices: ["True", "False"]
+    answer: 0
+    explain: "`not` s'applique d'abord : `(not True) or True` = `False or True` = `True`."
+  - q: "Que vaut `False and 1 / 0` ?"
+    choices: ["False", "Erreur ZeroDivisionError", "True", "0"]
+    answer: 0
+    explain: "`and` s'arrête dès que la gauche est fausse : la division n'est jamais calculée (évaluation paresseuse)."
+  - q: "Quelle expression est équivalente à `not (a and b)` ?"
+    choices: ["not a and not b", "not a or not b", "a or b", "not a or b"]
+    answer: 1
+    explain: "Loi de De Morgan : `not (a and b)` == `(not a) or (not b)`."
+  - q: "Quelle expression est équivalente à `not (a or b)` ?"
+    choices: ["not a and not b", "not a or not b", "a and b", "not a and b"]
+    answer: 0
+  - q: "Que vaut `bool(0)` ?"
+    choices: ["True", "False"]
+    answer: 1
+    explain: "0, 0.0, \"\", [], {} et None sont « faux ». Tout le reste est « vrai »."
+  - q: "Que vaut `bool(\"False\")` ?"
+    choices: ["True", "False"]
+    answer: 0
+    explain: "Une chaîne non vide est toujours vraie, même si elle contient le mot False !"
+  - q: "Comment tester si `x` est entre 1 et 6 inclus ?"
+    choices: ["1 < x < 6", "1 <= x <= 6", "x in 1..6", "1 =< x =< 6"]
+    answer: 1
+card:
+  title: "and / or / not, De Morgan"
+  body_md: |
+    `and` : les deux vraies. `or` : au moins une vraie. `not` : inverse.
+    De Morgan : `not (a and b)` == `not a or not b` ; `not (a or b)` == `not a and not b`.
+    Faux : `0`, `0.0`, `""`, `[]`, `{}`, `None`, `False`.
