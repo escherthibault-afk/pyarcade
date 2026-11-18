@@ -1,0 +1,49 @@
+id: w11-l05
+world: 11
+type: code_fill
+title: "Histogramme des dés"
+concepts: [matplotlib, hist, random]
+difficulty: 3
+estimated_minutes: 4
+xp: 45
+story: "Lance deux dés 10 000 fois et regarde la forme de la répartition."
+packages: [matplotlib]
+statement_md: "Simule `n` sommes de deux dés, trace leur histogramme avec `plt.hist(sums, bins=11, range=(1.5, 12.5))` et **renvoie** la liste des sommes."
+starter_code: |
+  import random
+  import matplotlib.pyplot as plt
+
+
+  def dice_histogram(n):
+      """Simulate n sums of two dice, plot their histogram and return them."""
+      pass
+solution: |
+  import random
+  import matplotlib.pyplot as plt
+
+
+  def dice_histogram(n):
+      """Simulate n sums of two dice, plot their histogram and return them."""
+      sums = [random.randint(1, 6) + random.randint(1, 6) for _ in range(n)]
+      plt.hist(sums, bins=11, range=(1.5, 12.5))
+      plt.xlabel("somme")
+      plt.ylabel("effectif")
+      return sums
+tests:
+  visible:
+    - setup: "plt.close('all')"
+      call: len(dice_histogram(100))
+      expected: "100"
+  hidden:
+    - setup: "plt.close('all')\ndice_histogram(500)"
+      call: len(plt.gca().patches)
+      expected: "11"
+      label: "11 barres"
+    - setup: "plt.close('all')"
+      call: "all(2 <= s <= 12 for s in dice_histogram(1000))"
+      expected: "True"
+  statistical:
+    - expr: "sum(s == 7 for s in dice_histogram(12000)) / 12000"
+      approx: 0.1667
+      tol: 0.015
+hints: ["Une compréhension de `randint(1, 6) + randint(1, 6)`.", "`plt.hist(sums, bins=11, range=(1.5, 12.5))`.", "Renvoie la liste."]

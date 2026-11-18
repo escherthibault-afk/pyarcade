@@ -1,0 +1,25 @@
+id: w12-l09
+world: 12
+type: trace
+title: "Trace la partie"
+concepts: [boucle_de_jeu, etat, trace]
+difficulty: 3
+estimated_minutes: 4
+xp: 40
+story: "Une partie de quatre coups. Suis l'état."
+statement_md: "Note `key` et `state` après chaque passage sur la ligne marquée."
+code: |
+  def apply(state, key):
+      new = dict(state)
+      if key == "+":
+          new["n"] = state["n"] * 2
+      elif key == "-":
+          new["n"] = state["n"] - 1
+      new["moves"] = state["moves"] + 1
+      return new
+
+  state = {"n": 1, "moves": 0}
+  for key in "++-+":
+      state = apply(state, key)  # @snap
+watch: [key, state]
+hints: ["+ double n, - retire 1, chaque coup compte.", "Après ++ : n = 4.", "Final : {'n': 6, 'moves': 4}."]

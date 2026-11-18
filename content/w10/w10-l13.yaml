@@ -1,0 +1,43 @@
+id: w10-l13
+world: 10
+type: code_fill
+title: "Rappel : fusionner deux listes triées"
+concepts: [listes, fusion, while, revision]
+difficulty: 4
+estimated_minutes: 6
+xp: 55
+review: true
+story: "Deux classements triés à fusionner en un seul, sans tout retrier."
+statement_md: "Renvoie la fusion triée de deux listes **déjà triées**, en un seul parcours (sans `sorted` ni `sort`)."
+starter_code: |
+  def merge_sorted(a, b):
+      """Return the sorted merge of the sorted lists a and b."""
+      pass
+solution: |
+  def merge_sorted(a, b):
+      """Return the sorted merge of the sorted lists a and b."""
+      result = []
+      i = 0
+      j = 0
+      while i < len(a) and j < len(b):
+          if a[i] <= b[j]:
+              result.append(a[i])
+              i += 1
+          else:
+              result.append(b[j])
+              j += 1
+      return result + a[i:] + b[j:]
+tests:
+  visible:
+    - call: merge_sorted([1, 4, 9], [2, 3, 10])
+      expected: "[1, 2, 3, 4, 9, 10]"
+  hidden:
+    - call: merge_sorted([], [1, 2])
+      expected: "[1, 2]"
+    - call: merge_sorted([1, 1], [1])
+      expected: "[1, 1, 1]"
+    - call: merge_sorted([5], [])
+      expected: "[5]"
+constraints:
+  forbidden: ["call:sorted", "method:sort"]
+hints: ["Deux indices, un dans chaque liste.", "On prend le plus petit des deux éléments courants.", "À la fin, on ajoute ce qui reste : `a[i:] + b[j:]`."]

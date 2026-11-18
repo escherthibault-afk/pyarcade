@@ -1,0 +1,34 @@
+id: w11-l09
+world: 11
+type: code_fill
+title: "Moyenne glissante"
+concepts: [listes, moyenne, lissage]
+difficulty: 3
+estimated_minutes: 5
+xp: 45
+story: "Une courbe Monte Carlo trop agitée ? On la lisse avec une moyenne glissante."
+statement_md: "Renvoie la liste des moyennes de chaque fenêtre de `k` valeurs consécutives : `[1, 2, 3, 4]`, `k = 2` → `[1.5, 2.5, 3.5]`. (Liste vide si `k > len(values)`.)"
+starter_code: |
+  def moving_average(values, k):
+      """Return the means of every window of k consecutive values."""
+      pass
+solution: |
+  def moving_average(values, k):
+      """Return the means of every window of k consecutive values."""
+      result = []
+      for i in range(len(values) - k + 1):
+          window = values[i:i + k]
+          result.append(sum(window) / k)
+      return result
+tests:
+  visible:
+    - call: moving_average([1, 2, 3, 4], 2)
+      expected: "[1.5, 2.5, 3.5]"
+  hidden:
+    - call: moving_average([1, 2], 3)
+      expected: "[]"
+    - call: moving_average([5, 5, 5], 3)
+      expected: "[5.0]"
+    - call: moving_average([2, 4, 6, 8], 1)
+      expected: "[2.0, 4.0, 6.0, 8.0]"
+hints: ["Combien de fenêtres ? `len(values) - k + 1`.", "Une tranche `values[i:i + k]`.", "Moyenne = somme / k."]

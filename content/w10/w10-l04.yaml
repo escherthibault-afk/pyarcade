@@ -1,0 +1,36 @@
+id: w10-l04
+world: 10
+type: code_fill
+title: "Le premier manquant"
+concepts: [set, recherche]
+difficulty: 3
+estimated_minutes: 4
+xp: 40
+story: "Quel est le plus petit numéro de ticket pas encore distribué ?"
+statement_md: "Renvoie le plus petit entier `≥ 1` qui n'est pas dans `items`. Utilise un `set` pour que ce soit rapide."
+starter_code: |
+  def first_missing_positive(items):
+      """Return the smallest integer >= 1 that is not in items."""
+      pass
+solution: |
+  def first_missing_positive(items):
+      """Return the smallest integer >= 1 that is not in items."""
+      present = set(items)
+      k = 1
+      while k in present:
+          k += 1
+      return k
+tests:
+  visible:
+    - call: first_missing_positive([3, 1, 2, 5])
+      expected: "4"
+  hidden:
+    - call: first_missing_positive([])
+      expected: "1"
+    - call: first_missing_positive([-1, 0, 2])
+      expected: "1"
+    - call: first_missing_positive(list(range(1, 100001)))
+      expected: "100001"
+      label: "100 000 éléments"
+      timeout_ms: 3000
+hints: ["`set(items)` une seule fois.", "Avance k tant qu'il est présent.", "`while k in present: k += 1`"]

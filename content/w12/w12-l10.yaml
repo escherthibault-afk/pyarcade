@@ -1,0 +1,41 @@
+id: w12-l10
+world: 12
+type: refactor
+title: "Refactor : adieu les globales"
+concepts: [refactor, etat, pure, global]
+difficulty: 3
+estimated_minutes: 5
+xp: 50
+story: "Ce code marche… une seule fois. La deuxième partie commence avec le score de la première."
+statement_md: |
+  Réécris `score_round(state, points)` pour qu'elle reçoive l'état en paramètre et renvoie un **nouvel** état
+  `{"score": ..., "rounds": ...}` (score augmenté de `points`, un tour de plus), **sans** `global`.
+starter_code: |
+  score = 0
+  rounds = 0
+
+
+  def score_round(state, points):
+      """Return the new state after a round worth points."""
+      global score, rounds
+      score = score + points
+      rounds = rounds + 1
+      return {"score": score, "rounds": rounds}
+solution: |
+  def score_round(state, points):
+      """Return the new state after a round worth points."""
+      return {"score": state["score"] + points, "rounds": state["rounds"] + 1}
+tests:
+  visible:
+    - call: 'score_round({"score": 10, "rounds": 2}, 5)'
+      expected: "{'score': 15, 'rounds': 3}"
+  hidden:
+    - call: 'score_round({"score": 0, "rounds": 0}, 7)'
+      expected: "{'score': 7, 'rounds': 1}"
+      label: "nouvelle partie"
+    - call: 'score_round({"score": 1, "rounds": 1}, 1)'
+      pure: true
+      expected: "{'score': 2, 'rounds': 2}"
+constraints:
+  forbidden: [Global]
+hints: ["Tout ce dont la fonction a besoin est dans `state`.", "Construis un nouveau dict.", "Supprime les variables globales."]

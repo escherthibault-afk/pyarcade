@@ -1,0 +1,33 @@
+id: w12-l06
+world: 12
+type: code_fill
+title: "Tasser à gauche"
+concepts: [listes, jeu2048, pure]
+difficulty: 3
+estimated_minutes: 4
+xp: 45
+story: "Première moitié du mouvement du 2048 : pousser les tuiles à gauche, sans fusion."
+statement_md: "Renvoie une **nouvelle** ligne où les valeurs non nulles sont poussées à gauche (dans l'ordre), complétée par des 0 : `[0, 2, 0, 4]` → `[2, 4, 0, 0]`."
+starter_code: |
+  def compact_left(line):
+      """Return a new line with the non-zero values pushed to the left."""
+      pass
+solution: |
+  def compact_left(line):
+      """Return a new line with the non-zero values pushed to the left."""
+      values = [v for v in line if v != 0]
+      return values + [0] * (len(line) - len(values))
+tests:
+  visible:
+    - call: compact_left([0, 2, 0, 4])
+      expected: "[2, 4, 0, 0]"
+  hidden:
+    - call: compact_left([0, 0, 0, 0])
+      expected: "[0, 0, 0, 0]"
+    - call: compact_left([2, 2, 2, 2])
+      expected: "[2, 2, 2, 2]"
+      label: "pas de fusion ici"
+    - call: compact_left([0, 8])
+      pure: true
+      expected: "[8, 0]"
+hints: ["Garde les valeurs non nulles dans l'ordre.", "Complète avec autant de 0 qu'il en manque.", "`[0] * k` crée k zéros."]

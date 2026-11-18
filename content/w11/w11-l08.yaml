@@ -1,0 +1,44 @@
+id: w11-l08
+world: 11
+type: code_fill
+title: "Une grille en image"
+concepts: [matplotlib, imshow, grilles]
+difficulty: 3
+estimated_minutes: 4
+xp: 45
+story: "La carte de l'épidémie en couleurs : chaque nombre devient un pixel."
+packages: [matplotlib]
+statement_md: |
+  `grid` est une grille de chaînes `"S"`, `"I"`, `"R"`. Construis la grille de nombres correspondante
+  (`S` → 0, `I` → 1, `R` → 2, avec un dict), affiche-la avec `plt.imshow(numbers)` et **renvoie** la grille de nombres.
+starter_code: |
+  import matplotlib.pyplot as plt
+
+  CODES = {"S": 0, "I": 1, "R": 2}
+
+
+  def show_grid(grid):
+      """Convert the S/I/R grid to numbers, show it with imshow and return the numbers."""
+      pass
+solution: |
+  import matplotlib.pyplot as plt
+
+  CODES = {"S": 0, "I": 1, "R": 2}
+
+
+  def show_grid(grid):
+      """Convert the S/I/R grid to numbers, show it with imshow and return the numbers."""
+      numbers = [[CODES[c] for c in row] for row in grid]
+      plt.imshow(numbers)
+      return numbers
+tests:
+  visible:
+    - setup: "plt.close('all')"
+      call: 'show_grid([["S", "I"], ["R", "S"]])'
+      expected: "[[0, 1], [2, 0]]"
+  hidden:
+    - setup: "plt.close('all')\nshow_grid([['S', 'I', 'I']])"
+      call: "len(plt.gca().get_images())"
+      expected: "1"
+      label: "une image affichée"
+hints: ["Compréhension imbriquée avec le dict `CODES`.", "`plt.imshow(numbers)`.", "Renvoie `numbers`."]

@@ -1,0 +1,54 @@
+id: w12-l05
+world: 12
+type: code_fill
+title: "Un dict de fonctions"
+concepts: [dict, fonctions, dispatch]
+difficulty: 3
+estimated_minutes: 4
+xp: 45
+story: "Une touche → une action. Une table de fonctions évite une cascade de if."
+statement_md: |
+  Les fonctions `up`, `down`, `left`, `right` (fournies) renvoient une nouvelle position `(x, y)`.
+  Écris `move(pos, key)` qui utilise le dict `ACTIONS` (touche → fonction) : appelle la bonne fonction, ou renvoie `pos` si la touche est inconnue.
+given_code: |
+  def up(pos):
+      return (pos[0], pos[1] - 1)
+
+
+  def down(pos):
+      return (pos[0], pos[1] + 1)
+
+
+  def left(pos):
+      return (pos[0] - 1, pos[1])
+
+
+  def right(pos):
+      return (pos[0] + 1, pos[1])
+
+
+  ACTIONS = {"z": up, "s": down, "q": left, "d": right}
+starter_code: |
+  def move(pos, key):
+      """Return the new position after key (unchanged for unknown keys)."""
+      pass
+solution: |
+  def move(pos, key):
+      """Return the new position after key (unchanged for unknown keys)."""
+      if key in ACTIONS:
+          return ACTIONS[key](pos)
+      return pos
+tests:
+  visible:
+    - call: move((2, 2), "z")
+      expected: "(2, 1)"
+  hidden:
+    - call: move((0, 0), "d")
+      expected: "(1, 0)"
+    - call: move((5, 5), "x")
+      expected: "(5, 5)"
+      label: "touche inconnue"
+constraints:
+  max_count: {If: 1}
+hints: ["`ACTIONS[key]` est une fonction : on l'appelle avec `(pos)`.", "Teste d'abord si la touche existe.", "`return ACTIONS[key](pos)`"]
+explanation_md: "Les fonctions sont des valeurs comme les autres : on peut les ranger dans un dict et les appeler plus tard."

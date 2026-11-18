@@ -1,0 +1,54 @@
+id: w12-l04
+world: 12
+type: parsons
+title: "La boucle de jeu MVC"
+concepts: [mvc, boucle_de_jeu]
+difficulty: 3
+estimated_minutes: 4
+xp: 45
+story: "Contrôleur : lire, mettre à jour, afficher, recommencer."
+statement_md: |
+  Remets la boucle de jeu dans l'ordre. `new_state`, `apply_key` (modèle pur) et `render` (vue, renvoie une chaîne) sont fournis.
+  La fonction lit les touches dans la liste `keys` (au lieu du clavier, pour pouvoir la tester) et renvoie l'état final.
+given_code: |
+  def new_state():
+      return {"x": 0, "over": False}
+
+
+  def apply_key(state, key):
+      new = dict(state)
+      if key == "q":
+          new["over"] = True
+      elif key == "d":
+          new["x"] = state["x"] + 1
+      elif key == "a":
+          new["x"] = state["x"] - 1
+      return new
+
+
+  def render(state):
+      return "." * state["x"] + "@"
+lines:
+  - "def game_loop(keys):"
+  - "    state = new_state()"
+  - "    for key in keys:"
+  - "        state = apply_key(state, key)"
+  - "        print(render(state))"
+  - "        if state[\"over\"]:"
+  - "            break"
+  - "    return state"
+distractors:
+  - "        apply_key(state, key)"
+tests:
+  visible:
+    - call: game_loop(["d", "d", "a"])
+      expected: "{'x': 1, 'over': False}"
+  hidden:
+    - call: game_loop(["d", "q", "d", "d"])
+      expected: "{'x': 1, 'over': True}"
+      label: "s'arrête au q"
+    - call: game_loop(["d"])
+      output: ".@\n"
+      expected: "{'x': 1, 'over': False}"
+      label: "affiche après chaque touche"
+hints: ["Le modèle étant pur, il faut récupérer le nouvel état : `state = apply_key(...)`.", "On affiche après chaque mise à jour.", "On sort de la boucle quand la partie est finie."]

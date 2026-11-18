@@ -1,0 +1,30 @@
+id: w12-l02
+world: 12
+type: predict_output
+title: "Pur ou pas pur ?"
+concepts: [pure, mutation, dict]
+difficulty: 3
+estimated_minutes: 3
+xp: 35
+story: "Deux fonctions se ressemblent. Une seule respecte l'état d'origine."
+statement_md: "Qu'affiche ce programme ?"
+code: |
+  def add_point_bad(state):
+      state["score"] += 1
+      return state
+
+  def add_point_good(state):
+      new = dict(state)
+      new["score"] += 1
+      return new
+
+  s = {"score": 0}
+  a = add_point_good(s)
+  print(s["score"], a["score"])
+  b = add_point_bad(s)
+  print(s["score"], b["score"], b is s)
+answer: |
+  0 1
+  1 1 True
+hints: ["`dict(state)` crée une copie.", "La version « bad » modifie le dict reçu et le renvoie.", "`b is s` : est-ce le même objet ?"]
+explanation_md: "La fonction impure modifie l'état d'origine : l'historique (annuler un coup, rejouer) devient impossible."

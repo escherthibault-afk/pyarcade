@@ -185,6 +185,8 @@ export const ParsonsLevel = Base.extend({
   distractors: z.array(z.string()).default([]),
   /** If tests are given, any arrangement that passes them is accepted. */
   tests: Tests.optional(),
+  /** Helpers available to the program (not part of the puzzle). */
+  given_code: z.string().default(''),
 })
 
 export const QuizQuestion = z.object({

@@ -1,0 +1,30 @@
+id: w11-l11
+world: 11
+type: parsons
+title: "La courbe cumulée"
+concepts: [accumulateur, matplotlib]
+difficulty: 3
+estimated_minutes: 4
+xp: 40
+story: "Le nombre total de malades depuis le début : une somme cumulée."
+statement_md: "`cumulative(values)` renvoie la liste des sommes cumulées : `[1, 2, 3]` → `[1, 3, 6]`. Une ligne est un leurre."
+lines:
+  - "def cumulative(values):"
+  - "    result = []"
+  - "    total = 0"
+  - "    for v in values:"
+  - "        total += v"
+  - "        result.append(total)"
+  - "    return result"
+distractors:
+  - "        result.append(v)"
+tests:
+  visible:
+    - call: cumulative([1, 2, 3])
+      expected: "[1, 3, 6]"
+  hidden:
+    - call: cumulative([])
+      expected: "[]"
+    - call: cumulative([5, -5])
+      expected: "[5, 0]"
+hints: ["Un accumulateur ET une liste.", "On ajoute le total, pas la valeur.", "L'ordre : mettre à jour le total, puis l'ajouter."]

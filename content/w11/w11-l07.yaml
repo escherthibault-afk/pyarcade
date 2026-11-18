@@ -1,0 +1,40 @@
+id: w11-l07
+world: 11
+type: code_fill
+title: "Diagramme en barres"
+concepts: [matplotlib, bar, dict]
+difficulty: 2
+estimated_minutes: 4
+xp: 40
+story: "Les lettres les plus fréquentes du dictionnaire Wordle, en barres."
+packages: [matplotlib]
+statement_md: "`counts` est un dict `{lettre: nombre}`. Trace une barre par lettre, **dans l'ordre alphabétique** (`plt.bar(lettres, valeurs)`), et renvoie la liste des lettres tracées."
+starter_code: |
+  import matplotlib.pyplot as plt
+
+
+  def plot_letter_counts(counts):
+      """Plot one bar per letter (alphabetical order) and return the letters."""
+      pass
+solution: |
+  import matplotlib.pyplot as plt
+
+
+  def plot_letter_counts(counts):
+      """Plot one bar per letter (alphabetical order) and return the letters."""
+      letters = sorted(counts)
+      plt.bar(letters, [counts[c] for c in letters])
+      plt.xlabel("lettre")
+      plt.ylabel("nombre")
+      return letters
+tests:
+  visible:
+    - setup: "plt.close('all')"
+      call: 'plot_letter_counts({"e": 5, "a": 3})'
+      expected: "['a', 'e']"
+  hidden:
+    - setup: "plt.close('all')\nplot_letter_counts({'z': 1, 'b': 4, 'c': 2})"
+      call: "[int(p.get_height()) for p in plt.gca().patches]"
+      expected: "[4, 2, 1]"
+      label: "hauteurs dans l'ordre"
+hints: ["`sorted(counts)` trie les clés.", "Les hauteurs dans le même ordre.", "`plt.bar(letters, heights)`"]

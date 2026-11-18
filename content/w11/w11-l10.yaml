@@ -1,0 +1,24 @@
+id: w11-l10
+world: 11
+type: predict_output
+title: "Préparer les données"
+concepts: [listes, comprehension, zip]
+difficulty: 3
+estimated_minutes: 3
+xp: 35
+story: "Avant de tracer, on transforme. Prédis chaque étape."
+statement_md: "Qu'affiche ce programme ?"
+code: |
+  history = [(9, 1, 0), (6, 3, 1), (2, 5, 3)]
+  s = [h[0] for h in history]
+  i = [h[1] for h in history]
+  print(s)
+  print(max(i), i.index(max(i)))
+  print(list(zip(s, i)))
+  print([round(x / 10, 1) for x in s])
+answer: |
+  [9, 6, 2]
+  5 2
+  [(9, 1), (6, 3), (2, 5)]
+  [0.9, 0.6, 0.2]
+hints: ["La première coordonnée de chaque tuple.", "`index` donne la position du maximum.", "`zip` associe les éléments deux à deux."]

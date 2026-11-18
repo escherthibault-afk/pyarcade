@@ -1,0 +1,52 @@
+id: w10-l11
+world: 10
+type: bug_hunt
+title: "La dichotomie qui boucle"
+concepts: [dichotomie, boucle_infinie, bug]
+difficulty: 4
+estimated_minutes: 5
+xp: 50
+story: "Elle trouve souvent… et parfois ne s'arrête jamais."
+statement_md: "Renvoie l'indice de `target` dans la liste triée (ou `-1`). **2 bugs**."
+starter_code: |
+  def binary_search(items, target):
+      """Return the index of target in the sorted list items, or -1."""
+      lo = 0
+      hi = len(items)
+      while lo <= hi:
+          mid = (lo + hi) // 2
+          if items[mid] == target:
+              return mid
+          elif items[mid] < target:
+              lo = mid
+          else:
+              hi = mid - 1
+      return -1
+solution: |
+  def binary_search(items, target):
+      """Return the index of target in the sorted list items, or -1."""
+      lo = 0
+      hi = len(items) - 1
+      while lo <= hi:
+          mid = (lo + hi) // 2
+          if items[mid] == target:
+              return mid
+          elif items[mid] < target:
+              lo = mid + 1
+          else:
+              hi = mid - 1
+      return -1
+bugs: 2
+tests:
+  visible:
+    - call: binary_search([1, 3, 5, 7], 5)
+      expected: "2"
+  hidden:
+    - call: binary_search([1, 3, 5, 7], 8)
+      expected: "-1"
+      label: "plus grand que tout"
+    - call: binary_search([1, 3], 3)
+      expected: "1"
+    - call: binary_search([], 1)
+      expected: "-1"
+hints: ["Quel est le dernier indice valide ? Et si `lo = mid` ne bouge pas ?", "`hi` doit valoir `len(items) - 1` ; `lo = mid + 1`.", "Sans `+ 1`, lo peut rester égal à mid pour toujours."]

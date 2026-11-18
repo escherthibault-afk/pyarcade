@@ -1,0 +1,42 @@
+id: w12-l08
+world: 12
+type: quiz
+title: "QCM éclair : architecture"
+concepts: [mvc, pure, etat]
+difficulty: 3
+estimated_minutes: 2
+xp: 40
+story: "Les principes qui rendent un projet testable."
+statement_md: "10 questions, 70 secondes."
+time_limit: 70
+questions:
+  - q: "Dans MVC, qui lit le clavier ?"
+    choices: ["le contrôleur", "le modèle", "la vue", "personne"]
+    answer: 0
+  - q: "Qui calcule le nouvel état ?"
+    choices: ["le modèle", "la vue", "le contrôleur", "rich"]
+    answer: 0
+  - q: "Qui affiche ?"
+    choices: ["la vue", "le modèle", "le contrôleur", "readchar"]
+    answer: 0
+  - q: "Une fonction pure…"
+    choices: ["ne modifie pas ses paramètres et renvoie un résultat", "affiche quelque chose", "utilise global", "n'a pas de return"]
+    answer: 0
+  - q: "Pourquoi garder le modèle pur ?"
+    choices: ["on peut le tester sans clavier ni écran", "c'est plus joli", "c'est obligatoire en Python", "pour aller plus vite"]
+    answer: 0
+  - q: "`dict(state)` copie…"
+    choices: ["le dict, mais pas les listes qu'il contient", "tout en profondeur", "rien", "seulement les clés"]
+    answer: 0
+  - q: "Pour copier une grille dans un état…"
+    choices: ["[row[:] for row in state['grid']]", "state['grid'][:]", "state['grid']", "dict(state['grid'])"]
+    answer: 0
+  - q: "Où mettre `input()` / `readkey()` ?"
+    choices: ["dans le contrôleur (game_loop)", "dans merge_line_left", "dans le modèle", "partout"]
+    answer: 0
+  - q: "`if __name__ == \"__main__\": game_loop()` sert à…"
+    choices: ["lancer le jeu seulement si on exécute le fichier", "importer le module", "tester", "rien"]
+    answer: 0
+  - q: "Réutiliser une seule fonction `move_left` pour les 4 directions, c'est possible grâce à…"
+    choices: ["la transposition et l'inversion des lignes", "des copier-coller", "une classe", "un dict"]
+    answer: 0

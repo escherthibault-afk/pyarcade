@@ -1,0 +1,34 @@
+id: w12-l03
+world: 12
+type: bug_hunt
+title: "Le modèle qui triche"
+concepts: [pure, grilles, copie, bug]
+difficulty: 3
+estimated_minutes: 4
+xp: 45
+story: "Annuler le dernier coup ne marche plus : l'ancienne grille a été modifiée en douce."
+statement_md: "`place_tile(state, x, y, value)` renvoie un **nouvel** état où la case vaut `value`, sans toucher à `state`. **1 bug** (copie superficielle)."
+starter_code: |
+  def place_tile(state, x, y, value):
+      """Return a new state with value at (x, y); state is not modified."""
+      new = dict(state)
+      new["grid"][y][x] = value
+      return new
+solution: |
+  def place_tile(state, x, y, value):
+      """Return a new state with value at (x, y); state is not modified."""
+      new = dict(state)
+      new["grid"] = [row[:] for row in state["grid"]]
+      new["grid"][y][x] = value
+      return new
+bugs: 1
+tests:
+  visible:
+    - call: "place_tile({'grid': [[0, 0], [0, 0]], 'score': 0}, 1, 0, 2)['grid']"
+      expected: "[[0, 2], [0, 0]]"
+  hidden:
+    - call: "place_tile({'grid': [[0, 0], [0, 0]], 'score': 0}, 1, 0, 2)"
+      pure: true
+      expected: "{'grid': [[0, 2], [0, 0]], 'score': 0}"
+      label: "l'état d'origine est intact"
+hints: ["`dict(state)` copie le dict, mais pas la grille qu'il contient.", "Il faut aussi copier la grille, ligne par ligne.", "`new[\"grid\"] = [row[:] for row in state[\"grid\"]]`"]

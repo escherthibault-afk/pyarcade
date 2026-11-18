@@ -1,0 +1,42 @@
+id: w10-l09
+world: 10
+type: quiz
+title: "QCM éclair : complexité"
+concepts: [complexite, set, tri]
+difficulty: 3
+estimated_minutes: 2
+xp: 35
+story: "Combien d'opérations ? Une intuition qui sauve des TP."
+statement_md: "10 questions, 70 secondes."
+time_limit: 70
+questions:
+  - q: "Double boucle sur une liste de n éléments : environ…"
+    choices: ["n² opérations", "n opérations", "log n", "2n"]
+    answer: 0
+  - q: "`x in liste` (n éléments) coûte…"
+    choices: ["jusqu'à n comparaisons", "1 opération", "log n", "n²"]
+    answer: 0
+  - q: "`x in ensemble` coûte…"
+    choices: ["environ 1 opération", "n", "n²", "log n"]
+    answer: 0
+  - q: "Recherche dichotomique dans 1 000 000 d'éléments triés : environ…"
+    choices: ["20 étapes", "1 000 000", "1000", "500 000"]
+    answer: 0
+  - q: "Le tri par sélection fait environ…"
+    choices: ["n²/2 comparaisons", "n comparaisons", "log n", "2^n"]
+    answer: 0
+  - q: "`sorted()` de Python fait environ…"
+    choices: ["n log n comparaisons", "n²", "n", "1"]
+    answer: 0
+  - q: "Pour détecter des doublons dans 10⁵ éléments, le plus rapide :"
+    choices: ["un set", "une double boucle", "trier puis double boucle", "un dict de listes"]
+    answer: 0
+  - q: "`liste.insert(0, x)` sur une grande liste est…"
+    choices: ["lent (décale tout)", "instantané", "interdit", "identique à append"]
+    answer: 0
+  - q: "Une dichotomie nécessite une liste…"
+    choices: ["triée", "sans doublons", "de nombres positifs", "de taille paire"]
+    answer: 0
+  - q: "Recalculer `len(l)` dans une boucle `while i < len(l)` coûte…"
+    choices: ["peu (len est instantané)", "n à chaque fois", "n²", "une erreur"]
+    answer: 0

@@ -1,0 +1,33 @@
+id: w10-l05
+world: 10
+type: parsons
+title: "Tri par sélection"
+concepts: [tri, selection, boucles_imbriquees]
+difficulty: 3
+estimated_minutes: 4
+xp: 40
+story: "Trier à la main : on cherche le plus petit, on le met devant, on recommence."
+statement_md: "`selection_sort(items)` trie la liste **sur place** (et la renvoie). Une ligne est un leurre."
+lines:
+  - "def selection_sort(items):"
+  - "    for i in range(len(items)):"
+  - "        smallest = i"
+  - "        for j in range(i + 1, len(items)):"
+  - "            if items[j] < items[smallest]:"
+  - "                smallest = j"
+  - "        items[i], items[smallest] = items[smallest], items[i]"
+  - "    return items"
+distractors:
+  - "            if items[j] < items[i]:"
+tests:
+  visible:
+    - call: selection_sort([3, 1, 2])
+      expected: "[1, 2, 3]"
+  hidden:
+    - call: selection_sort([])
+      expected: "[]"
+    - call: selection_sort([5, 4, 3, 2, 1])
+      expected: "[1, 2, 3, 4, 5]"
+    - call: selection_sort([2, 2, 1])
+      expected: "[1, 2, 2]"
+hints: ["Pour chaque position i, cherche l'indice du minimum dans la suite de la liste.", "On compare au minimum COURANT (`smallest`), pas à i.", "L'échange se fait après la boucle intérieure."]

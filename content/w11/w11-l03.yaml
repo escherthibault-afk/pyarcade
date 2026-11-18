@@ -1,0 +1,43 @@
+id: w11-l03
+world: 11
+type: code_fill
+title: "Plusieurs courbes"
+concepts: [matplotlib, legende]
+difficulty: 2
+estimated_minutes: 4
+xp: 40
+story: "Comparer deux croissances : linéaire et exponentielle."
+packages: [matplotlib]
+statement_md: "Trace sur le même graphique `y = 2x` (label `\"2x\"`) et `y = 2^x` (label `\"2^x\"`) pour `x = 0..n`, avec une légende. Renvoie le nombre de courbes tracées."
+starter_code: |
+  import matplotlib.pyplot as plt
+
+
+  def compare_growth(n):
+      """Plot 2x and 2**x for x in 0..n; return the number of curves."""
+      pass
+solution: |
+  import matplotlib.pyplot as plt
+
+
+  def compare_growth(n):
+      """Plot 2x and 2**x for x in 0..n; return the number of curves."""
+      xs = list(range(n + 1))
+      plt.plot(xs, [2 * x for x in xs], label="2x")
+      plt.plot(xs, [2 ** x for x in xs], label="2^x")
+      plt.legend()
+      return len(plt.gca().get_lines())
+tests:
+  visible:
+    - setup: "plt.close('all')"
+      call: compare_growth(5)
+      expected: "2"
+  hidden:
+    - setup: "plt.close('all')\ncompare_growth(3)"
+      call: "[t.get_text() for t in plt.gca().get_legend().get_texts()]"
+      expected: "['2x', '2^x']"
+      label: "légendes"
+    - setup: "plt.close('all')\ncompare_growth(3)"
+      call: "[int(v) for v in plt.gca().get_lines()[1].get_ydata()]"
+      expected: "[1, 2, 4, 8]"
+hints: ["Deux appels à `plt.plot`, chacun avec son `label`.", "`plt.legend()` à la fin.", "`len(plt.gca().get_lines())` compte les courbes."]

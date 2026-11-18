@@ -1,0 +1,33 @@
+id: w11-l12
+world: 11
+type: copy
+title: "Mode copie : normaliser une série"
+concepts: [listes, normalisation]
+difficulty: 2
+estimated_minutes: 3
+xp: 35
+story: "DS papier : ramener une série entre 0 et 1."
+statement_md: "Renvoie la liste des valeurs divisées par la plus grande valeur (liste vide → liste vide ; si le maximum vaut 0, renvoie des 0.0)."
+starter_code: |
+  def normalize_series(values):
+      """Return values divided by their maximum."""
+      pass
+solution: |
+  def normalize_series(values):
+      """Return values divided by their maximum."""
+      if len(values) == 0:
+          return []
+      top = max(values)
+      if top == 0:
+          return [0.0 for _ in values]
+      return [v / top for v in values]
+tests:
+  visible:
+    - call: normalize_series([2, 4, 8])
+      expected: "[0.25, 0.5, 1.0]"
+  hidden:
+    - call: normalize_series([])
+      expected: "[]"
+    - call: normalize_series([0, 0])
+      expected: "[0.0, 0.0]"
+hints: []

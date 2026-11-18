@@ -1,0 +1,29 @@
+id: w10-l03
+world: 10
+type: predict_output
+title: "Ensembles"
+concepts: [set, union, intersection]
+difficulty: 2
+estimated_minutes: 2
+xp: 25
+story: "Les `set` : pas de doublons, pas d'ordre, des tests ultra-rapides."
+statement_md: "Qu'affiche ce programme ? (les ensembles affichés sont triés avec `sorted` pour être lisibles)"
+code: |
+  a = {1, 2, 3, 3, 2}
+  b = {3, 4}
+  print(len(a))
+  print(sorted(a | b))
+  print(sorted(a & b))
+  print(sorted(a - b))
+  print(4 in b, 4 in a)
+answer: |
+  3
+  [1, 2, 3, 4]
+  [3]
+  [1, 2]
+  True False
+hints: ["Les doublons disparaissent.", "`|` union, `&` intersection, `-` différence.", "`in` sur un set est quasi instantané."]
+card:
+  title: "set"
+  body_md: |
+    `set()` vide, `{1, 2}`, `s.add(x)`, `x in s` (rapide !), `a | b`, `a & b`, `a - b`, `set(liste)` enlève les doublons.

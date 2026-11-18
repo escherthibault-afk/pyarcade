@@ -1,0 +1,37 @@
+id: w11-l01
+world: 11
+type: lesson
+title: "Ta première courbe"
+concepts: [matplotlib, plot]
+difficulty: 1
+estimated_minutes: 2
+xp: 15
+story: "Un graphique vaut mille print. matplotlib dessine, le site affiche."
+packages: [matplotlib]
+statement_md: |
+  ```python
+  import matplotlib.pyplot as plt
+  xs = [0, 1, 2, 3]
+  ys = [0, 1, 4, 9]
+  plt.plot(xs, ys, label="carré")   # une courbe (abscisses, ordonnées)
+  plt.xlabel("x")
+  plt.ylabel("x²")
+  plt.title("Ma courbe")
+  plt.legend()                      # affiche les label=
+  plt.show()                        # chez toi : ouvre une fenêtre ; ici : image dans la console
+  ```
+example_code: |
+  import matplotlib.pyplot as plt
+
+  xs = [0, 1, 2, 3, 4]
+  ys = [x ** 2 for x in xs]
+  plt.plot(xs, ys, label="x²")
+  plt.legend()
+  plt.show()
+task_md: "Ajoute une **deuxième courbe** `2x` avec son `label`, et des noms d'axes, puis exécute (valide dès que ça marche)."
+hints: ["`plt.plot(xs, [2 * x for x in xs], label=\"2x\")`.", "`plt.xlabel(\"x\")`, `plt.ylabel(\"y\")`.", "Avant `plt.show()`."]
+card:
+  title: "matplotlib : l'essentiel"
+  body_md: |
+    `import matplotlib.pyplot as plt` · `plt.plot(xs, ys, label=...)` · `plt.xlabel / ylabel / title` · `plt.legend()` ·
+    `plt.hist(data, bins=k)` · `plt.bar(noms, valeurs)` · `plt.imshow(grille)` · `plt.show()`.

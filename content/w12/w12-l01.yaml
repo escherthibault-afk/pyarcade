@@ -1,0 +1,62 @@
+id: w12-l01
+world: 12
+type: lesson
+title: "L'état du jeu dans un dict"
+concepts: [etat, dict, pure, architecture]
+difficulty: 2
+estimated_minutes: 2
+xp: 20
+story: "Pas de variables globales qui traînent : tout l'état du jeu tient dans un dictionnaire qu'on fait évoluer."
+statement_md: |
+  **Style fonctionnel** : l'état est un dict ; chaque action est une fonction **pure** qui renvoie un **nouvel** état.
+  ```python
+  def new_state():
+      return {"score": 0, "lives": 3, "over": False}
+
+  def lose_life(state):
+      new = dict(state)                 # copie (le dict reçu ne change pas)
+      new["lives"] = state["lives"] - 1
+      new["over"] = new["lives"] == 0
+      return new
+  ```
+  Architecture **MVC** : le **modèle** (fonctions pures sur l'état), la **vue** (affichage), le **contrôleur** (lit les touches, appelle le modèle, puis la vue).
+example_code: |
+  def new_state():
+      return {"score": 0, "lives": 3, "over": False}
+
+
+  def lose_life(state):
+      new = dict(state)
+      new["lives"] = state["lives"] - 1
+      new["over"] = new["lives"] == 0
+      return new
+
+
+  s0 = new_state()
+  s1 = lose_life(s0)
+  print(s0["lives"], s1["lives"])
+task_md: "Applique `lose_life` trois fois à partir de `s0` et affiche `over` de l'état final, puis les vies de `s0`. Attendu : `True` puis `3`."
+expected_output: "True\n3\n"
+solution: |
+  def new_state():
+      return {"score": 0, "lives": 3, "over": False}
+
+
+  def lose_life(state):
+      new = dict(state)
+      new["lives"] = state["lives"] - 1
+      new["over"] = new["lives"] == 0
+      return new
+
+
+  s0 = new_state()
+  s3 = lose_life(lose_life(lose_life(s0)))
+  print(s3["over"])
+  print(s0["lives"])
+hints: ["Compose trois appels.", "`s0` n'est jamais modifié.", "`lose_life(lose_life(lose_life(s0)))`"]
+card:
+  title: "Style fonctionnel + MVC"
+  body_md: |
+    État = dict. Modèle = fonctions pures `f(state) -> new_state` (copier avant de modifier : `dict(s)`, `[row[:] for row in grid]`).
+    Vue = `render(state)`. Contrôleur = boucle : lire une touche → modèle → vue. Pas de `class` exigé dans le TP 2048.
+exam_tip: "Le correcteur vérifie que tes fonctions du modèle ne modifient pas l'état reçu (tests de pureté)."

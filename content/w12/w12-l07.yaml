@@ -1,0 +1,59 @@
+id: w12-l07
+world: 12
+type: assemble
+title: "Assemble le contrôleur"
+concepts: [mvc, assemblage]
+difficulty: 3
+estimated_minutes: 5
+xp: 50
+story: "Le modèle et la vue existent. Il manque le chef d'orchestre."
+statement_md: |
+  Fournis : `new_state()`, `apply_key(state, key)` (pur), `is_over(state)` et `render(state)` (renvoie une chaîne).
+  Écris `play(keys)` : part d'un état neuf, applique les touches une à une **tant que la partie n'est pas finie**,
+  et renvoie la **liste des rendus** (un par touche jouée).
+given_code: |
+  def new_state():
+      return {"count": 0, "limit": 3}
+
+
+  def apply_key(state, key):
+      new = dict(state)
+      if key == "+":
+          new["count"] = state["count"] + 1
+      return new
+
+
+  def is_over(state):
+      return state["count"] >= state["limit"]
+
+
+  def render(state):
+      return f"count={state['count']}"
+starter_code: |
+  def play(keys):
+      """Play the keys until the game is over; return the list of renders."""
+      pass
+solution: |
+  def play(keys):
+      """Play the keys until the game is over; return the list of renders."""
+      state = new_state()
+      renders = []
+      for key in keys:
+          if is_over(state):
+              break
+          state = apply_key(state, key)
+          renders.append(render(state))
+      return renders
+tests:
+  visible:
+    - call: play(["+", "-", "+"])
+      expected: "['count=1', 'count=1', 'count=2']"
+  hidden:
+    - call: play(["+", "+", "+", "+", "+"])
+      expected: "['count=1', 'count=2', 'count=3']"
+      label: "on s'arrête quand c'est fini"
+    - call: play([])
+      expected: "[]"
+constraints:
+  required: ["call:apply_key", "call:render", "call:is_over"]
+hints: ["État neuf, liste vide, boucle sur les touches.", "Vérifie la fin AVANT de jouer la touche.", "Ajoute le rendu après chaque touche jouée."]

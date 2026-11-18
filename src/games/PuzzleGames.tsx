@@ -69,7 +69,7 @@ export function ParsonsGame({ session }: { session: Session }) {
     if (level.tests && level.tests.visible.length + level.tests.hidden.length > 0) {
       setRunning(true)
       const tests = [...level.tests.visible, ...level.tests.hidden.map((t) => ({ ...t, hidden: true }))]
-      const rep = await runLevelTests({ code, tests, seed: level.tests.random_seed, files: await resolveFiles(level.files), onResult: (r, i) => setPartial((p) => { const c = [...p]; c[i] = r; return c }) })
+      const rep = await runLevelTests({ code, tests, seed: level.tests.random_seed, files: await resolveFiles(level.files), given_code: level.given_code, onResult: (r, i) => setPartial((p) => { const c = [...p]; c[i] = r; return c }) })
       setRunning(false)
       setReport(rep)
       if (rep.allPassed && !sol.some((p) => level.distractors.map((d) => d.trim()).includes(p.text) && !level.lines.map((l) => l.trim()).includes(p.text))) session.complete({ code })

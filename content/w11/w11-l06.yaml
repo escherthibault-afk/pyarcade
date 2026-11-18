@@ -1,0 +1,39 @@
+id: w11-l06
+world: 11
+type: bug_hunt
+title: "Le graphique à l'envers"
+concepts: [matplotlib, plot, legende, bug]
+difficulty: 2
+estimated_minutes: 3
+xp: 35
+story: "La courbe du score monte… vers la gauche. Et la légende est vide."
+packages: [matplotlib]
+statement_md: "`plot_scores(days, scores)` doit tracer les scores (ordonnées) en fonction des jours (abscisses), avec `label=\"score\"` et une légende. **2 bugs**."
+starter_code: |
+  import matplotlib.pyplot as plt
+
+
+  def plot_scores(days, scores):
+      """Plot scores against days with a legend."""
+      plt.plot(scores, days)
+      plt.legend()
+solution: |
+  import matplotlib.pyplot as plt
+
+
+  def plot_scores(days, scores):
+      """Plot scores against days with a legend."""
+      plt.plot(days, scores, label="score")
+      plt.legend()
+bugs: 2
+tests:
+  visible:
+    - setup: "plt.close('all')\nplot_scores([1, 2, 3], [10, 30, 20])"
+      call: "[int(v) for v in plt.gca().get_lines()[0].get_xdata()]"
+      expected: "[1, 2, 3]"
+  hidden:
+    - setup: "plt.close('all')\nplot_scores([1, 2], [5, 6])"
+      call: "[t.get_text() for t in plt.gca().get_legend().get_texts()]"
+      expected: "['score']"
+      label: "légende"
+hints: ["`plt.plot(x, y)` : abscisses d'abord.", "Une légende sans `label=` est vide.", "`plt.plot(days, scores, label=\"score\")`"]

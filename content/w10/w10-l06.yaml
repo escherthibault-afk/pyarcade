@@ -1,0 +1,42 @@
+id: w10-l06
+world: 10
+type: code_fill
+title: "Tri par insertion"
+concepts: [tri, insertion, while]
+difficulty: 4
+estimated_minutes: 6
+xp: 55
+story: "Comme on range ses cartes : chaque nouvelle carte glisse vers la gauche jusqu'à sa place."
+statement_md: "Renvoie une **nouvelle** liste triée (croissante) par insertion, sans `sorted` ni `sort`. Ne modifie pas `items`."
+starter_code: |
+  def insertion_sort(items):
+      """Return a new sorted list (insertion sort)."""
+      pass
+solution: |
+  def insertion_sort(items):
+      """Return a new sorted list (insertion sort)."""
+      result = list(items)
+      for i in range(1, len(result)):
+          value = result[i]
+          j = i - 1
+          while j >= 0 and result[j] > value:
+              result[j + 1] = result[j]
+              j -= 1
+          result[j + 1] = value
+      return result
+tests:
+  visible:
+    - call: insertion_sort([4, 2, 5, 1])
+      expected: "[1, 2, 4, 5]"
+  hidden:
+    - call: insertion_sort([])
+      expected: "[]"
+    - call: insertion_sort([3, 3, 1])
+      expected: "[1, 3, 3]"
+    - call: insertion_sort([5, 4, 3])
+      pure: true
+      expected: "[3, 4, 5]"
+      label: "liste d'origine intacte"
+constraints:
+  forbidden: ["call:sorted", "method:sort"]
+hints: ["Copie d'abord : `result = list(items)`.", "Pour chaque i, décale vers la droite les éléments plus grands que `value`.", "`while j >= 0 and result[j] > value:`"]

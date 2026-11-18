@@ -1,0 +1,26 @@
+id: w10-l07
+world: 10
+type: trace
+title: "Trace la recherche dichotomique"
+concepts: [dichotomie, trace]
+difficulty: 3
+estimated_minutes: 4
+xp: 40
+story: "Deviner un nombre en coupant l'intervalle en deux à chaque fois."
+statement_md: "Note `lo`, `hi` et `mid` à chaque tour, en cherchant 23 dans la liste triée."
+code: |
+  items = [2, 5, 8, 12, 16, 23, 38, 56, 72]
+  target = 23
+  lo, hi = 0, len(items) - 1
+  while lo <= hi:
+      mid = (lo + hi) // 2
+      if items[mid] == target:
+          lo = hi + 1
+      elif items[mid] < target:
+          lo = mid + 1
+      else:
+          hi = mid - 1
+      done = False  # @snap
+watch: [lo, hi, mid]
+hints: ["Tour 1 : mid = 4 (16 < 23).", "Puis on cherche à droite : lo = 5.", "Trouvé au 3e tour."]
+explanation_md: "À chaque tour l'intervalle est divisé par 2 : environ log₂(n) tours. Pour un million d'éléments : 20 tours !"

@@ -1,0 +1,42 @@
+id: w11-l04
+world: 11
+type: quiz
+title: "QCM éclair : lire un graphique"
+concepts: [interpretation, matplotlib]
+difficulty: 2
+estimated_minutes: 2
+xp: 30
+story: "Savoir tracer, c'est bien. Savoir lire, c'est mieux."
+statement_md: "10 questions, 70 secondes."
+time_limit: 70
+questions:
+  - q: "Dans une épidémie SIR, la courbe I (infectés)…"
+    choices: ["monte puis redescend (pic)", "ne fait que monter", "est constante", "ne fait que descendre"]
+    answer: 0
+  - q: "La courbe S (sains) d'une épidémie…"
+    choices: ["décroît", "croît", "oscille", "est nulle"]
+    answer: 0
+  - q: "Une courbe de fréquences Monte Carlo devient plus lisse quand…"
+    choices: ["on augmente n", "on diminue n", "on change de couleur", "on ajoute une légende"]
+    answer: 0
+  - q: "`plt.plot([3, 1, 2])` utilise comme abscisses…"
+    choices: ["0, 1, 2", "1, 2, 3", "3, 1, 2", "aucune"]
+    answer: 0
+  - q: "Pour comparer des catégories (lettres, villes), on préfère…"
+    choices: ["plt.bar", "plt.plot", "plt.imshow", "plt.legend"]
+    answer: 0
+  - q: "Pour la répartition d'une variable (sommes de dés), on utilise…"
+    choices: ["plt.hist", "plt.plot", "plt.title", "plt.xlabel"]
+    answer: 0
+  - q: "Pour afficher une grille de nombres comme une image…"
+    choices: ["plt.imshow", "plt.bar", "plt.hist", "plt.scatter"]
+    answer: 0
+  - q: "`plt.legend()` affiche…"
+    choices: ["les label= donnés aux courbes", "les titres des axes", "le titre", "rien"]
+    answer: 0
+  - q: "La somme de 2 dés : quelle valeur est la plus fréquente ?"
+    choices: ["7", "12", "2", "6"]
+    answer: 0
+  - q: "Une courbe de probabilité de victoire en fonction du niveau est…"
+    choices: ["croissante", "décroissante", "constante", "en cloche"]
+    answer: 0

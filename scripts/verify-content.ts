@@ -152,7 +152,7 @@ for (const level0 of levels) {
         jobs.push({ id, kind: 'lesson', example_code: level.example_code, expected_output: level.expected_output, solution: level.solution, stdin: level.stdin, files })
         break
       case 'parsons':
-        jobs.push({ id, kind: 'parsons', lines: level.lines, tests: flatTests(level.tests), seed: level.tests?.random_seed, files })
+        jobs.push({ id, kind: 'parsons', lines: level.lines, tests: flatTests(level.tests), seed: level.tests?.random_seed, files, given_code: level.given_code })
         break
       case 'trace':
         if ((level.code.match(/# @snap/g) ?? []).length < 1) add(id, 'trace code needs a `# @snap` marker')

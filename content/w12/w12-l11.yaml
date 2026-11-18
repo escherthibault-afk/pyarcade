@@ -1,0 +1,66 @@
+id: w12-l11
+world: 12
+type: code_fill
+title: "Lire un long énoncé : le distributeur"
+concepts: [lecture_enonce, etat, dict, conditions]
+difficulty: 4
+estimated_minutes: 8
+xp: 60
+story: "Un énoncé de TP, avec un tableau et des cas particuliers. Extrais l'information utile."
+statement_md: |
+  ## Le distributeur de boissons
+
+  L'état du distributeur est un dict `{"credit": centimes insérés, "stock": {boisson: quantité}, "message": str}`.
+  Les prix (en centimes) sont dans `PRICES` (fourni).
+
+  `select(state, drink)` renvoie un **nouvel** état selon ces règles, **dans cet ordre** :
+
+  | situation | crédit | stock | message |
+  |---|---|---|---|
+  | boisson inconnue | inchangé | inchangé | `"inconnu"` |
+  | stock à 0 | inchangé | inchangé | `"épuisé"` |
+  | crédit insuffisant | inchangé | inchangé | `"il manque X"` (X = centimes manquants) |
+  | sinon | crédit − prix | quantité − 1 | `"servi"` |
+
+  L'état reçu (et son dict `stock`) ne doit pas être modifié.
+given_code: |
+  PRICES = {"cafe": 60, "the": 50, "soda": 120}
+starter_code: |
+  def select(state, drink):
+      """Return the new vending machine state after selecting drink."""
+      pass
+solution: |
+  def select(state, drink):
+      """Return the new vending machine state after selecting drink."""
+      new = {"credit": state["credit"], "stock": dict(state["stock"]), "message": ""}
+      if drink not in PRICES:
+          new["message"] = "inconnu"
+      elif state["stock"].get(drink, 0) == 0:
+          new["message"] = "épuisé"
+      elif state["credit"] < PRICES[drink]:
+          new["message"] = f"il manque {PRICES[drink] - state['credit']}"
+      else:
+          new["credit"] = state["credit"] - PRICES[drink]
+          new["stock"][drink] -= 1
+          new["message"] = "servi"
+      return new
+tests:
+  visible:
+    - call: 'select({"credit": 100, "stock": {"cafe": 2}, "message": ""}, "cafe")'
+      expected: "{'credit': 40, 'stock': {'cafe': 1}, 'message': 'servi'}"
+  hidden:
+    - call: 'select({"credit": 100, "stock": {"cafe": 2}, "message": ""}, "chocolat")["message"]'
+      expected: "'inconnu'"
+    - call: 'select({"credit": 100, "stock": {"the": 0}, "message": ""}, "the")["message"]'
+      expected: "'épuisé'"
+    - call: 'select({"credit": 30, "stock": {"cafe": 2}, "message": ""}, "cafe")'
+      expected: "{'credit': 30, 'stock': {'cafe': 2}, 'message': 'il manque 30'}"
+    - call: 'select({"credit": 30, "stock": {"soda": 0}, "message": ""}, "soda")["message"]'
+      expected: "'épuisé'"
+      label: "l'ordre des règles compte"
+    - call: 'select({"credit": 100, "stock": {"cafe": 2}, "message": ""}, "cafe")'
+      pure: true
+      expected: "{'credit': 40, 'stock': {'cafe': 1}, 'message': 'servi'}"
+      label: "état d'origine intact"
+hints: ["Commence par construire un nouvel état (avec une copie du stock).", "Cascade `if/elif` dans l'ordre exact du tableau.", "Le stock d'une boisson absente du dict vaut 0 : `.get(drink, 0)`."]
+exam_tip: "Sur un énoncé long : souligne les mots « dans cet ordre », « inchangé », « ne doit pas être modifié ». Chacun correspond à un test caché."
