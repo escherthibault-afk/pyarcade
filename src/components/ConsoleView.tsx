@@ -4,6 +4,7 @@ import type { ExecResult } from '../engine/api'
 import { ErrorCard } from './ErrorCard'
 import { CanvasView } from './CanvasView'
 import { MapView } from './MapView'
+import { AnimatedCanvas } from './AnimatedCanvas'
 import { useTr } from '../i18n'
 
 const MARK = '\x1b[R]'
@@ -44,7 +45,8 @@ export function ConsoleView({ result, running, placeholder }: { result: ExecResu
       {result?.stdout ? <Stdout text={result.stdout} /> : null}
       {result?.error && <ErrorCard error={result.error} />}
       {result?.images?.map((b64, i) => <img key={i} alt={`figure ${i + 1}`} className="max-w-full rounded-lg bg-white" src={`data:image/png;base64,${b64}`} />)}
-      {result?.canvas && result.canvas.frame.length > 0 && <CanvasView width={result.canvas.width} height={result.canvas.height} frame={result.canvas.frame} />}
+      {result?.canvas?.animated && !result.error && <AnimatedCanvas width={result.canvas.width} height={result.canvas.height} first={result.canvas.frame} />}
+      {result?.canvas && !result.canvas.animated && result.canvas.frame.length > 0 && <CanvasView width={result.canvas.width} height={result.canvas.height} frame={result.canvas.frame} />}
       {result?.maps?.map((m, i) => <MapView key={i} data={m} />)}
       {result && !result.stdout && !result.error && !result.images && !result.canvas && !result.maps && (
         <div className="text-sm text-muted">{tr('(rien n’a été affiché)', '(nothing was printed)')}</div>

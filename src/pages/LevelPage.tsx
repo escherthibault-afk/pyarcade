@@ -60,6 +60,7 @@ function LevelRunner({ level }: { level: Level }) {
   const [params] = useSearchParams()
   const daily = params.get('daily') === '1'
   const review = params.get('review') === '1'
+  const heal = params.get('heal') === '1'
   const recordAttempt = useStore((s) => s.recordAttempt)
   const completeLevel = useStore((s) => s.completeLevel)
   const bump = useStore((s) => s.bump)
@@ -111,6 +112,7 @@ function LevelRunner({ level }: { level: Level }) {
       if (lastErrors.current.includes('print_not_return')) bump('print_return_fixed')
       if (lastErrors.current.includes('IndexError')) bump('fixed_after_index')
       if (review) bump('reviews_done')
+      if (heal) useStore.getState().refillHearts(1)
       if (level.type === 'golf' && level.par_chars && o.chars !== undefined && o.chars <= level.par_chars) bump('golf_par')
       if (level.type === 'predict_output' && level.timed_seconds && stars === 3) bump('speed3')
       const outcome = completeLevel({
@@ -132,7 +134,7 @@ function LevelRunner({ level }: { level: Level }) {
       setInfo({ stars, outcome, code: o.code, timeMs: o.timeMs, chars: o.chars, extra: o.extra })
       awardBadges()
     },
-    [hints, mistakes, level, daily, review, recordAttempt, completeLevel, bump],
+    [hints, mistakes, level, daily, review, heal, recordAttempt, completeLevel, bump],
   )
 
   const statement = useMemo(

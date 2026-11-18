@@ -4,14 +4,14 @@ import { loadNamespace, resolveFiles, type PyError } from '../engine/api'
 import { ErrorCard } from '../components/ErrorCard'
 import { useTr } from '../i18n'
 
-const GAMES: Record<string, React.LazyExoticComponent<React.ComponentType<{ ns: string; level: BossLevel }>>> = {
+export const LIVE_GAMES: Record<string, React.LazyExoticComponent<React.ComponentType<{ ns: string; level: BossLevel }>>> = {
   wordle: lazy(() => import('./WordleLive')),
   mastermind: lazy(() => import('./MastermindLive')),
   motus: lazy(() => import('./WordleLive').then((m) => ({ default: m.MotusLive }))),
 }
 
-export function registerLiveGame(name: string, comp: (typeof GAMES)[string]) {
-  GAMES[name] = comp
+export function registerLiveGame(name: string, comp: (typeof LIVE_GAMES)[string]) {
+  LIVE_GAMES[name] = comp
 }
 
 /** "⚡ This game runs on your N functions": loads the student's file into the `boss` namespace. */
@@ -27,7 +27,7 @@ export function LiveGame({ level, code }: { level: BossLevel; code: string }) {
       else setErr(r.error)
     })()
   }, [code, level.files])
-  const Game = level.live_game ? GAMES[level.live_game] : undefined
+  const Game = level.live_game ? LIVE_GAMES[level.live_game] : undefined
   return (
     <div className="card mb-5 overflow-hidden border-ok p-4">
       <div className="mb-3 text-center">
