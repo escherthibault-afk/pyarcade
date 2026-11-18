@@ -153,8 +153,8 @@ export function CodeGame({ session }: { session: Session }) {
   const chars = code.trim().length
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
-      <section className="space-y-4" aria-label={tr('Énoncé', 'Statement')}>
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+      <section className="min-w-0 space-y-4" aria-label={tr('Énoncé', 'Statement')}>
         <div className="card space-y-3 p-4">
           {session.statement}
           {level.tests.visible.length > 0 && (
@@ -197,7 +197,7 @@ export function CodeGame({ session }: { session: Session }) {
         {!copyMode && <div className="card p-4">{session.hintPanel}</div>}
       </section>
 
-      <section className="space-y-3" aria-label={tr('Ton code', 'Your code')}>
+      <section className="min-w-0 space-y-3" aria-label={tr('Ton code', 'Your code')}>
         <div className={shake ? 'shake' : ''}>
           <div className="h-[380px]">
             <CodeEditor

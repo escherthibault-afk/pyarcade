@@ -107,7 +107,7 @@ worlds:
     emoji: "🟩"
     color: "#22c55e"
     radar: fichiers
-    bosses: []
+    bosses: [boss-wordle-guided, boss-wordle-twin-mastermind, boss-wordle-twin-motus, boss-wordle-exam]
   - id: secret
     title: Monde secret
     title_en: Secret world

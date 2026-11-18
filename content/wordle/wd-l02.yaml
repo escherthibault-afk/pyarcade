@@ -1,0 +1,31 @@
+id: wd-l02
+world: wordle
+type: predict_output
+title: "Tranches de mots"
+concepts: [str, slicing, indexation]
+difficulty: 2
+estimated_minutes: 2
+xp: 20
+story: "Le slicing découpe un mot comme une baguette : `mot[début:fin]`, la fin n'est pas incluse."
+statement_md: "Qu'affiche ce programme ?"
+code: |
+  word = "planet"
+  print(word[1])
+  print(word[-2])
+  print(word[0:3])
+  print(word[3:])
+  print(word[::-1])
+  print(len(word[2:4]))
+answer: |
+  l
+  e
+  pla
+  net
+  tenalp
+  2
+hints:
+  - "Les indices commencent à 0 : p=0, l=1, a=2, n=3, e=4, t=5."
+  - "`word[a:b]` va de l'indice a inclus à b **exclu**."
+  - "`word[::-1]` lit le mot à l'envers."
+explanation_md: "`word[0:3]` prend les indices 0, 1, 2 → `pla`. `word[3:]` va jusqu'au bout. `word[2:4]` a `4 - 2 = 2` lettres."
+exam_tip: "La borne de fin d'une tranche (et de `range`) est **exclue** : c'est la source n° 1 des décalages d'une case."

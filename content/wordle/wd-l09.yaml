@@ -1,0 +1,40 @@
+id: wd-l09
+world: wordle
+type: code_fill
+title: "Compter les lettres"
+concepts: [dict, compteur, for]
+difficulty: 2
+estimated_minutes: 4
+xp: 35
+story: "Combien de `e` dans `eerie` ? L'algorithme des couleurs a besoin de le savoir."
+statement_md: |
+  Renvoie le dictionnaire `{lettre: nombre}` des lettres de `word`. À la main : `collections.Counter` interdit.
+starter_code: |
+  def letter_counts(word):
+      """Return a dict {letter: number of occurrences in word}."""
+      pass
+solution: |
+  def letter_counts(word):
+      """Return a dict {letter: number of occurrences in word}."""
+      counts = {}
+      for letter in word:
+          counts[letter] = counts.get(letter, 0) + 1
+      return counts
+tests:
+  visible:
+    - call: letter_counts("eerie")
+      expected: "{'e': 3, 'r': 1, 'i': 1}"
+  hidden:
+    - call: letter_counts("")
+      expected: "{}"
+    - call: letter_counts("abc")
+      expected: "{'a': 1, 'b': 1, 'c': 1}"
+    - call: letter_counts("Aa")
+      expected: "{'A': 1, 'a': 1}"
+      label: "majuscule ≠ minuscule"
+constraints:
+  forbidden: ["import:collections", "name:Counter"]
+hints:
+  - "Un dictionnaire vide au départ, une boucle sur les lettres."
+  - "`counts[letter] = counts.get(letter, 0) + 1`"
+  - "N'oublie pas `return counts` après la boucle."

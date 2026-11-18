@@ -1,0 +1,35 @@
+id: wd-l12
+world: wordle
+type: color_tiles
+title: "Devine la couleur : lettres en double"
+concepts: [wordle, lettres_en_double]
+difficulty: 3
+estimated_minutes: 5
+xp: 40
+story: "Avant de coder l'algorithme, fais-le à la main. Le piège : les lettres en double."
+statement_md: |
+  Colorie chaque lettre de la proposition comme le ferait le jeu : 🟩 bien placée, 🟨 présente ailleurs, ⬛ absente.
+  **Règle d'or** : d'abord toutes les vertes, ensuite les jaunes, **dans la limite des lettres disponibles** dans le secret.
+rounds:
+  - secret: crane
+    guess: slate
+    note: "Échauffement."
+  - secret: apple
+    guess: paper
+    note: "Deux p dans chaque mot."
+  - secret: abbey
+    guess: babes
+  - secret: crane
+    guess: eerie
+    note: "Trois e proposés, un seul dans le secret."
+  - secret: hello
+    guess: lolly
+  - secret: eerie
+    guess: geese
+  - secret: brass
+    guess: sassy
+hints:
+  - "Commence par repérer les vertes : elles « consomment » leur lettre du secret."
+  - "Pour chaque lettre non verte : reste-t-il cette lettre dans le secret (non utilisée) ? Si oui, jaune et on l'utilise."
+  - "`crane`/`eerie` : seul le dernier e est vert ; le secret n'a plus de e pour les autres → gris. Le r est jaune."
+explanation_md: "C'est exactement l'algorithme en 2 passes du boss : passe 1 les vertes + compteur des lettres restantes, passe 2 les jaunes en décrémentant."

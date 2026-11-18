@@ -1,0 +1,34 @@
+id: wd-l07
+world: wordle
+type: parsons
+title: "Où est la lettre ?"
+concepts: [for, range, append, listes]
+difficulty: 2
+estimated_minutes: 3
+xp: 25
+story: "Pour colorier, il faut savoir où apparaît chaque lettre."
+statement_md: |
+  `positions(word, letter)` renvoie la liste des indices où `letter` apparaît dans `word`.
+  `positions("apple", "p")` → `[1, 2]`. Une ligne est un leurre.
+lines:
+  - "def positions(word, letter):"
+  - "    result = []"
+  - "    for i in range(len(word)):"
+  - "        if word[i] == letter:"
+  - "            result.append(i)"
+  - "    return result"
+distractors:
+  - "            result.append(letter)"
+tests:
+  visible:
+    - call: positions("apple", "p")
+      expected: "[1, 2]"
+  hidden:
+    - call: positions("crane", "z")
+      expected: "[]"
+    - call: positions("eerie", "e")
+      expected: "[0, 1, 4]"
+hints:
+  - "On a besoin des indices, donc `range(len(word))`."
+  - "On ajoute l'**indice** `i`, pas la lettre."
+  - "La liste se crée avant la boucle, se renvoie après."

@@ -1,0 +1,50 @@
+id: wd-l04
+world: wordle
+type: quiz
+title: "QCM éclair : méthodes de chaînes"
+concepts: [str, lower, strip, isalpha]
+difficulty: 2
+estimated_minutes: 2
+xp: 25
+story: "Les chaînes ont des super-pouvoirs : `.lower()`, `.strip()`, `.isalpha()`…"
+statement_md: "10 questions, 60 secondes."
+time_limit: 60
+questions:
+  - q: "Que vaut `\"CraNe\".lower()` ?"
+    choices: ["\"crane\"", "\"CRANE\"", "\"Crane\"", "None"]
+    answer: 0
+  - q: "Que vaut `\"  crane\\n\".strip()` ?"
+    choices: ["\"crane\"", "\"  crane\"", "\"crane\\n\"", "\"crane \""]
+    answer: 0
+    explain: "`strip()` enlève espaces, tabulations et retours à la ligne aux deux bouts."
+  - q: "Que vaut `\"cr4ne\".isalpha()` ?"
+    choices: ["True", "False"]
+    answer: 1
+  - q: "Que vaut `len(\"crane\\n\")` ?"
+    choices: ["5", "6", "7", "Erreur"]
+    answer: 1
+    explain: "`\\n` est UN caractère : c'est le piège des mots lus dans un fichier sans `strip()`."
+  - q: "Après `w = \"crane\"` puis `w.upper()`, que vaut `w` ?"
+    choices: ["\"CRANE\"", "\"crane\"", "None", "Erreur"]
+    answer: 1
+    explain: "Les chaînes sont immuables : `upper()` renvoie une NOUVELLE chaîne. Il faut écrire `w = w.upper()`."
+  - q: "Que vaut `\"a,b,c\".split(\",\")` ?"
+    choices: ["[\"a\", \"b\", \"c\"]", "\"abc\"", "(\"a\", \"b\", \"c\")", "[\"a,b,c\"]"]
+    answer: 0
+  - q: "Que vaut `\"-\".join([\"a\", \"b\"])` ?"
+    choices: ["\"a-b\"", "\"-a-b-\"", "[\"a-b\"]", "\"ab-\""]
+    answer: 0
+  - q: "Que vaut `\"apple\".count(\"p\")` ?"
+    choices: ["1", "2", "3", "True"]
+    answer: 1
+  - q: "Que fait `\"crane\"[0] = \"b\"` ?"
+    choices: ["Le mot devient \"brane\"", "TypeError", "Rien", "Le mot devient \"b\""]
+    answer: 1
+  - q: "Que vaut `\"pla\" in \"planet\"` ?"
+    choices: ["True", "False", "Erreur", "3"]
+    answer: 0
+card:
+  title: "Méthodes de chaînes"
+  body_md: |
+    `lower()` `upper()` `strip()` `isalpha()` `split(sep)` `sep.join(liste)` `count(x)` `replace(a, b)`.
+    Elles **renvoient** une nouvelle chaîne : `w = w.lower()`.

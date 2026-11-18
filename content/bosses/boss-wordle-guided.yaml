@@ -1,0 +1,731 @@
+id: boss-wordle-guided
+world: wordle
+type: boss
+variant: guided
+project: wordle
+title: "🟩 Boss Wordle"
+concepts: [str, dict, fichiers, while, random]
+difficulty: 4
+estimated_minutes: 60
+xp: 400
+min_stars: 20
+live_game: wordle
+files:
+  words.txt: "@data/words_en_5.txt"
+  secrets.txt: "@data/secrets_en_5.txt"
+  mini.txt: "Crane\n\nslate\nAPPLE \nhello world\nabc\nCRANE\npèche\nbanana\nplant\n"
+statement_md: "Le projet complet du jeu du mot mystère, en 15 fonctions, comme au TP."
+intro_md: |
+  ## Le jeu du mot mystère (Wordle)
+
+  L'ordinateur choisit un **mot secret de 5 lettres**. Le joueur a **6 essais** pour le trouver.
+  Après chaque proposition, chaque lettre reçoit une couleur :
+
+  | couleur | sens |
+  |---|---|
+  | 🟩 `"green"` | la lettre est dans le mot, **à cette place** |
+  | 🟨 `"yellow"` | la lettre est dans le mot, **ailleurs** |
+  | ⬛ `"grey"` | la lettre n'est pas dans le mot (ou plus de lettre disponible) |
+
+  **Lettres en double** : une lettre du secret ne peut « servir » qu'une fois. On colore d'abord les vertes,
+  puis on distribue les jaunes **dans la limite des lettres restantes** (un dictionnaire de compteurs).
+  Exemple : secret `apple`, proposition `paper` → `yellow yellow green yellow grey` (le 2e `p` de `paper` est vert,
+  le premier ne peut être jaune que parce que `apple` contient deux `p`).
+
+  ### Organisation du fichier
+  - Les constantes `GREEN`, `YELLOW`, `GREY`, `STYLES`, `ACCENTS`, `EMPTY_TILE` sont données en haut du fichier.
+  - Les fichiers `words.txt` (mots autorisés) et `secrets.txt` (mots secrets possibles) sont disponibles.
+  - Chaque fonction se teste seule, puis `game_loop()` assemble tout.
+  - Affichage : sur le site `from rich_lite import Console` ; chez toi, `from rich.console import Console`
+    (mêmes méthodes `print`, même balisage `[bold white on green] A [/]`).
+
+  Valide les fonctions dans l'ordre : chacune retire des PV au boss. Quand tout est vert, tu joues au jeu… **avec ton code**.
+header_code: |
+  import random
+  from rich_lite import Console
+
+  console = Console()
+
+  GREEN = "green"
+  YELLOW = "yellow"
+  GREY = "grey"
+  STYLES = {GREEN: "bold white on green", YELLOW: "bold black on yellow", GREY: "bold white on grey"}
+  EMPTY_TILE = "[dim] _ [/]"
+  ACCENTS = {"é": "e", "è": "e", "ê": "e", "ë": "e", "à": "a", "â": "a", "ä": "a", "î": "i",
+             "ï": "i", "ô": "o", "ö": "o", "ù": "u", "û": "u", "ü": "u", "ç": "c"}
+steps:
+  - fn: normalize
+    title: "nettoyer un mot"
+    statement_md: |
+      Renvoie le mot en **minuscules**, **sans espaces ni retour à la ligne** autour, et **sans accents**
+      (remplace chaque lettre accentuée grâce au dictionnaire `ACCENTS`).
+    starter_code: |
+      def normalize(word):
+          """Return word in lowercase, without spaces around it and without accents."""
+          pass
+    solution: |
+      def normalize(word):
+          """Return word in lowercase, without spaces around it and without accents."""
+          word = word.strip().lower()
+          result = ""
+          for letter in word:
+              if letter in ACCENTS:
+                  result = result + ACCENTS[letter]
+              else:
+                  result = result + letter
+          return result
+    tests:
+      visible:
+        - call: normalize("  Crane\n")
+          expected: "'crane'"
+        - call: normalize("CRÊPE")
+          expected: "'crepe'"
+      hidden:
+        - call: normalize("")
+          expected: "''"
+          label: "chaîne vide"
+        - call: normalize("Élève ")
+          expected: "'eleve'"
+        - call: normalize("slate")
+          expected: "'slate'"
+    hints:
+      - "`strip()` enlève les espaces et `\\n` autour, `lower()` passe en minuscules. Puis on reconstruit la chaîne lettre par lettre."
+      - "Pour chaque lettre : si elle est une clé de `ACCENTS`, on ajoute `ACCENTS[lettre]`, sinon la lettre elle-même."
+      - "`word = word.strip().lower()` puis une boucle `for letter in word:` qui construit `result`."
+    points: 1
+  - fn: load_words
+    title: "lire le dictionnaire"
+    statement_md: |
+      Lis le fichier ligne par ligne (`with open(file_path, encoding="utf-8") as f:`), **normalise** chaque ligne et garde
+      seulement les mots de `length` lettres qui ne contiennent **que des lettres** (`isalpha`).
+      Pas de doublon : si un mot est déjà dans la liste, ne l'ajoute pas une 2e fois. L'ordre du fichier est conservé.
+
+      Le fichier `mini.txt` contient : `Crane`, une ligne vide, `slate`, `APPLE `, `hello world`, `abc`, `CRANE`, `pèche`, `banana`, `plant`.
+    starter_code: |
+      def load_words(file_path, length=5):
+          """Return the list of normalized words of the given length found in the file (no duplicates)."""
+          pass
+    solution: |
+      def load_words(file_path, length=5):
+          """Return the list of normalized words of the given length found in the file (no duplicates)."""
+          words = []
+          with open(file_path, encoding="utf-8") as f:
+              for line in f:
+                  word = normalize(line)
+                  if len(word) == length and word.isalpha() and word not in words:
+                      words.append(word)
+          return words
+    tests:
+      visible:
+        - call: load_words("mini.txt")
+          expected: "['crane', 'slate', 'apple', 'peche', 'plant']"
+      hidden:
+        - call: load_words("mini.txt", 6)
+          expected: "['banana']"
+          label: "paramètre length"
+        - call: load_words("mini.txt", 3)
+          expected: "['abc']"
+        - call: len(load_words("words.txt"))
+          expected: "8521"
+          label: "vrai dictionnaire"
+        - call: "'crane' in load_words('secrets.txt')"
+          expected: "True"
+    hints:
+      - "Ouvre le fichier avec `with open(...) as f:` puis `for line in f:` : chaque `line` finit par `\\n`."
+      - "Réutilise `normalize(line)` : il enlève le `\\n`, les espaces, les majuscules et les accents."
+      - "Condition d'ajout : `len(word) == length and word.isalpha() and word not in words`."
+    points: 1.5
+  - fn: choose_secret
+    title: "tirer le mot secret"
+    statement_md: "Renvoie un mot tiré **au hasard** dans la liste `words` (sans la modifier)."
+    starter_code: |
+      def choose_secret(words):
+          """Return a random word from the list words."""
+          pass
+    solution: |
+      def choose_secret(words):
+          """Return a random word from the list words."""
+          return random.choice(words)
+    tests:
+      visible:
+        - call: "choose_secret(['crane', 'slate', 'plant']) in ['crane', 'slate', 'plant']"
+          expected: "True"
+      hidden:
+        - call: "choose_secret(['solo'])"
+          expected: "'solo'"
+          label: "un seul mot"
+        - call: "choose_secret(['crane', 'slate'])"
+          pure: true
+          label: "la liste n'est pas modifiée"
+      statistical:
+        - expr: "sum(choose_secret(['a', 'b', 'c']) == 'a' for _ in range(6000)) / 6000"
+          approx: 0.3333
+          tol: 0.03
+          label: "chaque mot a la même chance"
+    hints:
+      - "Le module `random` est déjà importé."
+      - "`random.choice(liste)` renvoie un élément au hasard."
+      - "`return random.choice(words)`"
+    points: 0.5
+  - fn: count_letters
+    title: "compter les lettres"
+    statement_md: |
+      Renvoie un dictionnaire `{lettre: nombre d'apparitions}`. **Écris-le à la main** :
+      `collections.Counter` est interdit ici (tu l'utiliseras plus tard, quand tu sauras le refaire).
+    starter_code: |
+      def count_letters(word):
+          """Return a dict mapping each letter of word to its number of occurrences."""
+          pass
+    solution: |
+      def count_letters(word):
+          """Return a dict mapping each letter of word to its number of occurrences."""
+          counts = {}
+          for letter in word:
+              if letter in counts:
+                  counts[letter] += 1
+              else:
+                  counts[letter] = 1
+          return counts
+    tests:
+      visible:
+        - call: count_letters("apple")
+          expected: "{'a': 1, 'p': 2, 'l': 1, 'e': 1}"
+      hidden:
+        - call: count_letters("")
+          expected: "{}"
+          label: "mot vide"
+        - call: count_letters("eerie")
+          expected: "{'e': 3, 'r': 1, 'i': 1}"
+        - call: count_letters("aaaaa")
+          expected: "{'a': 5}"
+    constraints:
+      forbidden: ["import:collections", "name:Counter"]
+    hints:
+      - "Parcours le mot lettre par lettre et tiens un dictionnaire de compteurs."
+      - "Si la lettre est déjà une clé : +1. Sinon : on crée la clé avec 1."
+      - "`counts[letter] = counts.get(letter, 0) + 1` fait les deux cas d'un coup."
+    points: 1.5
+  - fn: is_valid_guess
+    title: "valider une proposition"
+    statement_md: |
+      Renvoie un **tuple** `(valide, message)` :
+      - `(False, "...")` si la proposition n'a pas `length` lettres, ou contient autre chose que des lettres,
+        ou n'est pas dans `words` (un message court qui explique, en anglais, non vide) ;
+      - `(True, "")` sinon.
+
+      `guess` est déjà normalisé.
+    starter_code: |
+      def is_valid_guess(guess, words, length=5):
+          """Return (True, "") if guess is valid, else (False, message)."""
+          pass
+    solution: |
+      def is_valid_guess(guess, words, length=5):
+          """Return (True, "") if guess is valid, else (False, message)."""
+          if len(guess) != length:
+              return (False, f"The word must have {length} letters.")
+          if not guess.isalpha():
+              return (False, "Letters only, please.")
+          if guess not in words:
+              return (False, "Not in the word list.")
+          return (True, "")
+    tests:
+      visible:
+        - setup: "W = ['crane', 'slate', 'apple']"
+          call: is_valid_guess('crane', W)
+          expected: "(True, '')"
+        - setup: "W = ['crane', 'slate', 'apple']"
+          call: is_valid_guess('abc', W)[0]
+          expected: "False"
+      hidden:
+        - setup: "W = ['crane', 'slate', 'apple']"
+          call: is_valid_guess('cr4ne', W)[0]
+          expected: "False"
+          label: "chiffre dans le mot"
+        - setup: "W = ['crane', 'slate', 'apple']"
+          call: is_valid_guess('zzzzz', W)[0]
+          expected: "False"
+          label: "pas dans le dictionnaire"
+        - setup: "W = ['crane', 'slate', 'apple']"
+          call: is_valid_guess('apples', W)[0]
+          expected: "False"
+          label: "trop long"
+        - setup: "W = ['crane', 'slate', 'apple']"
+          call: "len(is_valid_guess('abc', W)[1]) > 0 and isinstance(is_valid_guess('abc', W)[1], str)"
+          expected: "True"
+          label: "message non vide"
+        - call: is_valid_guess('banana', ['banana'], 6)
+          expected: "(True, '')"
+          label: "paramètre length"
+    hints:
+      - "Teste les cas d'erreur un par un et renvoie dès qu'un problème est trouvé."
+      - "Longueur : `len(guess) != length` ; lettres : `guess.isalpha()` ; dictionnaire : `guess in words`."
+      - "Renvoyer un tuple : `return (False, \"Not in the word list.\")`."
+    points: 1.5
+  - fn: evaluate_guess
+    title: "colorier une proposition (lettres en double !)"
+    statement_md: |
+      Renvoie la liste des couleurs (`GREEN`, `YELLOW`, `GREY`) de chaque lettre de `guess`. Ne tiens pas compte des majuscules.
+
+      **Algorithme en 2 passes :**
+      1. Toutes les cases `GREY` au départ. Pour chaque position : si la lettre est bien placée → `GREEN` ;
+         sinon on **compte** la lettre du secret comme « disponible » (dictionnaire de compteurs).
+      2. Pour chaque position pas verte : si la lettre est disponible (compteur > 0) → `YELLOW` et on **décrémente**.
+    starter_code: |
+      def evaluate_guess(guess, secret):
+          """Return the list of colours (GREEN, YELLOW, GREY) for each letter of guess."""
+          pass
+    solution: |
+      def evaluate_guess(guess, secret):
+          """Return the list of colours (GREEN, YELLOW, GREY) for each letter of guess."""
+          guess = guess.lower()
+          secret = secret.lower()
+          result = [GREY] * len(guess)
+          available = {}
+          for i in range(len(secret)):
+              if guess[i] == secret[i]:
+                  result[i] = GREEN
+              else:
+                  available[secret[i]] = available.get(secret[i], 0) + 1
+          for i in range(len(guess)):
+              if result[i] != GREEN and available.get(guess[i], 0) > 0:
+                  result[i] = YELLOW
+                  available[guess[i]] -= 1
+          return result
+    tests:
+      visible:
+        - call: evaluate_guess('crane', 'crane')
+          expected: "['green', 'green', 'green', 'green', 'green']"
+        - call: evaluate_guess('moist', 'crane')
+          expected: "['grey', 'grey', 'grey', 'grey', 'grey']"
+        - call: evaluate_guess('slate', 'crane')
+          expected: "['grey', 'grey', 'green', 'grey', 'green']"
+      hidden:
+        - call: evaluate_guess('CRANE', 'crane')
+          expected: "['green', 'green', 'green', 'green', 'green']"
+          label: "majuscules en entrée"
+        - call: evaluate_guess('Nacre', 'CRANE')
+          expected: "['yellow', 'yellow', 'yellow', 'yellow', 'green']"
+          label: "anagramme, majuscules mélangées"
+        - call: evaluate_guess('paper', 'apple')
+          expected: "['yellow', 'yellow', 'green', 'yellow', 'grey']"
+          label: "double p dans les deux mots"
+        - call: evaluate_guess('babes', 'abbey')
+          expected: "['yellow', 'yellow', 'green', 'green', 'grey']"
+          label: "double b dans les deux mots"
+        - call: evaluate_guess('eerie', 'crane')
+          expected: "['grey', 'grey', 'yellow', 'grey', 'green']"
+          label: "trois e proposés, un seul dans le secret (vert)"
+        - call: evaluate_guess('lolly', 'hello')
+          expected: "['grey', 'yellow', 'green', 'green', 'grey']"
+          label: "les verts consomment les l avant les jaunes"
+        - call: evaluate_guess('speed', 'abide')
+          expected: "['grey', 'grey', 'yellow', 'grey', 'yellow']"
+          label: "double e proposé, un seul dans le secret"
+        - call: evaluate_guess('allee', 'eagle')
+          expected: "['yellow', 'yellow', 'grey', 'yellow', 'green']"
+          label: "doubles l et e"
+        - call: evaluate_guess('robot', 'motor')
+          expected: "['yellow', 'green', 'grey', 'green', 'yellow']"
+          label: "double o dans les deux mots"
+        - call: evaluate_guess('geese', 'eerie')
+          expected: "['grey', 'green', 'yellow', 'grey', 'green']"
+          label: "lettre bien placée ET présente ailleurs"
+        - call: evaluate_guess('sassy', 'brass')
+          expected: "['yellow', 'yellow', 'grey', 'green', 'grey']"
+          label: "trois s proposés, deux dans le secret"
+        - call: evaluate_guess('llama', 'hello')
+          expected: "['yellow', 'yellow', 'grey', 'grey', 'grey']"
+          label: "double l mal placé"
+        - call: evaluate_guess('kayak', 'karat')
+          expected: "['green', 'green', 'grey', 'green', 'grey']"
+          label: "doubles k et a"
+        - call: evaluate_guess('tweet', 'sweet')
+          expected: "['grey', 'green', 'green', 'green', 'green']"
+          label: "double e vert"
+        - call: evaluate_guess('added', 'dread')
+          expected: "['yellow', 'yellow', 'grey', 'yellow', 'green']"
+          label: "trois d proposés"
+        - call: evaluate_guess('mamma', 'maxim')
+          expected: "['green', 'green', 'yellow', 'grey', 'grey']"
+          label: "trois m proposés, deux dans le secret"
+        - call: evaluate_guess('apple', 'paper')
+          expected: "['yellow', 'yellow', 'green', 'grey', 'yellow']"
+          label: "double p, sens inverse"
+        - call: evaluate_guess('error', 'robot')
+          expected: "['grey', 'yellow', 'grey', 'green', 'grey']"
+          label: "trois r proposés, un seul dans le secret"
+        - call: evaluate_guess('fluff', 'offal')
+          expected: "['yellow', 'yellow', 'grey', 'yellow', 'grey']"
+          label: "trois f proposés, deux dans le secret"
+        - call: evaluate_guess('array', 'rarer')
+          expected: "['yellow', 'yellow', 'green', 'grey', 'grey']"
+          label: "trois r dans le secret"
+        - call: evaluate_guess('stars', 'trust')
+          expected: "['yellow', 'yellow', 'grey', 'yellow', 'grey']"
+          label: "double s, double t"
+        - call: evaluate_guess('banana', 'bandit')
+          expected: "['green', 'green', 'green', 'grey', 'grey', 'grey']"
+          label: "mots de 6 lettres"
+    hints:
+      - "Une seule boucle ne suffit pas : il faut d'abord trouver les vertes, puis distribuer les jaunes avec un dictionnaire de lettres encore disponibles."
+      - "Passe 1 : `if guess[i] == secret[i]: result[i] = GREEN` sinon `available[secret[i]] += 1`. Passe 2 : jaune seulement si `available.get(guess[i], 0) > 0`, puis décrémenter."
+      - "Commence par `result = [GREY] * len(guess)` et `available = {}` (et pense à `.lower()` sur les deux mots)."
+    points: 4
+  - fn: is_won
+    title: "partie gagnée ?"
+    statement_md: "Renvoie `True` si `feedback` **n'est pas vide** et que toutes ses cases sont `GREEN`."
+    starter_code: |
+      def is_won(feedback):
+          """Return True if feedback is not empty and every colour is GREEN."""
+          pass
+    solution: |
+      def is_won(feedback):
+          """Return True if feedback is not empty and every colour is GREEN."""
+          if len(feedback) == 0:
+              return False
+          for colour in feedback:
+              if colour != GREEN:
+                  return False
+          return True
+    tests:
+      visible:
+        - call: is_won(['green'] * 5)
+          expected: "True"
+        - call: is_won(['green', 'green', 'yellow', 'green', 'green'])
+          expected: "False"
+      hidden:
+        - call: is_won([])
+          expected: "False"
+          label: "feedback vide"
+        - call: is_won(['grey'] * 5)
+          expected: "False"
+    hints:
+      - "Cas particulier d'abord : une liste vide n'est pas une victoire."
+      - "Parcours les couleurs : dès qu'une n'est pas `GREEN`, c'est perdu."
+      - "`return len(feedback) > 0 and feedback.count(GREEN) == len(feedback)` marche aussi."
+    points: 0.5
+  - fn: create_game_state
+    title: "état de la partie"
+    statement_md: |
+      Renvoie un dictionnaire avec exactement ces clés :
+      `"secret"`, `"guesses"` (liste vide), `"feedbacks"` (liste vide), `"max_attempts"`, `"won"` (`False`), `"over"` (`False`).
+    starter_code: |
+      def create_game_state(secret, max_attempts=6):
+          """Return a new game state dictionary."""
+          pass
+    solution: |
+      def create_game_state(secret, max_attempts=6):
+          """Return a new game state dictionary."""
+          return {
+              "secret": secret,
+              "guesses": [],
+              "feedbacks": [],
+              "max_attempts": max_attempts,
+              "won": False,
+              "over": False,
+          }
+    tests:
+      visible:
+        - call: create_game_state('crane')
+          expected: "{'secret': 'crane', 'guesses': [], 'feedbacks': [], 'max_attempts': 6, 'won': False, 'over': False}"
+      hidden:
+        - call: create_game_state('slate', 3)['max_attempts']
+          expected: "3"
+        - call: "create_game_state('a')['guesses'] is not create_game_state('a')['guesses']"
+          expected: "True"
+          label: "une nouvelle liste à chaque partie"
+    hints:
+      - "Un dictionnaire littéral `{\"clé\": valeur, ...}` suffit."
+      - "Les listes vides s'écrivent `[]`."
+      - "N'oublie pas d'utiliser le paramètre `max_attempts`."
+    points: 1
+  - fn: play_guess
+    title: "jouer un coup"
+    statement_md: |
+      Si la partie est **déjà finie** (`state["over"]`), renvoie `None` sans rien changer.
+      Sinon : évalue `guess`, ajoute `guess` à `state["guesses"]` et le feedback à `state["feedbacks"]`,
+      mets à jour `state["won"]` et `state["over"]` (gagné, ou nombre d'essais atteint), puis **renvoie le feedback**.
+    starter_code: |
+      def play_guess(state, guess):
+          """Play one guess: update state and return the feedback (None if the game is over)."""
+          pass
+    solution: |
+      def play_guess(state, guess):
+          """Play one guess: update state and return the feedback (None if the game is over)."""
+          if state["over"]:
+              return None
+          feedback = evaluate_guess(guess, state["secret"])
+          state["guesses"].append(guess)
+          state["feedbacks"].append(feedback)
+          state["won"] = is_won(feedback)
+          state["over"] = state["won"] or len(state["guesses"]) >= state["max_attempts"]
+          return feedback
+    tests:
+      visible:
+        - setup: "s = create_game_state('crane')"
+          call: play_guess(s, 'slate')
+          expected: "['grey', 'grey', 'green', 'grey', 'green']"
+        - setup: "s = create_game_state('crane')\nplay_guess(s, 'slate')"
+          call: "(play_guess(s, 'crane'), s['won'], s['over'], s['guesses'])"
+          expected: "(['green'] * 5, True, True, ['slate', 'crane'])"
+      hidden:
+        - setup: "s = create_game_state('crane')\nplay_guess(s, 'crane')"
+          call: "(play_guess(s, 'slate'), len(s['guesses']))"
+          expected: "(None, 1)"
+          label: "on ne joue plus après une victoire"
+        - setup: "s = create_game_state('crane', 2)\nplay_guess(s, 'slate')\nplay_guess(s, 'apple')"
+          call: "(s['won'], s['over'], len(s['feedbacks']))"
+          expected: "(False, True, 2)"
+          label: "perdu au dernier essai"
+        - setup: "s = create_game_state('crane', 2)\nplay_guess(s, 'slate')"
+          call: "s['over']"
+          expected: "False"
+          label: "pas fini avant le dernier essai (décalage de 1 ?)"
+    hints:
+      - "Commence par le cas « partie finie » : `if state[\"over\"]: return None`."
+      - "Réutilise `evaluate_guess` et `is_won`, puis `append` dans les deux listes."
+      - "`state[\"over\"] = state[\"won\"] or len(state[\"guesses\"]) >= state[\"max_attempts\"]`"
+    points: 2
+  - fn: update_keyboard
+    title: "le clavier coloré"
+    statement_md: |
+      `keyboard` associe à chaque lettre déjà jouée sa **meilleure** couleur connue (`GREEN` > `YELLOW` > `GREY`).
+      Mets-le à jour avec la proposition et son feedback (une lettre ne peut jamais redescendre), puis **renvoie** `keyboard`.
+    starter_code: |
+      def update_keyboard(keyboard, guess, feedback):
+          """Update keyboard with the best known colour of each letter of guess, and return it."""
+          pass
+    solution: |
+      def update_keyboard(keyboard, guess, feedback):
+          """Update keyboard with the best known colour of each letter of guess, and return it."""
+          rank = {GREY: 0, YELLOW: 1, GREEN: 2}
+          for i in range(len(guess)):
+              letter = guess[i]
+              colour = feedback[i]
+              if letter not in keyboard or rank[colour] > rank[keyboard[letter]]:
+                  keyboard[letter] = colour
+          return keyboard
+    tests:
+      visible:
+        - call: "update_keyboard({}, 'crane', ['grey', 'yellow', 'grey', 'grey', 'green'])"
+          expected: "{'c': 'grey', 'r': 'yellow', 'a': 'grey', 'n': 'grey', 'e': 'green'}"
+      hidden:
+        - call: "update_keyboard({'e': 'green'}, 'speed', ['grey', 'grey', 'yellow', 'grey', 'grey'])"
+          expected: "{'e': 'green', 's': 'grey', 'p': 'grey', 'd': 'grey'}"
+          label: "une lettre verte reste verte"
+        - call: "update_keyboard({}, 'eerie', ['grey', 'grey', 'yellow', 'grey', 'green'])"
+          expected: "{'e': 'green', 'r': 'yellow', 'i': 'grey'}"
+          label: "lettre en double dans la proposition"
+        - call: "update_keyboard({'r': 'grey'}, 'rr', ['grey', 'yellow'])"
+          expected: "{'r': 'yellow'}"
+    hints:
+      - "Un dictionnaire `rank = {GREY: 0, YELLOW: 1, GREEN: 2}` permet de comparer deux couleurs."
+      - "Pour chaque position i : on écrit la couleur si la lettre est absente du clavier ou si la nouvelle couleur est meilleure."
+      - "`if letter not in keyboard or rank[colour] > rank[keyboard[letter]]:`"
+    points: 1
+  - fn: render_guess
+    title: "afficher une ligne"
+    statement_md: |
+      Renvoie une chaîne avec, pour chaque lettre, la case `"[STYLE] L [/]"` où `STYLE` vient de `STYLES[couleur]`
+      et `L` est la lettre en **majuscule** entourée d'un espace. Les cases sont collées les unes aux autres.
+
+      Exemple : `render_guess("ab", [GREEN, GREY])` → `"[bold white on green] A [/][bold white on grey] B [/]"`.
+    starter_code: |
+      def render_guess(guess, feedback):
+          """Return the rich markup string showing guess with its colours."""
+          pass
+    solution: |
+      def render_guess(guess, feedback):
+          """Return the rich markup string showing guess with its colours."""
+          line = ""
+          for i in range(len(guess)):
+              line = line + f"[{STYLES[feedback[i]]}] {guess[i].upper()} [/]"
+          return line
+    tests:
+      visible:
+        - call: "render_guess('ab', ['green', 'grey'])"
+          expected: "'[bold white on green] A [/][bold white on grey] B [/]'"
+      hidden:
+        - call: "render_guess('c', ['yellow'])"
+          expected: "'[bold black on yellow] C [/]'"
+        - call: "render_guess('', [])"
+          expected: "''"
+          label: "vide"
+    hints:
+      - "Construis la chaîne case par case dans une boucle sur les indices."
+      - "Une case : `f\"[{STYLES[feedback[i]]}] {guess[i].upper()} [/]\"`."
+      - "Commence avec `line = \"\"` et ajoute chaque case."
+    points: 1
+  - fn: render_board
+    title: "afficher la grille"
+    statement_md: |
+      Renvoie la grille complète : une ligne par essai joué (`render_guess`), puis des lignes vides
+      (`EMPTY_TILE` répété autant de fois que de lettres dans le secret) jusqu'à `max_attempts` lignes.
+      Les lignes sont séparées par `"\n"`.
+    starter_code: |
+      def render_board(state):
+          """Return the whole board as a rich markup string (one line per attempt)."""
+          pass
+    solution: |
+      def render_board(state):
+          """Return the whole board as a rich markup string (one line per attempt)."""
+          lines = []
+          for i in range(len(state["guesses"])):
+              lines.append(render_guess(state["guesses"][i], state["feedbacks"][i]))
+          while len(lines) < state["max_attempts"]:
+              lines.append(EMPTY_TILE * len(state["secret"]))
+          return "\n".join(lines)
+    tests:
+      visible:
+        - setup: "s = create_game_state('ab', 2)\nplay_guess(s, 'ba')"
+          call: render_board(s)
+          expected: "'[bold black on yellow] B [/][bold black on yellow] A [/]\\n[dim] _ [/][dim] _ [/]'"
+      hidden:
+        - call: "render_board(create_game_state('abc', 1))"
+          expected: "'[dim] _ [/][dim] _ [/][dim] _ [/]'"
+          label: "aucun essai"
+        - setup: "s = create_game_state('crane')\nplay_guess(s, 'slate')"
+          call: "render_board(s).count('\\n')"
+          expected: "5"
+          label: "6 lignes"
+    hints:
+      - "Fabrique une liste de lignes, puis `\"\\n\".join(lignes)`."
+      - "D'abord les essais joués (`render_guess`), puis une boucle `while len(lines) < max_attempts`."
+      - "Une ligne vide : `EMPTY_TILE * len(state[\"secret\"])`."
+    points: 1
+  - fn: create_stats
+    title: "statistiques : départ"
+    statement_md: |
+      Renvoie `{"played": 0, "wins": 0, "current_streak": 0, "best_streak": 0, "distribution": {1: 0, 2: 0, ..., max_attempts: 0}}`.
+    starter_code: |
+      def create_stats(max_attempts=6):
+          """Return empty statistics."""
+          pass
+    solution: |
+      def create_stats(max_attempts=6):
+          """Return empty statistics."""
+          distribution = {}
+          for n in range(1, max_attempts + 1):
+              distribution[n] = 0
+          return {"played": 0, "wins": 0, "current_streak": 0, "best_streak": 0, "distribution": distribution}
+    tests:
+      visible:
+        - call: create_stats(3)
+          expected: "{'played': 0, 'wins': 0, 'current_streak': 0, 'best_streak': 0, 'distribution': {1: 0, 2: 0, 3: 0}}"
+      hidden:
+        - call: "sorted(create_stats()['distribution'])"
+          expected: "[1, 2, 3, 4, 5, 6]"
+          label: "de 1 à 6 inclus"
+    hints:
+      - "La distribution compte combien de parties ont été gagnées en 1 essai, 2 essais…"
+      - "`for n in range(1, max_attempts + 1):` (attention au +1)."
+      - "Construis `distribution` dans une boucle puis renvoie le grand dictionnaire."
+    points: 0.5
+  - fn: update_stats
+    title: "statistiques : après une partie"
+    statement_md: |
+      Une partie de plus : `played` +1. Si gagnée : `wins` +1, `current_streak` +1, `best_streak` mis à jour,
+      et `distribution[nb_attempts]` +1. Si perdue : `current_streak` repasse à 0. Renvoie `stats`.
+    starter_code: |
+      def update_stats(stats, won, nb_attempts):
+          """Update stats after a game and return them."""
+          pass
+    solution: |
+      def update_stats(stats, won, nb_attempts):
+          """Update stats after a game and return them."""
+          stats["played"] += 1
+          if won:
+              stats["wins"] += 1
+              stats["current_streak"] += 1
+              if stats["current_streak"] > stats["best_streak"]:
+                  stats["best_streak"] = stats["current_streak"]
+              stats["distribution"][nb_attempts] += 1
+          else:
+              stats["current_streak"] = 0
+          return stats
+    tests:
+      visible:
+        - setup: "st = create_stats()"
+          call: "update_stats(st, True, 3)"
+          expected: "{'played': 1, 'wins': 1, 'current_streak': 1, 'best_streak': 1, 'distribution': {1: 0, 2: 0, 3: 1, 4: 0, 5: 0, 6: 0}}"
+      hidden:
+        - setup: "st = create_stats()\nupdate_stats(st, True, 2)\nupdate_stats(st, True, 4)"
+          call: "update_stats(st, False, 6)"
+          expected: "{'played': 3, 'wins': 2, 'current_streak': 0, 'best_streak': 2, 'distribution': {1: 0, 2: 1, 3: 0, 4: 1, 5: 0, 6: 0}}"
+          label: "la série retombe à 0, le record reste"
+        - setup: "st = create_stats()\nupdate_stats(st, False, 6)"
+          call: "st['distribution']"
+          expected: "{1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0}"
+          label: "une défaite ne compte pas dans la distribution"
+    hints:
+      - "`stats[\"played\"] += 1` dans tous les cas."
+      - "Le meilleur record : `if stats[\"current_streak\"] > stats[\"best_streak\"]: ...`."
+      - "La distribution est un dict : `stats[\"distribution\"][nb_attempts] += 1`."
+    points: 1
+  - fn: game_loop
+    title: "la boucle de jeu"
+    statement_md: |
+      Assemble tout : charge les mots, choisis le secret (sauf s'il est donné en paramètre, pratique pour tester),
+      crée l'état, puis **tant que la partie n'est pas finie** : lis une proposition (`input`), normalise-la,
+      refuse-la avec un message si elle est invalide ou **déjà proposée**, sinon joue-la et affiche la grille.
+      À la fin, affiche « gagné » ou « perdu (le mot était …) » et **renvoie l'état final**.
+      Les propositions refusées ne comptent pas comme des essais.
+    starter_code: |
+      def game_loop(words_file="words.txt", secret=None, max_attempts=6):
+          """Play a full game in the console and return the final state."""
+          pass
+
+
+      if __name__ == "__main__":
+          game_loop()
+    solution: |
+      def game_loop(words_file="words.txt", secret=None, max_attempts=6):
+          """Play a full game in the console and return the final state."""
+          words = load_words(words_file)
+          if secret is None:
+              secret = choose_secret(load_words("secrets.txt"))
+          state = create_game_state(secret, max_attempts)
+          keyboard = {}
+          while not state["over"]:
+              guess = normalize(input("Your guess: "))
+              valid, message = is_valid_guess(guess, words)
+              if not valid:
+                  console.print(f"[red]{message}[/]")
+              elif guess in state["guesses"]:
+                  console.print("[red]Already tried.[/]")
+              else:
+                  feedback = play_guess(state, guess)
+                  update_keyboard(keyboard, guess, feedback)
+                  console.print(render_board(state))
+          if state["won"]:
+              console.print(f"[bold green]Well done! Found in {len(state['guesses'])} attempts.[/]")
+          else:
+              console.print(f"[bold red]Lost! The word was {state['secret'].upper()}.[/]")
+          return state
+
+
+      if __name__ == "__main__":
+          game_loop()
+    tests:
+      visible:
+        - call: "game_loop(secret='crane')['guesses']"
+          stdin: ["slate", "crane"]
+          expected: "['slate', 'crane']"
+      hidden:
+        - call: "game_loop(secret='crane')['guesses']"
+          stdin: ["abc", "zzzzz", "SLATE ", "slate", "crane"]
+          expected: "['slate', 'crane']"
+          label: "propositions invalides et déjà jouées ignorées"
+        - call: "(lambda s: (s['won'], s['over'], len(s['guesses'])))(game_loop(secret='crane', max_attempts=2))"
+          stdin: ["slate", "apple"]
+          expected: "(False, True, 2)"
+          label: "défaite"
+        - call: "game_loop(secret='crane')['won']"
+          stdin: ["crane"]
+          expected: "True"
+          label: "victoire au premier essai"
+    hints:
+      - "Structure : préparation, puis `while not state[\"over\"]:` avec `input`, puis le message final et `return state`."
+      - "Dans la boucle : `normalize`, puis `is_valid_guess` (qui renvoie un tuple à déballer), puis le test « déjà proposé »."
+      - "Ne joue (`play_guess`) que si la proposition est valide ET nouvelle ; affiche `render_board(state)`."
+    points: 2

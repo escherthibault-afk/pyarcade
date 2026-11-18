@@ -1,0 +1,26 @@
+id: wd-l18
+world: wordle
+type: truth_table
+title: "La partie continue ?"
+concepts: [bool, and, not, de_morgan]
+difficulty: 2
+estimated_minutes: 3
+xp: 30
+story: "La condition du `while` de ta boucle de jeu. Si elle est fausse au mauvais moment, la partie ne s'arrête jamais."
+statement_md: |
+  Écris l'expression qui vaut `True` **tant que la partie doit continuer** : pas encore gagné, et moins de 6 essais joués.
+  Variables : `won` (booléen) et `attempts` (nombre d'essais déjà joués).
+vars: [won, attempts]
+rows:
+  - {won: false, attempts: 0}
+  - {won: false, attempts: 5}
+  - {won: false, attempts: 6}
+  - {won: true, attempts: 2}
+  - {won: true, attempts: 6}
+solution: "not won and attempts < 6"
+simple_len: 22
+hints:
+  - "Deux conditions doivent être vraies en même temps."
+  - "« pas encore gagné » : `not won`. « moins de 6 essais » : `attempts < 6`."
+  - "La partie s'arrête si `won or attempts >= 6` ; la négation (De Morgan) donne la condition pour continuer."
+explanation_md: "`not (won or attempts >= 6)` est équivalent à `not won and attempts < 6` : c'est la loi de De Morgan."

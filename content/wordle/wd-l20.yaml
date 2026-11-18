@@ -1,0 +1,52 @@
+id: wd-l20
+world: wordle
+type: code_fill
+title: "Bonus : le mode difficile"
+concepts: [wordle, zip, conditions]
+difficulty: 4
+estimated_minutes: 6
+xp: 60
+story: "En mode difficile, chaque indice trouvé doit être réutilisé. Ta fonction débloquera ce mode dans le jeu en direct."
+statement_md: |
+  `guesses` et `feedbacks` sont les propositions déjà jouées et leurs couleurs (`"green"`, `"yellow"`, `"grey"`).
+  Renvoie `True` si `guess` respecte **tous** les indices :
+  - chaque lettre verte d'une proposition précédente est **à la même place** dans `guess` ;
+  - chaque lettre jaune apparaît **quelque part** dans `guess`.
+starter_code: |
+  def respects_hints(guess, guesses, feedbacks):
+      """Return True if guess reuses every hint found so far (hard mode)."""
+      pass
+solution: |
+  def respects_hints(guess, guesses, feedbacks):
+      """Return True if guess reuses every hint found so far (hard mode)."""
+      for previous, feedback in zip(guesses, feedbacks):
+          for i in range(len(previous)):
+              if feedback[i] == "green" and guess[i] != previous[i]:
+                  return False
+              if feedback[i] == "yellow" and previous[i] not in guess:
+                  return False
+      return True
+tests:
+  visible:
+    - call: "respects_hints('crate', ['slate'], [['grey', 'grey', 'green', 'grey', 'green']])"
+      expected: "True"
+    - call: "respects_hints('moist', ['slate'], [['grey', 'grey', 'green', 'grey', 'green']])"
+      expected: "False"
+  hidden:
+    - call: "respects_hints('crane', [], [])"
+      expected: "True"
+      label: "premier coup"
+    - call: "respects_hints('tread', ['slate'], [['grey', 'grey', 'yellow', 'yellow', 'grey']])"
+      expected: "True"
+      label: "jaunes réutilisés"
+    - call: "respects_hints('tried', ['slate'], [['grey', 'grey', 'yellow', 'yellow', 'grey']])"
+      expected: "False"
+      label: "un jaune oublié"
+    - call: "respects_hints('crane', ['crown', 'crate'], [['green', 'green', 'grey', 'grey', 'yellow'], ['green', 'green', 'green', 'grey', 'green']])"
+      expected: "True"
+      label: "plusieurs essais"
+hints:
+  - "`zip(guesses, feedbacks)` parcourt les deux listes en parallèle."
+  - "Deux règles par position : vert → même lettre à la même place ; jaune → la lettre est dans `guess`."
+  - "Renvoie `False` dès qu'une règle est violée, `True` après les boucles."
+explanation_md: "`zip` évite de manipuler deux indices. Le `return True` final n'est atteint que si aucune règle n'a été violée."

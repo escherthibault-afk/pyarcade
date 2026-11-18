@@ -1,0 +1,48 @@
+id: wd-l06
+world: wordle
+type: bug_hunt
+title: "Lettres bien placées"
+concepts: [range, indices, bug]
+difficulty: 2
+estimated_minutes: 4
+xp: 30
+story: "Le compteur de lettres bien placées plante une fois sur deux. Un classique du décalage d'une case."
+statement_md: |
+  `count_well_placed(guess, secret)` renvoie le nombre de positions où les deux mots (de même longueur) ont la même lettre.
+  Il y a **2 bugs** (3 vies).
+starter_code: |
+  def count_well_placed(guess, secret):
+      """Return the number of positions where guess and secret have the same letter."""
+      count = 0
+      for i in range(len(guess) + 1):
+          if guess[i] == secret[i]:
+              count += 1
+              return count
+solution: |
+  def count_well_placed(guess, secret):
+      """Return the number of positions where guess and secret have the same letter."""
+      count = 0
+      for i in range(len(guess)):
+          if guess[i] == secret[i]:
+              count += 1
+      return count
+bugs: 2
+tests:
+  visible:
+    - call: count_well_placed("slate", "crane")
+      expected: "2"
+  hidden:
+    - call: count_well_placed("crane", "crane")
+      expected: "5"
+    - call: count_well_placed("moist", "crane")
+      expected: "0"
+      label: "aucune lettre commune"
+    - call: count_well_placed("", "")
+      expected: "0"
+      label: "mots vides"
+hints:
+  - "Les indices d'un mot de 5 lettres vont de 0 à 4. Et le `return` : à quel niveau d'indentation est-il ?"
+  - "`range(len(guess) + 1)` va une case trop loin ; le `return` est dans le `if`, donc il sort au premier point."
+  - "`for i in range(len(guess)):` et le `return count` aligné avec le `for`."
+explanation_md: "Deux pièges en un : l'indice de trop (`IndexError`) et le `return` trop indenté qui arrête la fonction au premier tour utile."
+exam_tip: "Un `return` dans une boucle arrête **toute** la fonction. Vérifie son indentation."

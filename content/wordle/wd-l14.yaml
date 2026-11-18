@@ -1,0 +1,41 @@
+id: wd-l14
+world: wordle
+type: code_fill
+title: "Proposition bien formée ?"
+concepts: [str, isalpha, len, bool]
+difficulty: 2
+estimated_minutes: 3
+xp: 30
+story: "Le jeu refuse `cr4ne` et `apples`. Écris le premier filtre."
+statement_md: "Renvoie `True` si `guess` a exactement `length` caractères et ne contient que des lettres."
+starter_code: |
+  def has_valid_shape(guess, length=5):
+      """Return True if guess has exactly length characters, all letters."""
+      pass
+solution: |
+  def has_valid_shape(guess, length=5):
+      """Return True if guess has exactly length characters, all letters."""
+      return len(guess) == length and guess.isalpha()
+tests:
+  visible:
+    - call: has_valid_shape("crane")
+      expected: "True"
+    - call: has_valid_shape("cr4ne")
+      expected: "False"
+  hidden:
+    - call: has_valid_shape("apples")
+      expected: "False"
+      label: "trop long"
+    - call: has_valid_shape("")
+      expected: "False"
+      label: "vide"
+    - call: has_valid_shape("banana", 6)
+      expected: "True"
+      label: "paramètre length"
+    - call: has_valid_shape("ab de")
+      expected: "False"
+      label: "espace"
+hints:
+  - "Deux conditions reliées par `and`."
+  - "`len(guess) == length` et `guess.isalpha()`."
+  - "`return len(guess) == length and guess.isalpha()`"

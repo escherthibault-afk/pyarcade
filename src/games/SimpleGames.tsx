@@ -49,7 +49,7 @@ export function LessonGame({ session }: { session: Session }) {
   }, [run.result, level.expected_output, ok])
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
       <section className="card space-y-3 p-4">
         {session.statement}
         {level.task_md && (
@@ -66,7 +66,7 @@ export function LessonGame({ session }: { session: Session }) {
         )}
         {session.hintPanel}
       </section>
-      <section className="space-y-3">
+      <section className="min-w-0 space-y-3">
         <div className="h-[300px]">
           <CodeEditor value={code} onChange={setCode} onRun={go} theme={profile.equipped.editorTheme as EditorThemeName} fontSize={settings.fontSize} />
         </div>

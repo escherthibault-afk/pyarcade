@@ -1,0 +1,51 @@
+id: wd-l03
+world: wordle
+type: code_fill
+title: "Compter les voyelles"
+concepts: [for, str, compteur]
+difficulty: 2
+estimated_minutes: 4
+xp: 30
+story: "Un bon premier mot contient beaucoup de voyelles. Écris l'outil qui les compte."
+statement_md: |
+  Renvoie le nombre de voyelles (`a e i o u y`) de `word`, en ignorant les majuscules.
+  Parcours le mot avec une boucle `for letter in word:`.
+starter_code: |
+  def count_vowels(word):
+      """Return the number of vowels (aeiouy) in word, case-insensitive."""
+      pass
+solution: |
+  def count_vowels(word):
+      """Return the number of vowels (aeiouy) in word, case-insensitive."""
+      count = 0
+      for letter in word.lower():
+          if letter in "aeiouy":
+              count += 1
+      return count
+tests:
+  visible:
+    - call: count_vowels("crane")
+      expected: "2"
+    - call: count_vowels("AUDIO")
+      expected: "4"
+  hidden:
+    - call: count_vowels("")
+      expected: "0"
+      label: "mot vide"
+    - call: count_vowels("rhythm")
+      expected: "1"
+    - call: count_vowels("queue")
+      expected: "4"
+      label: "voyelles en double"
+constraints:
+  required: [For]
+hints:
+  - "Un compteur qui démarre à 0 et augmente de 1 à chaque voyelle."
+  - "`letter in \"aeiouy\"` teste si la lettre est une voyelle ; `word.lower()` gère les majuscules."
+  - "`for letter in word.lower(): if letter in \"aeiouy\": count += 1`"
+explanation_md: "`for letter in word` parcourt directement les lettres : pas besoin d'indices quand la position ne compte pas."
+exam_tip: "Initialise ton compteur **avant** la boucle, pas dedans (sinon il repart à 0 à chaque tour)."
+card:
+  title: "Parcourir une chaîne"
+  body_md: |
+    `for c in s:` donne chaque caractère. `for i in range(len(s)):` donne chaque indice (utile pour comparer deux mots position par position).

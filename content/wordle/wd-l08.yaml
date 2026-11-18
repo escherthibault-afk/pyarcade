@@ -1,0 +1,32 @@
+id: wd-l08
+world: wordle
+type: trace
+title: "Trace le dictionnaire de compteurs"
+concepts: [dict, compteur, trace]
+difficulty: 2
+estimated_minutes: 4
+xp: 30
+story: "Le cœur de l'algorithme Wordle, c'est ce petit dictionnaire qui grandit. Suis-le à la trace."
+statement_md: |
+  Remplis le tableau : après chaque tour de boucle, que valent `letter` et `counts` ?
+  (Écris le dictionnaire comme Python : `{'a': 1}`.)
+code: |
+  counts = {}
+  for letter in "papa":
+      counts[letter] = counts.get(letter, 0) + 1  # @snap
+  print(counts)
+watch: [letter, counts]
+max_rows: 6
+hints:
+  - "`counts.get(letter, 0)` vaut 0 si la lettre n'est pas encore une clé."
+  - "Tour 1 : `p` → `{'p': 1}`."
+  - "Tour 3 : `p` revient → `{'p': 2, 'a': 1}`."
+explanation_md: "`d.get(k, 0) + 1` gère en une ligne les deux cas : première apparition (0 + 1) et suivantes. C'est exactement `count_letters` du boss."
+card:
+  title: "Compter avec un dict"
+  body_md: |
+    ```python
+    counts = {}
+    for x in data:
+        counts[x] = counts.get(x, 0) + 1
+    ```

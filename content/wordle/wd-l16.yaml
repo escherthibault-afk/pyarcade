@@ -1,0 +1,95 @@
+id: wd-l16
+world: wordle
+type: write_test
+title: "Démasque la version naïve"
+concepts: [assert, tests, lettres_en_double]
+difficulty: 3
+estimated_minutes: 6
+xp: 50
+story: "Quatre versions de `evaluate_guess` circulent. Une seule est juste. Tes `assert` doivent faire le ménage."
+statement_md: |
+  Écris des `assert` sur `evaluate_guess(guess, secret)` qui **passent** sur la bonne version et **échouent** sur les 3 fausses.
+  Exemple : `assert evaluate_guess("crane", "crane") == ["green"] * 5`.
+signature: |
+  def evaluate_guess(guess, secret):
+      """Return the list of colours ('green', 'yellow', 'grey') of each letter of guess (case-insensitive)."""
+implementations:
+  - label: A
+    correct: false
+    code: |
+      def evaluate_guess(guess, secret):
+          guess, secret = guess.lower(), secret.lower()
+          result = []
+          for i in range(len(guess)):
+              if guess[i] == secret[i]:
+                  result.append("green")
+              elif guess[i] in secret:
+                  result.append("yellow")
+              else:
+                  result.append("grey")
+          return result
+  - label: B
+    correct: true
+    code: |
+      def evaluate_guess(guess, secret):
+          guess, secret = guess.lower(), secret.lower()
+          result = ["grey"] * len(guess)
+          left = {}
+          for i in range(len(secret)):
+              if guess[i] == secret[i]:
+                  result[i] = "green"
+              else:
+                  left[secret[i]] = left.get(secret[i], 0) + 1
+          for i in range(len(guess)):
+              if result[i] != "green" and left.get(guess[i], 0) > 0:
+                  result[i] = "yellow"
+                  left[guess[i]] -= 1
+          return result
+  - label: C
+    correct: false
+    code: |
+      def evaluate_guess(guess, secret):
+          guess, secret = guess.lower(), secret.lower()
+          left = {}
+          for c in secret:
+              left[c] = left.get(c, 0) + 1
+          result = []
+          for i in range(len(guess)):
+              if guess[i] == secret[i]:
+                  result.append("green")
+                  left[guess[i]] -= 1
+              elif left.get(guess[i], 0) > 0:
+                  result.append("yellow")
+                  left[guess[i]] -= 1
+              else:
+                  result.append("grey")
+          return result
+  - label: D
+    correct: false
+    code: |
+      def evaluate_guess(guess, secret):
+          result = ["grey"] * len(guess)
+          left = {}
+          for i in range(len(secret)):
+              if guess[i] == secret[i]:
+                  result[i] = "green"
+              else:
+                  left[secret[i]] = left.get(secret[i], 0) + 1
+          for i in range(len(guess)):
+              if result[i] != "green" and left.get(guess[i], 0) > 0:
+                  result[i] = "yellow"
+                  left[guess[i]] -= 1
+          return result
+starter_code: |
+  assert evaluate_guess("crane", "crane") == ["green"] * 5
+solution: |
+  assert evaluate_guess("crane", "crane") == ["green"] * 5
+  assert evaluate_guess("eerie", "crane") == ["grey", "grey", "yellow", "grey", "green"]
+  assert evaluate_guess("lolly", "hello") == ["grey", "yellow", "green", "green", "grey"]
+  assert evaluate_guess("CRANE", "crane") == ["green"] * 5
+hints:
+  - "A ne compte pas les lettres ; C distribue les jaunes **pendant** la même passe que les vertes ; D a oublié quelque chose de plus simple."
+  - "Pour C : il faut un cas où une lettre est jaune AVANT qu'une même lettre plus loin soit verte (`lolly`/`hello`). Pour D : des majuscules."
+  - "`assert evaluate_guess(\"lolly\", \"hello\") == [\"grey\", \"yellow\", \"green\", \"green\", \"grey\"]`"
+explanation_md: "Un bon jeu de tests couvre : identique, rien en commun, doubles dans le secret, doubles dans la proposition, vert qui doit passer avant un jaune, majuscules."
+exam_tip: "Avant de rendre, écris toi-même 4 ou 5 `assert` sur les cas limites : c'est ce que font les tests cachés du correcteur."

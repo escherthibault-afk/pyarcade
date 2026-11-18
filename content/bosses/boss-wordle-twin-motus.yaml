@@ -1,0 +1,399 @@
+id: boss-wordle-twin-motus
+world: wordle
+type: boss
+variant: twin
+project: "wordle:motus"
+title: "👯 Jumeau : Motus (première lettre donnée)"
+concepts: [str, dict, listes, fichiers, while]
+difficulty: 4
+estimated_minutes: 55
+xp: 350
+live_game: motus
+files:
+  mots.txt: "@data/words_fr_motus.txt"
+  petit.txt: "Maison\nMOUTON\n\ncheval\nchâteau\nporte-clé\nchemin\ntomate\n  tortue \nbateau\n"
+statement_md: "Mots français de 6 à 9 lettres, la première lettre est donnée : même algorithme, nouvelles données."
+intro_md: |
+  ## Le mot à trouver, première lettre offerte
+
+  Le secret est un mot **français de 6 à 9 lettres**. Sa **première lettre** est montrée au joueur, qui a **6 essais**.
+  Chaque proposition doit avoir la bonne longueur et **commencer par la bonne lettre**.
+
+  Le retour se fait par **symboles** : `O` bien placée, `?` présente ailleurs, `.` absente (toujours en 2 passes,
+  avec un dictionnaire de compteurs). Une ligne d'indices `known_pattern` montre les lettres déjà trouvées.
+
+  Nouveauté : le dictionnaire est rangé **par longueur** dans un `dict` de listes.
+header_code: |
+  import random
+  from rich_lite import Console
+
+  console = Console()
+
+  ACCENTS = {"é": "e", "è": "e", "ê": "e", "ë": "e", "à": "a", "â": "a", "ä": "a", "î": "i",
+             "ï": "i", "ô": "o", "ö": "o", "ù": "u", "û": "u", "ü": "u", "ç": "c"}
+  STYLES = {"O": "bold white on green", "?": "bold black on yellow", ".": "bold white on blue"}
+steps:
+  - fn: normalize
+    title: "nettoyer un mot"
+    statement_md: "Minuscules, sans espaces autour, sans accents (dict `ACCENTS`), et **sans tirets ni apostrophes** : `\"Porte-Clé\"` → `\"portecle\"`."
+    starter_code: |
+      def normalize(word):
+          """Return word lowercase, stripped, without accents, hyphens or apostrophes."""
+          pass
+    solution: |
+      def normalize(word):
+          """Return word lowercase, stripped, without accents, hyphens or apostrophes."""
+          result = ""
+          for letter in word.strip().lower():
+              if letter in ACCENTS:
+                  result = result + ACCENTS[letter]
+              elif letter != "-" and letter != "'":
+                  result = result + letter
+          return result
+    tests:
+      visible:
+        - call: normalize("Porte-Clé")
+          expected: "'portecle'"
+      hidden:
+        - call: normalize("  CHÂTEAU\n")
+          expected: "'chateau'"
+        - call: normalize("aujourd'hui")
+          expected: "'aujourdhui'"
+        - call: normalize("")
+          expected: "''"
+    hints:
+      - "Parcours le mot déjà passé par `strip().lower()`."
+      - "Trois cas : lettre accentuée (on la remplace), tiret/apostrophe (on l'ignore), sinon on la garde."
+      - "`elif letter != \"-\" and letter != \"'\":`"
+    points: 1.5
+  - fn: load_words_by_length
+    title: "dictionnaire rangé par longueur"
+    statement_md: |
+      Lis le fichier, normalise chaque ligne, et range les mots **de 6 à 9 lettres** (lettres seulement) dans un dict
+      `{longueur: [mots]}` (ordre du fichier, sans doublon). Les longueurs sans mot n'apparaissent pas.
+    starter_code: |
+      def load_words_by_length(file_path):
+          """Return a dict {length: list of words} for words of 6 to 9 letters."""
+          pass
+    solution: |
+      def load_words_by_length(file_path):
+          """Return a dict {length: list of words} for words of 6 to 9 letters."""
+          by_length = {}
+          with open(file_path, encoding="utf-8") as f:
+              for line in f:
+                  word = normalize(line)
+                  if 6 <= len(word) <= 9 and word.isalpha():
+                      if len(word) not in by_length:
+                          by_length[len(word)] = []
+                      if word not in by_length[len(word)]:
+                          by_length[len(word)].append(word)
+          return by_length
+    tests:
+      visible:
+        - call: load_words_by_length("petit.txt")
+          expected: "{6: ['maison', 'mouton', 'cheval', 'chemin', 'tomate', 'tortue', 'bateau'], 7: ['chateau'], 8: ['portecle']}"
+      hidden:
+        - call: "sorted(load_words_by_length('mots.txt'))"
+          expected: "[6, 7, 8, 9]"
+        - call: "'tableau' in load_words_by_length('mots.txt')[7]"
+          expected: "True"
+    hints:
+      - "Pour chaque mot gardé : si sa longueur n'est pas encore une clé, crée une liste vide."
+      - "`if len(word) not in by_length: by_length[len(word)] = []`"
+      - "Puis `append` si le mot n'est pas déjà dans la liste."
+    points: 2
+  - fn: choose_secret
+    title: "tirer le secret"
+    statement_md: "Si `length` vaut `None`, tire d'abord une longueur au hasard parmi les clés ; puis tire un mot de cette longueur."
+    starter_code: |
+      def choose_secret(words_by_length, length=None):
+          """Return a random word (of the given length, or of a random available length)."""
+          pass
+    solution: |
+      def choose_secret(words_by_length, length=None):
+          """Return a random word (of the given length, or of a random available length)."""
+          if length is None:
+              length = random.choice(sorted(words_by_length))
+          return random.choice(words_by_length[length])
+    tests:
+      visible:
+        - call: "choose_secret({6: ['maison']}, 6)"
+          expected: "'maison'"
+      hidden:
+        - call: "choose_secret({6: ['maison'], 7: ['tableau']}) in ['maison', 'tableau']"
+          expected: "True"
+          label: "longueur au hasard"
+      statistical:
+        - expr: "sum(len(choose_secret({6: ['maison'], 7: ['tableau']})) == 7 for _ in range(4000)) / 4000"
+          approx: 0.5
+          tol: 0.04
+          label: "chaque longueur a sa chance"
+    hints:
+      - "`sorted(dico)` donne la liste triée des clés."
+      - "`random.choice` sur les longueurs, puis sur les mots de cette longueur."
+      - "`if length is None: length = random.choice(sorted(words_by_length))`"
+    points: 1
+  - fn: is_valid_guess
+    title: "valider une proposition"
+    statement_md: "`(True, \"\")` si même longueur que le secret, **même première lettre**, que des lettres, et présent dans le dictionnaire ; sinon `(False, message)`."
+    starter_code: |
+      def is_valid_guess(guess, secret, words_by_length):
+          """Return (True, "") if guess is valid for this secret, else (False, message)."""
+          pass
+    solution: |
+      def is_valid_guess(guess, secret, words_by_length):
+          """Return (True, "") if guess is valid for this secret, else (False, message)."""
+          if len(guess) != len(secret):
+              return (False, f"{len(secret)} letters needed.")
+          if guess[0] != secret[0]:
+              return (False, f"The word starts with {secret[0].upper()}.")
+          if not guess.isalpha() or guess not in words_by_length.get(len(guess), []):
+              return (False, "Unknown word.")
+          return (True, "")
+    tests:
+      visible:
+        - setup: "D = {6: ['maison', 'mouton', 'cheval']}"
+          call: is_valid_guess('mouton', 'maison', D)
+          expected: "(True, '')"
+      hidden:
+        - setup: "D = {6: ['maison', 'mouton', 'cheval']}"
+          call: is_valid_guess('cheval', 'maison', D)[0]
+          expected: "False"
+          label: "mauvaise première lettre"
+        - setup: "D = {6: ['maison', 'mouton', 'cheval']}"
+          call: is_valid_guess('mais', 'maison', D)[0]
+          expected: "False"
+        - setup: "D = {6: ['maison', 'mouton', 'cheval']}"
+          call: is_valid_guess('mxxxxx', 'maison', D)[0]
+          expected: "False"
+          label: "pas dans le dictionnaire"
+        - setup: "D = {6: ['maison']}"
+          call: is_valid_guess('mangue', 'manteau', D)[0]
+          expected: "False"
+          label: "longueur différente"
+    hints:
+      - "Trois vérifications : longueur, première lettre, dictionnaire."
+      - "`words_by_length.get(len(guess), [])` évite une KeyError."
+      - "`guess[0] != secret[0]`"
+    points: 1.5
+  - fn: evaluate_guess
+    title: "les symboles O ? ."
+    statement_md: "Renvoie une **chaîne** de symboles : `O` bien placée, `?` ailleurs (dans la limite des lettres disponibles), `.` absente."
+    starter_code: |
+      def evaluate_guess(guess, secret):
+          """Return a string of symbols: O (right place), ? (elsewhere), . (absent)."""
+          pass
+    solution: |
+      def evaluate_guess(guess, secret):
+          """Return a string of symbols: O (right place), ? (elsewhere), . (absent)."""
+          result = ["."] * len(guess)
+          left = {}
+          for i in range(len(secret)):
+              if guess[i] == secret[i]:
+                  result[i] = "O"
+              else:
+                  left[secret[i]] = left.get(secret[i], 0) + 1
+          for i in range(len(guess)):
+              if result[i] != "O" and left.get(guess[i], 0) > 0:
+                  result[i] = "?"
+                  left[guess[i]] -= 1
+          return "".join(result)
+    tests:
+      visible:
+        - call: evaluate_guess('maison', 'maison')
+          expected: "'OOOOOO'"
+        - call: evaluate_guess('mouton', 'maison')
+          expected: "'O...OO'"
+      hidden:
+        - call: evaluate_guess('tomate', 'tortue')
+          expected: "'OO..?O'"
+          label: "t en double"
+        - call: evaluate_guess('cheval', 'chemin')
+          expected: "'OOO...'"
+        - call: evaluate_guess('bonbon', 'bateau')
+          expected: "'O.....'"
+          label: "b en double, un seul dans le secret"
+    hints:
+      - "Même algorithme en deux passes ; on travaille sur une liste puis on la transforme en chaîne."
+      - "Les chaînes sont immuables : `result = [\".\"] * len(guess)` puis `\"\".join(result)`."
+      - "Passe 2 : `?` seulement si `left.get(guess[i], 0) > 0`, puis décrémenter."
+    points: 4
+  - fn: known_pattern
+    title: "les lettres déjà trouvées"
+    statement_md: |
+      Renvoie le secret où chaque lettre est remplacée par `.` sauf : la **première** (toujours visible) et celles déjà
+      trouvées **bien placées** dans au moins une proposition. `known_pattern("maison", ["mouton"])` → `"m...on"`.
+    starter_code: |
+      def known_pattern(secret, guesses):
+          """Return the secret with unknown letters replaced by dots."""
+          pass
+    solution: |
+      def known_pattern(secret, guesses):
+          """Return the secret with unknown letters replaced by dots."""
+          pattern = ""
+          for i in range(len(secret)):
+              found = i == 0
+              for guess in guesses:
+                  if guess[i] == secret[i]:
+                      found = True
+              if found:
+                  pattern = pattern + secret[i]
+              else:
+                  pattern = pattern + "."
+          return pattern
+    tests:
+      visible:
+        - call: known_pattern("maison", ["mouton"])
+          expected: "'m...on'"
+      hidden:
+        - call: known_pattern("maison", [])
+          expected: "'m.....'"
+          label: "aucune proposition"
+        - call: known_pattern("chemin", ["cheval", "chatte"])
+          expected: "'che...'"
+        - call: known_pattern("tortue", ["tomate", "toiles"])
+          expected: "'to...e'"
+          label: "plusieurs propositions"
+    hints:
+      - "Pour chaque position : visible si c'est la 1re, ou si une proposition a la même lettre à cette position."
+      - "Une variable booléenne `found` par position."
+      - "Construis le motif lettre par lettre."
+    points: 2
+  - fn: create_game_state
+    title: "état de la partie"
+    statement_md: "`{\"secret\", \"guesses\": [], \"feedbacks\": [], \"max_attempts\", \"won\": False, \"over\": False}`."
+    starter_code: |
+      def create_game_state(secret, max_attempts=6):
+          """Return a new game state."""
+          pass
+    solution: |
+      def create_game_state(secret, max_attempts=6):
+          """Return a new game state."""
+          return {"secret": secret, "guesses": [], "feedbacks": [], "max_attempts": max_attempts, "won": False, "over": False}
+    tests:
+      visible:
+        - call: create_game_state("maison")["guesses"]
+          expected: "[]"
+      hidden:
+        - call: create_game_state("maison")
+          expected: "{'secret': 'maison', 'guesses': [], 'feedbacks': [], 'max_attempts': 6, 'won': False, 'over': False}"
+    hints:
+      - "Comme au Wordle."
+      - "Six clés."
+      - "Un dictionnaire littéral."
+    points: 1
+  - fn: play_guess
+    title: "jouer un coup"
+    statement_md: "Comme au Wordle : `None` si fini ; sinon évaluer, enregistrer, gagné si tout est `O`, fini si gagné ou plus d'essais ; renvoyer le feedback."
+    starter_code: |
+      def play_guess(state, guess):
+          """Play one guess and return its feedback string (None if the game is over)."""
+          pass
+    solution: |
+      def play_guess(state, guess):
+          """Play one guess and return its feedback string (None if the game is over)."""
+          if state["over"]:
+              return None
+          feedback = evaluate_guess(guess, state["secret"])
+          state["guesses"].append(guess)
+          state["feedbacks"].append(feedback)
+          state["won"] = feedback == "O" * len(state["secret"])
+          state["over"] = state["won"] or len(state["guesses"]) >= state["max_attempts"]
+          return feedback
+    tests:
+      visible:
+        - setup: "s = create_game_state('maison')"
+          call: play_guess(s, 'mouton')
+          expected: "'O...OO'"
+      hidden:
+        - setup: "s = create_game_state('maison')\nplay_guess(s, 'maison')"
+          call: "(play_guess(s, 'mouton'), s['won'], s['over'])"
+          expected: "(None, True, True)"
+        - setup: "s = create_game_state('maison', 1)\nplay_guess(s, 'mouton')"
+          call: "(s['won'], s['over'])"
+          expected: "(False, True)"
+    hints:
+      - "Gagné : `feedback == \"O\" * len(secret)`."
+      - "Même ordre que d'habitude : test de fin, évaluation, append, won, over."
+      - "Renvoie le feedback."
+    points: 2
+  - fn: render_row
+    title: "afficher une ligne"
+    statement_md: "Comme `render_guess` : `\"[STYLE] L [/]\"` par lettre avec `STYLES[symbole]`, lettres en majuscules."
+    starter_code: |
+      def render_row(guess, feedback):
+          """Return the rich markup line for one guess."""
+          pass
+    solution: |
+      def render_row(guess, feedback):
+          """Return the rich markup line for one guess."""
+          line = ""
+          for i in range(len(guess)):
+              line = line + f"[{STYLES[feedback[i]]}] {guess[i].upper()} [/]"
+          return line
+    tests:
+      visible:
+        - call: render_row('ab', 'O?')
+          expected: "'[bold white on green] A [/][bold black on yellow] B [/]'"
+      hidden:
+        - call: render_row('c', '.')
+          expected: "'[bold white on blue] C [/]'"
+    hints:
+      - "Même boucle que d'habitude."
+      - "Le style vient du symbole : `STYLES[feedback[i]]`."
+      - "`guess[i].upper()`"
+    points: 1
+  - fn: game_loop
+    title: "la boucle de jeu"
+    statement_md: "Charge le dictionnaire, tire le secret (sauf s'il est donné), affiche `known_pattern` avant chaque essai, refuse les propositions invalides, renvoie l'état final."
+    starter_code: |
+      def game_loop(secret=None, max_attempts=6):
+          """Play a full game and return the final state."""
+          pass
+
+
+      if __name__ == "__main__":
+          game_loop()
+    solution: |
+      def game_loop(secret=None, max_attempts=6):
+          """Play a full game and return the final state."""
+          words = load_words_by_length("mots.txt")
+          if secret is None:
+              secret = choose_secret(words)
+          state = create_game_state(secret, max_attempts)
+          while not state["over"]:
+              console.print(f"[bold]{known_pattern(secret, state['guesses']).upper()}[/]")
+              guess = normalize(input("Ta proposition : "))
+              valid, message = is_valid_guess(guess, secret, words)
+              if not valid:
+                  console.print(f"[red]{message}[/]")
+              else:
+                  feedback = play_guess(state, guess)
+                  console.print(render_row(guess, feedback))
+          if state["won"]:
+              console.print("[bold green]Bravo ![/]")
+          else:
+              console.print(f"[bold red]Perdu ! C'était {secret.upper()}.[/]")
+          return state
+
+
+      if __name__ == "__main__":
+          game_loop()
+    tests:
+      visible:
+        - call: "game_loop(secret='maison')['guesses']"
+          stdin: ["mouton", "maison"]
+          expected: "['mouton', 'maison']"
+      hidden:
+        - call: "game_loop(secret='maison')['guesses']"
+          stdin: ["cheval", "maisons", "Maison"]
+          expected: "['maison']"
+          label: "propositions invalides ignorées"
+        - call: "game_loop(secret='maison', max_attempts=1)['won']"
+          stdin: ["mouton"]
+          expected: "False"
+    hints:
+      - "Même squelette que le Wordle, avec `known_pattern` affiché à chaque tour."
+      - "`valid, message = is_valid_guess(guess, secret, words)`"
+      - "Renvoie l'état."
+    points: 2

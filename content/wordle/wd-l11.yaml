@@ -1,0 +1,62 @@
+id: wd-l11
+world: wordle
+type: code_fill
+title: "Lire le fichier de mots"
+concepts: [fichiers, open, strip, listes]
+difficulty: 3
+estimated_minutes: 5
+xp: 40
+story: "Le dictionnaire du jeu dort dans un fichier texte, un mot par ligne… avec des lignes vides et des majuscules."
+statement_md: |
+  Lis le fichier `file_path` et renvoie la liste de ses lignes **nettoyées** (`strip` + `lower`),
+  en **sautant les lignes vides**. Le fichier `mots.txt` contient :
+
+  ```
+  Crane
+  slate
+
+  APPLE  
+  ```
+starter_code: |
+  def read_words(file_path):
+      """Return the cleaned non-empty lines of the file."""
+      pass
+solution: |
+  def read_words(file_path):
+      """Return the cleaned non-empty lines of the file."""
+      words = []
+      with open(file_path, encoding="utf-8") as f:
+          for line in f:
+              word = line.strip().lower()
+              if word != "":
+                  words.append(word)
+      return words
+files:
+  mots.txt: "Crane\nslate\n\nAPPLE  \n"
+  vide.txt: ""
+  fin.txt: "zebra\n\n\n"
+tests:
+  visible:
+    - call: read_words("mots.txt")
+      expected: "['crane', 'slate', 'apple']"
+  hidden:
+    - call: read_words("vide.txt")
+      expected: "[]"
+      label: "fichier vide"
+    - call: read_words("fin.txt")
+      expected: "['zebra']"
+      label: "lignes vides à la fin"
+hints:
+  - "`with open(file_path, encoding=\"utf-8\") as f:` puis `for line in f:`."
+  - "Chaque `line` finit par `\\n` : nettoie-la avant de la tester."
+  - "N'ajoute le mot que s'il n'est pas vide : `if word != \"\":`."
+explanation_md: "`with open(...)` ferme le fichier tout seul. Lire ligne par ligne avec `for line in f` est la méthode la plus simple (et la plus économe en mémoire)."
+exam_tip: "Pièges de lecture de fichier : `\\n` en fin de ligne, ligne vide finale, majuscules. Teste ta fonction sur un petit fichier piégé."
+card:
+  title: "Lire un fichier texte"
+  body_md: |
+    ```python
+    with open("mots.txt", encoding="utf-8") as f:
+        for line in f:
+            word = line.strip()
+    ```

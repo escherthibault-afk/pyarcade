@@ -1,0 +1,346 @@
+id: boss-wordle-exam
+world: wordle
+type: boss
+variant: exam
+project: "wordle:exam"
+title: "🎓 Examen Wordle (sujet blanc noté sur 20)"
+concepts: [str, dict, fichiers, while]
+difficulty: 5
+estimated_minutes: 90
+xp: 0
+time_limit_minutes: 90
+live_game: wordle
+files:
+  words.txt: "@data/{{WORDS}}"
+  mini.txt: "Crane\n\nslate\nAPPLE \nplanet\nGarden\nabc\nCRANE\npèche\n"
+variants:
+  - label: "A — 5 lettres, 6 essais, couleurs green/yellow/grey"
+    vars: {LEN: 5, TRIES: 6, OK: green, MID: yellow, NO: grey, WORDS: words_en_5.txt, S: crane, W1: slate, W2: plant, MINI: "['crane', 'slate', 'apple', 'peche']"}
+  - label: "B — 6 lettres, 7 essais, symboles G/Y/-"
+    vars: {LEN: 6, TRIES: 7, OK: G, MID: Y, NO: "-", WORDS: words_en_6.txt, S: planet, W1: garden, W2: bandit, MINI: "['planet', 'garden']"}
+  - label: "C — 5 lettres, 8 essais, symboles +/?/."
+    vars: {LEN: 5, TRIES: 8, OK: "+", MID: "?", NO: ".", WORDS: words_en_5.txt, S: crane, W1: slate, W2: plant, MINI: "['crane', 'slate', 'apple', 'peche']"}
+statement_md: |
+  Sujet complet en **90 minutes**, sans indice. Les fonctions et leurs signatures sont imposées.
+  Le jour J, on te donnera peut-être une autre longueur de mot, un autre nombre d'essais, ou des symboles au lieu des couleurs :
+  rejoue ce sujet dans ses 3 variantes.
+intro_md: |
+  ## Sujet : le mot mystère ({{LEN}} lettres, {{TRIES}} essais)
+
+  Écris un jeu de mot mystère en console. Mots de **{{LEN}} lettres**, **{{TRIES}} essais**.
+  Le retour pour chaque lettre est un symbole : `"{{OK}}"` (bien placée), `"{{MID}}"` (ailleurs), `"{{NO}}"` (absente).
+  Les lettres en double sont gérées comme d'habitude (une lettre du secret ne sert qu'une fois, vertes d'abord).
+
+  Fichiers : `words.txt` (mots autorisés, un par ligne). Constantes fournies en haut du fichier.
+
+  **Barème** : chaque fonction est notée sur ses tests (visibles + cachés), le respect exact de la signature et la lisibilité.
+header_code: |
+  import random
+  from rich_lite import Console
+
+  console = Console()
+
+  LENGTH = {{LEN}}
+  MAX_ATTEMPTS = {{TRIES}}
+  OK, MID, NO = "{{OK}}", "{{MID}}", "{{NO}}"
+  STYLES = {OK: "bold white on green", MID: "bold black on yellow", NO: "bold white on grey"}
+  ACCENTS = {"é": "e", "è": "e", "ê": "e", "à": "a", "â": "a", "î": "i", "ô": "o", "ù": "u", "û": "u", "ç": "c"}
+steps:
+  - fn: normalize
+    title: "normaliser"
+    statement_md: "Minuscules, sans espaces autour, sans accents (dict `ACCENTS`)."
+    starter_code: |
+      def normalize(word):
+          """Return word in lowercase, stripped, without accents."""
+          pass
+    solution: |
+      def normalize(word):
+          """Return word in lowercase, stripped, without accents."""
+          result = ""
+          for letter in word.strip().lower():
+              result = result + ACCENTS.get(letter, letter)
+          return result
+    tests:
+      visible:
+        - call: normalize(" Crâne\n")
+          expected: "'crane'"
+      hidden:
+        - call: normalize("")
+          expected: "''"
+        - call: normalize("ÉTÉ")
+          expected: "'ete'"
+    points: 1.5
+  - fn: load_words
+    title: "charger les mots"
+    statement_md: "Mots normalisés de `length` lettres (lettres seulement), sans doublon, dans l'ordre du fichier."
+    starter_code: |
+      def load_words(file_path, length=LENGTH):
+          """Return the list of normalized words of the given length (no duplicates)."""
+          pass
+    solution: |
+      def load_words(file_path, length=LENGTH):
+          """Return the list of normalized words of the given length (no duplicates)."""
+          words = []
+          with open(file_path, encoding="utf-8") as f:
+              for line in f:
+                  word = normalize(line)
+                  if len(word) == length and word.isalpha() and word not in words:
+                      words.append(word)
+          return words
+    tests:
+      visible:
+        - call: load_words("mini.txt")
+          expected: "{{MINI}}"
+      hidden:
+        - call: load_words("mini.txt", 3)
+          expected: "['abc']"
+        - call: "'{{S}}' in load_words('words.txt')"
+          expected: "True"
+    points: 2
+  - fn: is_valid_guess
+    title: "valider (avec « déjà proposé »)"
+    statement_md: "`(True, \"\")` si bonne longueur, lettres seulement, dans `words` **et pas déjà dans `played`** ; sinon `(False, message non vide)`."
+    starter_code: |
+      def is_valid_guess(guess, words, played, length=LENGTH):
+          """Return (True, "") if guess can be played, else (False, message)."""
+          pass
+    solution: |
+      def is_valid_guess(guess, words, played, length=LENGTH):
+          """Return (True, "") if guess can be played, else (False, message)."""
+          if len(guess) != length or not guess.isalpha():
+              return (False, f"{length} letters only.")
+          if guess not in words:
+              return (False, "Unknown word.")
+          if guess in played:
+              return (False, "Already played.")
+          return (True, "")
+    tests:
+      visible:
+        - call: "is_valid_guess('{{W1}}', ['{{W1}}', '{{S}}'], [])"
+          expected: "(True, '')"
+      hidden:
+        - call: "is_valid_guess('{{W1}}', ['{{W1}}', '{{S}}'], ['{{W1}}'])[0]"
+          expected: "False"
+          label: "déjà proposé"
+        - call: "is_valid_guess('ab', ['ab'], [])[0]"
+          expected: "False"
+          label: "mauvaise longueur"
+        - call: "is_valid_guess('{{W2}}', ['{{W1}}'], [])[0]"
+          expected: "False"
+          label: "hors dictionnaire"
+        - call: "len(is_valid_guess('ab', [], [])[1]) > 0"
+          expected: "True"
+    points: 2
+  - fn: evaluate_guess
+    title: "évaluer (lettres en double)"
+    statement_md: "Liste des symboles `OK` / `MID` / `NO`, insensible à la casse, en 2 passes."
+    starter_code: |
+      def evaluate_guess(guess, secret):
+          """Return the list of symbols (OK, MID, NO) for each letter of guess."""
+          pass
+    solution: |
+      def evaluate_guess(guess, secret):
+          """Return the list of symbols (OK, MID, NO) for each letter of guess."""
+          guess, secret = guess.lower(), secret.lower()
+          result = [NO] * len(guess)
+          left = {}
+          for i in range(len(secret)):
+              if guess[i] == secret[i]:
+                  result[i] = OK
+              else:
+                  left[secret[i]] = left.get(secret[i], 0) + 1
+          for i in range(len(guess)):
+              if result[i] != OK and left.get(guess[i], 0) > 0:
+                  result[i] = MID
+                  left[guess[i]] -= 1
+          return result
+    tests:
+      visible:
+        - call: evaluate_guess('slate', 'crane')
+          expected: "['{{NO}}', '{{NO}}', '{{OK}}', '{{NO}}', '{{OK}}']"
+      hidden:
+        - call: evaluate_guess('eerie', 'crane')
+          expected: "['{{NO}}', '{{NO}}', '{{MID}}', '{{NO}}', '{{OK}}']"
+          label: "e ×3 proposé"
+        - call: evaluate_guess('paper', 'apple')
+          expected: "['{{MID}}', '{{MID}}', '{{OK}}', '{{MID}}', '{{NO}}']"
+        - call: evaluate_guess('lolly', 'hello')
+          expected: "['{{NO}}', '{{MID}}', '{{OK}}', '{{OK}}', '{{NO}}']"
+        - call: evaluate_guess('Geese', 'EERIE')
+          expected: "['{{NO}}', '{{OK}}', '{{MID}}', '{{NO}}', '{{OK}}']"
+          label: "majuscules"
+        - call: evaluate_guess('banana', 'bandit')
+          expected: "['{{OK}}', '{{OK}}', '{{OK}}', '{{NO}}', '{{NO}}', '{{NO}}']"
+        - call: evaluate_guess('moist', 'crane')
+          expected: "['{{NO}}'] * 5"
+    points: 5
+  - fn: is_won
+    title: "gagné ?"
+    statement_md: "`True` si le feedback n'est pas vide et ne contient que `OK`."
+    starter_code: |
+      def is_won(feedback):
+          """Return True if feedback is not empty and only contains OK."""
+          pass
+    solution: |
+      def is_won(feedback):
+          """Return True if feedback is not empty and only contains OK."""
+          return len(feedback) > 0 and feedback.count(OK) == len(feedback)
+    tests:
+      visible:
+        - call: "is_won(['{{OK}}'] * 5)"
+          expected: "True"
+      hidden:
+        - call: "is_won([])"
+          expected: "False"
+        - call: "is_won(['{{OK}}', '{{MID}}'])"
+          expected: "False"
+    points: 1
+  - fn: create_game_state
+    title: "état"
+    statement_md: "`{\"secret\", \"guesses\": [], \"feedbacks\": [], \"max_attempts\", \"won\": False, \"over\": False}`."
+    starter_code: |
+      def create_game_state(secret, max_attempts=MAX_ATTEMPTS):
+          """Return a new game state."""
+          pass
+    solution: |
+      def create_game_state(secret, max_attempts=MAX_ATTEMPTS):
+          """Return a new game state."""
+          return {"secret": secret, "guesses": [], "feedbacks": [], "max_attempts": max_attempts, "won": False, "over": False}
+    tests:
+      visible:
+        - call: create_game_state('{{S}}')
+          expected: "{'secret': '{{S}}', 'guesses': [], 'feedbacks': [], 'max_attempts': {{TRIES}}, 'won': False, 'over': False}"
+      hidden:
+        - call: create_game_state('x', 2)['max_attempts']
+          expected: "2"
+    points: 1.5
+  - fn: play_guess
+    title: "jouer un coup"
+    statement_md: "`None` si fini ; sinon évaluer, enregistrer, mettre à jour `won`/`over`, renvoyer le feedback."
+    starter_code: |
+      def play_guess(state, guess):
+          """Play one guess and return its feedback (None if the game is over)."""
+          pass
+    solution: |
+      def play_guess(state, guess):
+          """Play one guess and return its feedback (None if the game is over)."""
+          if state["over"]:
+              return None
+          feedback = evaluate_guess(guess, state["secret"])
+          state["guesses"].append(guess)
+          state["feedbacks"].append(feedback)
+          state["won"] = is_won(feedback)
+          state["over"] = state["won"] or len(state["guesses"]) >= state["max_attempts"]
+          return feedback
+    tests:
+      visible:
+        - setup: "s = create_game_state('{{S}}')"
+          call: "play_guess(s, '{{S}}') == ['{{OK}}'] * {{LEN}} and s['won'] and s['over']"
+          expected: "True"
+      hidden:
+        - setup: "s = create_game_state('{{S}}')\nplay_guess(s, '{{S}}')"
+          call: "(play_guess(s, '{{W1}}'), len(s['guesses']))"
+          expected: "(None, 1)"
+          label: "rien après la victoire"
+        - setup: "s = create_game_state('{{S}}', 2)\nplay_guess(s, '{{W1}}')"
+          call: "s['over']"
+          expected: "False"
+        - setup: "s = create_game_state('{{S}}', 2)\nplay_guess(s, '{{W1}}')\nplay_guess(s, '{{W2}}')"
+          call: "(s['won'], s['over'])"
+          expected: "(False, True)"
+    points: 2.5
+  - fn: update_keyboard
+    title: "clavier"
+    statement_md: "Meilleur symbole connu par lettre (`OK` > `MID` > `NO`), modifie et renvoie `keyboard`."
+    starter_code: |
+      def update_keyboard(keyboard, guess, feedback):
+          """Update and return keyboard with the best known symbol of each letter."""
+          pass
+    solution: |
+      def update_keyboard(keyboard, guess, feedback):
+          """Update and return keyboard with the best known symbol of each letter."""
+          rank = {NO: 0, MID: 1, OK: 2}
+          for letter, symbol in zip(guess, feedback):
+              if letter not in keyboard or rank[symbol] > rank[keyboard[letter]]:
+                  keyboard[letter] = symbol
+          return keyboard
+    tests:
+      visible:
+        - call: "update_keyboard({}, 'ab', ['{{OK}}', '{{NO}}'])"
+          expected: "{'a': '{{OK}}', 'b': '{{NO}}'}"
+      hidden:
+        - call: "update_keyboard({'a': '{{OK}}'}, 'aa', ['{{NO}}', '{{MID}}'])"
+          expected: "{'a': '{{OK}}'}"
+          label: "ne redescend jamais"
+        - call: "update_keyboard({'a': '{{NO}}'}, 'a', ['{{MID}}'])"
+          expected: "{'a': '{{MID}}'}"
+    points: 1.5
+  - fn: render_guess
+    title: "afficher"
+    statement_md: "`\"[STYLE] L [/]\"` par lettre (majuscule), `STYLE = STYLES[symbole]`, cases collées."
+    starter_code: |
+      def render_guess(guess, feedback):
+          """Return the rich markup line for guess."""
+          pass
+    solution: |
+      def render_guess(guess, feedback):
+          """Return the rich markup line for guess."""
+          return "".join(f"[{STYLES[s]}] {c.upper()} [/]" for c, s in zip(guess, feedback))
+    tests:
+      visible:
+        - call: "render_guess('ab', ['{{OK}}', '{{NO}}'])"
+          expected: "'[bold white on green] A [/][bold white on grey] B [/]'"
+      hidden:
+        - call: "render_guess('', [])"
+          expected: "''"
+    points: 0.5
+  - fn: game_loop
+    title: "boucle de jeu"
+    statement_md: "Charge les mots, choisis le secret (sauf s'il est donné), boucle tant que ce n'est pas fini (saisies invalides ou déjà jouées refusées), message final, renvoie l'état."
+    starter_code: |
+      def game_loop(secret=None):
+          """Play a full game in the console and return the final state."""
+          pass
+
+
+      if __name__ == "__main__":
+          game_loop()
+    solution: |
+      def game_loop(secret=None):
+          """Play a full game in the console and return the final state."""
+          words = load_words("words.txt")
+          if secret is None:
+              secret = random.choice(words)
+          state = create_game_state(secret)
+          while not state["over"]:
+              guess = normalize(input("Guess: "))
+              valid, message = is_valid_guess(guess, words, state["guesses"])
+              if not valid:
+                  console.print(f"[red]{message}[/]")
+                  continue
+              feedback = play_guess(state, guess)
+              console.print(render_guess(guess, feedback))
+          if state["won"]:
+              console.print("[bold green]Won![/]")
+          else:
+              console.print(f"[bold red]Lost: {secret.upper()}[/]")
+          return state
+
+
+      if __name__ == "__main__":
+          game_loop()
+    tests:
+      visible:
+        - call: "game_loop(secret='{{S}}')['guesses']"
+          stdin: ["{{W1}}", "{{S}}"]
+          expected: "['{{W1}}', '{{S}}']"
+      hidden:
+        - call: "game_loop(secret='{{S}}')['guesses']"
+          stdin: ["xyz", "{{W1}}", "{{W1}}", "{{S}}"]
+          expected: "['{{W1}}', '{{S}}']"
+          label: "invalide et déjà joué ignorés"
+        - call: "len(game_loop(secret='{{S}}')['guesses'])"
+          stdin: ["{{W1}}", "{{W2}}", "{{W1}}", "{{W2}}", "{{W1}}", "{{W2}}", "{{W1}}", "{{W2}}", "{{W1}}", "{{W2}}", "{{S}}"]
+          expected: "3"
+          label: "seules les nouvelles propositions comptent"
+    points: 2.5

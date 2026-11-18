@@ -309,8 +309,8 @@ function BossFight({ level, copyMode, onPhase, phase }: { level: BossLevel; copy
         </div>
       )}
 
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
-        <section className="space-y-3">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+        <section className="min-w-0 space-y-3">
           {level.intro_md && (
             <details className="card p-4" open={!bp?.validated?.length}>
               <summary className="cursor-pointer font-semibold">📜 {tr('Le sujet', 'The brief')}</summary>
@@ -355,7 +355,7 @@ function BossFight({ level, copyMode, onPhase, phase }: { level: BossLevel; copy
             </div>
           </div>
         </section>
-        <section className="space-y-3">
+        <section className="min-w-0 space-y-3">
           <div className="h-[520px]">
             <CodeEditor
               value={code}

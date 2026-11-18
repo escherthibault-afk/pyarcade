@@ -1,0 +1,40 @@
+id: wd-l01
+world: wordle
+type: lesson
+title: "Une chaîne, c'est une suite de cases"
+concepts: [str, indexation, len]
+difficulty: 1
+estimated_minutes: 2
+xp: 15
+story: "Le mot mystère est rangé lettre par lettre dans des cases numérotées. Numérotées à partir de… 0."
+statement_md: |
+  Une chaîne se comporte comme une liste de caractères :
+
+  ```python
+  word = "crane"
+  word[0]      # 'c'  (la 1re lettre a l'indice 0)
+  word[4]      # 'e'
+  word[-1]     # 'e'  (indices négatifs : on compte depuis la fin)
+  len(word)    # 5    (les indices vont donc de 0 à 4)
+  "a" in word  # True
+  ```
+example_code: |
+  word = "crane"
+  print(word[0])
+  print(len(word))
+task_md: "Modifie le programme pour afficher la **dernière** lettre de `word` puis `True` si la lettre `\"r\"` est dans le mot (deux lignes : `e` puis `True`)."
+expected_output: "e\nTrue\n"
+solution: |
+  word = "crane"
+  print(word[-1])
+  print("r" in word)
+hints:
+  - "La dernière lettre a l'indice `-1` (ou `len(word) - 1`)."
+  - "`\"r\" in word` vaut `True` ou `False`."
+  - "`print(word[-1])` puis `print(\"r\" in word)`."
+card:
+  title: "Indexer une chaîne"
+  body_md: |
+    `s[0]` 1re lettre, `s[-1]` dernière, `len(s)` longueur (indices de 0 à `len(s) - 1`).
+    `"a" in s` teste la présence. Les chaînes sont **immuables** : `s[0] = "x"` est interdit.
+exam_tip: "Pour Wordle, `guess[i]` et `secret[i]` à la même position `i` : c'est le test « bien placée »."

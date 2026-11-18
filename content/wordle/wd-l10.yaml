@@ -1,0 +1,30 @@
+id: wd-l10
+world: wordle
+type: predict_output
+title: "Speed Read : dictionnaires"
+concepts: [dict, get, in]
+difficulty: 2
+estimated_minutes: 2
+xp: 25
+story: "Lis vite : le compteur `left` sert à distribuer les jaunes."
+statement_md: "Speed Read : tape la sortie exacte."
+timed_seconds: 60
+code: |
+  left = {"p": 2, "a": 1}
+  left["p"] -= 1
+  print(left["p"])
+  print(left.get("z", 0))
+  print("a" in left)
+  left["e"] = left.get("e", 0) + 1
+  print(len(left))
+  print(left)
+answer: |
+  1
+  0
+  True
+  3
+  {'p': 1, 'a': 1, 'e': 1}
+hints:
+  - "`left.get(\"z\", 0)` ne plante pas : la clé absente donne la valeur par défaut."
+  - "`in` sur un dictionnaire teste les **clés**."
+  - "Une nouvelle clé s'ajoute à la fin de l'affichage."

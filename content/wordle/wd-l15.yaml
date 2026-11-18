@@ -1,0 +1,61 @@
+id: wd-l15
+world: wordle
+type: bug_hunt
+title: "Trop de jaunes !"
+concepts: [wordle, lettres_en_double, dict, bug]
+difficulty: 4
+estimated_minutes: 8
+xp: 60
+story: "Cette version du jeu colore en jaune des lettres qui n'existent plus. Les joueurs crient au scandale."
+statement_md: |
+  Cette fonction est la version **naïve en une seule passe**. Avec `secret = "crane"` et `guess = "eerie"`, elle répond
+  `yellow yellow yellow grey green` alors qu'il faut `grey grey yellow grey green` : le secret n'a qu'**un** `e`, déjà vert.
+  Corrige-la (**1 bug de conception = 2 vies**) : il faut un dictionnaire de lettres disponibles et deux passes.
+starter_code: |
+  def evaluate_guess(guess, secret):
+      """Return the list of colours for each letter of guess."""
+      result = []
+      for i in range(len(guess)):
+          if guess[i] == secret[i]:
+              result.append("green")
+          elif guess[i] in secret:
+              result.append("yellow")
+          else:
+              result.append("grey")
+      return result
+solution: |
+  def evaluate_guess(guess, secret):
+      """Return the list of colours for each letter of guess."""
+      result = ["grey"] * len(guess)
+      available = {}
+      for i in range(len(secret)):
+          if guess[i] == secret[i]:
+              result[i] = "green"
+          else:
+              available[secret[i]] = available.get(secret[i], 0) + 1
+      for i in range(len(guess)):
+          if result[i] != "green" and available.get(guess[i], 0) > 0:
+              result[i] = "yellow"
+              available[guess[i]] -= 1
+      return result
+bugs: 1
+tests:
+  visible:
+    - call: evaluate_guess("eerie", "crane")
+      expected: "['grey', 'grey', 'yellow', 'grey', 'green']"
+  hidden:
+    - call: evaluate_guess("slate", "crane")
+      expected: "['grey', 'grey', 'green', 'grey', 'green']"
+    - call: evaluate_guess("paper", "apple")
+      expected: "['yellow', 'yellow', 'green', 'yellow', 'grey']"
+    - call: evaluate_guess("lolly", "hello")
+      expected: "['grey', 'yellow', 'green', 'green', 'grey']"
+      label: "les verts d'abord"
+    - call: evaluate_guess("sassy", "brass")
+      expected: "['yellow', 'yellow', 'grey', 'green', 'grey']"
+hints:
+  - "`guess[i] in secret` ne sait pas si cette lettre du secret a déjà servi."
+  - "Passe 1 : les vertes, et on compte les lettres du secret NON vertes. Passe 2 : jaune seulement s'il en reste, puis on décrémente."
+  - "Pars de `result = [\"grey\"] * len(guess)` et `available = {}`."
+explanation_md: "La version naïve teste « la lettre est-elle dans le secret ? » sans compter. Le compteur `available` garantit qu'une lettre du secret ne donne qu'**une** couleur."
+exam_tip: "C'est LE point du TP Wordle où tout le monde perd des points. Teste toujours `eerie`/`crane`, `lolly`/`hello` et `paper`/`apple`."

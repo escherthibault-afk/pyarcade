@@ -1,0 +1,417 @@
+id: boss-wordle-twin-mastermind
+world: wordle
+type: boss
+variant: twin
+project: "wordle:mastermind"
+title: "👯 Jumeau : Mastermind (Bulls & Cows)"
+concepts: [str, dict, tuple, while, random]
+difficulty: 4
+estimated_minutes: 50
+xp: 350
+live_game: mastermind
+statement_md: "Un projet nouveau, même structure : vérifie que tu sais transférer l'algorithme des couleurs."
+intro_md: |
+  ## Le casseur de code
+
+  L'ordinateur cache un **code de 4 couleurs** parmi 6 (`R G B Y O P`, répétitions autorisées).
+  Le joueur a **10 essais**. Après chaque proposition, l'ordinateur répond par deux nombres :
+
+  - **bien placés** : bonne couleur au bon endroit (pion ●) ;
+  - **mal placés** : bonne couleur, mauvais endroit (pion ○) — **sans compter deux fois** une couleur du code.
+
+  C'est le **même algorithme en deux passes** que pour les mots : d'abord les bien placés, puis les mal placés
+  dans la limite des couleurs restantes (dictionnaire de compteurs). Seule la sortie change : un tuple `(bien, mal)`.
+
+  Un code est une chaîne comme `"RGBY"`. Affichage : `rich_lite` sur le site, `rich` chez toi.
+header_code: |
+  import random
+  from rich_lite import Console
+
+  console = Console()
+
+  COLORS = "RGBYOP"
+  STYLES = {"R": "bold white on red", "G": "bold white on green", "B": "bold white on blue",
+            "Y": "bold black on yellow", "O": "bold black on orange", "P": "bold white on purple"}
+steps:
+  - fn: random_code
+    title: "tirer un code secret"
+    statement_md: "Renvoie une chaîne de `length` couleurs tirées au hasard dans `colors` (répétitions autorisées)."
+    starter_code: |
+      def random_code(colors=COLORS, length=4):
+          """Return a random code of length symbols taken from colors."""
+          pass
+    solution: |
+      def random_code(colors=COLORS, length=4):
+          """Return a random code of length symbols taken from colors."""
+          code = ""
+          for _ in range(length):
+              code = code + random.choice(colors)
+          return code
+    tests:
+      visible:
+        - call: "len(random_code())"
+          expected: "4"
+        - call: "all(c in COLORS for c in random_code())"
+          expected: "True"
+      hidden:
+        - call: "random_code('AB', 6).replace('A', '').replace('B', '')"
+          expected: "''"
+          label: "paramètres colors et length"
+        - call: "len(random_code(length=0))"
+          expected: "0"
+      statistical:
+        - expr: "sum(random_code()[0] == 'R' for _ in range(6000)) / 6000"
+          approx: 0.1667
+          tol: 0.025
+          label: "chaque couleur a la même chance"
+    hints:
+      - "Construis la chaîne dans une boucle de `length` tours."
+      - "`random.choice(colors)` tire une lettre d'une chaîne."
+      - "`code = code + random.choice(colors)`"
+    points: 1
+  - fn: normalize_code
+    title: "nettoyer la saisie"
+    statement_md: "Renvoie la saisie **en majuscules**, sans espaces (ni autour, ni entre les lettres) : `\" r g b y\"` → `\"RGBY\"`."
+    starter_code: |
+      def normalize_code(text):
+          """Return text in uppercase without any space."""
+          pass
+    solution: |
+      def normalize_code(text):
+          """Return text in uppercase without any space."""
+          return text.strip().upper().replace(" ", "")
+    tests:
+      visible:
+        - call: normalize_code(" r g b y")
+          expected: "'RGBY'"
+      hidden:
+        - call: normalize_code("RGBY\n")
+          expected: "'RGBY'"
+        - call: normalize_code("")
+          expected: "''"
+    hints:
+      - "Trois méthodes de chaîne : `strip`, `upper`, `replace`."
+      - "`replace(\" \", \"\")` supprime tous les espaces."
+      - "`return text.strip().upper().replace(\" \", \"\")`"
+    points: 0.5
+  - fn: is_valid_code
+    title: "valider une proposition"
+    statement_md: "Renvoie `(True, \"\")` si le code a `length` symboles, tous dans `colors` ; sinon `(False, message)` avec un message non vide."
+    starter_code: |
+      def is_valid_code(code, colors=COLORS, length=4):
+          """Return (True, "") if code is valid, else (False, message)."""
+          pass
+    solution: |
+      def is_valid_code(code, colors=COLORS, length=4):
+          """Return (True, "") if code is valid, else (False, message)."""
+          if len(code) != length:
+              return (False, f"The code must have {length} symbols.")
+          for symbol in code:
+              if symbol not in colors:
+                  return (False, f"Unknown colour: {symbol}")
+          return (True, "")
+    tests:
+      visible:
+        - call: is_valid_code("RGBY")
+          expected: "(True, '')"
+        - call: is_valid_code("RGB")[0]
+          expected: "False"
+      hidden:
+        - call: is_valid_code("RGBX")[0]
+          expected: "False"
+          label: "couleur inconnue"
+        - call: "len(is_valid_code('RGBX')[1]) > 0"
+          expected: "True"
+        - call: is_valid_code("RRRR")
+          expected: "(True, '')"
+          label: "répétitions autorisées"
+        - call: is_valid_code("AB", "AB", 2)
+          expected: "(True, '')"
+    hints:
+      - "D'abord la longueur, puis chaque symbole."
+      - "Dès qu'un symbole n'est pas dans `colors`, on renvoie `(False, ...)`."
+      - "Le `return (True, \"\")` final est **après** la boucle."
+    points: 1.5
+  - fn: count_symbols
+    title: "compter les couleurs"
+    statement_md: "Renvoie le dictionnaire `{symbole: nombre}` du code, à la main."
+    starter_code: |
+      def count_symbols(code):
+          """Return a dict {symbol: number of occurrences}."""
+          pass
+    solution: |
+      def count_symbols(code):
+          """Return a dict {symbol: number of occurrences}."""
+          counts = {}
+          for symbol in code:
+              counts[symbol] = counts.get(symbol, 0) + 1
+          return counts
+    tests:
+      visible:
+        - call: count_symbols("RRGB")
+          expected: "{'R': 2, 'G': 1, 'B': 1}"
+      hidden:
+        - call: count_symbols("")
+          expected: "{}"
+    constraints:
+      forbidden: ["import:collections", "name:Counter"]
+    hints:
+      - "Même idée que `count_letters`."
+      - "`counts.get(symbol, 0) + 1`"
+      - "Dictionnaire vide avant la boucle, `return` après."
+    points: 1
+  - fn: evaluate
+    title: "bien placés / mal placés"
+    statement_md: |
+      Renvoie le tuple `(bien_placés, mal_placés)`.
+      Passe 1 : compte les bien placés, et range les autres symboles du secret dans un dict de compteurs.
+      Passe 2 : pour chaque symbole de la proposition **non bien placé**, s'il en reste dans le compteur → mal placé, et on décrémente.
+    starter_code: |
+      def evaluate(guess, secret):
+          """Return (well_placed, misplaced)."""
+          pass
+    solution: |
+      def evaluate(guess, secret):
+          """Return (well_placed, misplaced)."""
+          well = 0
+          left = {}
+          others = []
+          for i in range(len(secret)):
+              if guess[i] == secret[i]:
+                  well += 1
+              else:
+                  left[secret[i]] = left.get(secret[i], 0) + 1
+                  others.append(guess[i])
+          misplaced = 0
+          for symbol in others:
+              if left.get(symbol, 0) > 0:
+                  misplaced += 1
+                  left[symbol] -= 1
+          return (well, misplaced)
+    tests:
+      visible:
+        - call: evaluate("RGBY", "RGBY")
+          expected: "(4, 0)"
+        - call: evaluate("YBGR", "RGBY")
+          expected: "(0, 4)"
+      hidden:
+        - call: evaluate("OOPP", "RGBY")
+          expected: "(0, 0)"
+          label: "rien en commun"
+        - call: evaluate("RRRR", "RGBY")
+          expected: "(1, 0)"
+          label: "R ×4 proposé, R ×1 dans le code"
+        - call: evaluate("RRGG", "GGRR")
+          expected: "(0, 4)"
+          label: "doubles inversés"
+        - call: evaluate("RRBB", "RBRB")
+          expected: "(2, 2)"
+        - call: evaluate("YYBB", "BYYO")
+          expected: "(1, 2)"
+          label: "doubles des deux côtés"
+        - call: evaluate("GGGR", "RGGG")
+          expected: "(2, 2)"
+        - call: evaluate("BRRR", "RBBB")
+          expected: "(0, 2)"
+          label: "pas de mal placé compté deux fois"
+        - call: evaluate("PPOO", "OPPY")
+          expected: "(1, 2)"
+    hints:
+      - "C'est exactement l'algorithme des couleurs du Wordle, mais on compte au lieu de colorier."
+      - "Passe 1 : `well += 1` ou on compte `secret[i]` dans `left` (et on garde `guess[i]` de côté)."
+      - "Passe 2 : pour chaque symbole gardé, `if left.get(symbol, 0) > 0: misplaced += 1; left[symbol] -= 1`."
+    points: 4
+  - fn: is_won
+    title: "code cassé ?"
+    statement_md: "Renvoie `True` si `result` (le tuple) indique `length` bien placés."
+    starter_code: |
+      def is_won(result, length=4):
+          """Return True if every symbol is well placed."""
+          pass
+    solution: |
+      def is_won(result, length=4):
+          """Return True if every symbol is well placed."""
+          return result[0] == length
+    tests:
+      visible:
+        - call: is_won((4, 0))
+          expected: "True"
+        - call: is_won((2, 2))
+          expected: "False"
+      hidden:
+        - call: is_won((5, 0), 5)
+          expected: "True"
+    hints:
+      - "Le premier élément du tuple est le nombre de bien placés."
+      - "`result[0]`"
+      - "`return result[0] == length`"
+    points: 0.5
+  - fn: create_game_state
+    title: "état de la partie"
+    statement_md: "Renvoie `{\"secret\", \"guesses\": [], \"results\": [], \"max_attempts\", \"won\": False, \"over\": False}`."
+    starter_code: |
+      def create_game_state(secret, max_attempts=10):
+          """Return a new game state."""
+          pass
+    solution: |
+      def create_game_state(secret, max_attempts=10):
+          """Return a new game state."""
+          return {"secret": secret, "guesses": [], "results": [], "max_attempts": max_attempts, "won": False, "over": False}
+    tests:
+      visible:
+        - call: create_game_state("RGBY")
+          expected: "{'secret': 'RGBY', 'guesses': [], 'results': [], 'max_attempts': 10, 'won': False, 'over': False}"
+      hidden:
+        - call: create_game_state("RG", 3)["max_attempts"]
+          expected: "3"
+    hints:
+      - "Un dictionnaire littéral."
+      - "Deux listes vides : `guesses` et `results`."
+      - "Utilise le paramètre `max_attempts`."
+    points: 1
+  - fn: play_guess
+    title: "jouer un coup"
+    statement_md: "Comme pour Wordle : rien si la partie est finie (renvoie `None`), sinon évalue, enregistre, mets à jour `won`/`over`, renvoie le résultat."
+    starter_code: |
+      def play_guess(state, guess):
+          """Play one guess and return its result (None if the game is over)."""
+          pass
+    solution: |
+      def play_guess(state, guess):
+          """Play one guess and return its result (None if the game is over)."""
+          if state["over"]:
+              return None
+          result = evaluate(guess, state["secret"])
+          state["guesses"].append(guess)
+          state["results"].append(result)
+          state["won"] = is_won(result, len(state["secret"]))
+          state["over"] = state["won"] or len(state["guesses"]) >= state["max_attempts"]
+          return result
+    tests:
+      visible:
+        - setup: "s = create_game_state('RGBY')"
+          call: play_guess(s, 'RRBB')
+          expected: "(2, 0)"
+      hidden:
+        - setup: "s = create_game_state('RGBY')\nplay_guess(s, 'RGBY')"
+          call: "(play_guess(s, 'RRRR'), s['won'], len(s['guesses']))"
+          expected: "(None, True, 1)"
+          label: "rien après la victoire"
+        - setup: "s = create_game_state('RGBY', 1)\nplay_guess(s, 'OOOO')"
+          call: "(s['won'], s['over'])"
+          expected: "(False, True)"
+    hints:
+      - "Même structure que `play_guess` du Wordle."
+      - "`is_won(result, len(state[\"secret\"]))`"
+      - "N'oublie pas `over` = gagné OU plus d'essais."
+    points: 2
+  - fn: render_pegs
+    title: "les pions"
+    statement_md: "Renvoie `●` par bien placé, puis `○` par mal placé, puis `·` pour compléter jusqu'à `length` : `(1, 2)` → `\"●○○·\"`."
+    starter_code: |
+      def render_pegs(result, length=4):
+          """Return the pegs string: ● per well placed, ○ per misplaced, · for the rest."""
+          pass
+    solution: |
+      def render_pegs(result, length=4):
+          """Return the pegs string: ● per well placed, ○ per misplaced, · for the rest."""
+          well, misplaced = result
+          return "●" * well + "○" * misplaced + "·" * (length - well - misplaced)
+    tests:
+      visible:
+        - call: render_pegs((1, 2))
+          expected: "'●○○·'"
+      hidden:
+        - call: render_pegs((0, 0))
+          expected: "'····'"
+        - call: render_pegs((4, 0))
+          expected: "'●●●●'"
+        - call: render_pegs((2, 1), 5)
+          expected: "'●●○··'"
+    hints:
+      - "Déballe le tuple : `well, misplaced = result`."
+      - "Multiplier une chaîne la répète : `\"●\" * 2`."
+      - "Le reste : `length - well - misplaced`."
+    points: 1
+  - fn: render_row
+    title: "une ligne du plateau"
+    statement_md: |
+      Renvoie les cases colorées (`"[STYLE] R [/]"` avec `STYLES[symbole]`), collées, puis **deux espaces**, puis `render_pegs(result, len(guess))`.
+    starter_code: |
+      def render_row(guess, result):
+          """Return the rich markup line for one guess and its pegs."""
+          pass
+    solution: |
+      def render_row(guess, result):
+          """Return the rich markup line for one guess and its pegs."""
+          line = ""
+          for symbol in guess:
+              line = line + f"[{STYLES[symbol]}] {symbol} [/]"
+          return line + "  " + render_pegs(result, len(guess))
+    tests:
+      visible:
+        - call: "render_row('RG', (1, 0))"
+          expected: "'[bold white on red] R [/][bold white on green] G [/]  ●·'"
+      hidden:
+        - call: "render_row('Y', (0, 1))"
+          expected: "'[bold black on yellow] Y [/]  ○'"
+    hints:
+      - "Une boucle sur les symboles, comme `render_guess`."
+      - "`f\"[{STYLES[symbol]}] {symbol} [/]\"`"
+      - "Termine par `+ \"  \" + render_pegs(result, len(guess))`."
+    points: 1
+  - fn: game_loop
+    title: "la boucle de jeu"
+    statement_md: |
+      Tire un code (sauf si `secret` est donné), crée l'état, puis tant que ce n'est pas fini : lis une saisie, normalise-la,
+      refuse-la si invalide, sinon joue-la et affiche la ligne. Message final, et **renvoie l'état**.
+    starter_code: |
+      def game_loop(secret=None, max_attempts=10):
+          """Play a full game in the console and return the final state."""
+          pass
+
+
+      if __name__ == "__main__":
+          game_loop()
+    solution: |
+      def game_loop(secret=None, max_attempts=10):
+          """Play a full game in the console and return the final state."""
+          if secret is None:
+              secret = random_code()
+          state = create_game_state(secret, max_attempts)
+          while not state["over"]:
+              guess = normalize_code(input("Your code (e.g. RGBY): "))
+              valid, message = is_valid_code(guess, COLORS, len(secret))
+              if not valid:
+                  console.print(f"[red]{message}[/]")
+              else:
+                  result = play_guess(state, guess)
+                  console.print(render_row(guess, result))
+          if state["won"]:
+              console.print(f"[bold green]Code broken in {len(state['guesses'])} attempts![/]")
+          else:
+              console.print(f"[bold red]Lost! The code was {state['secret']}.[/]")
+          return state
+
+
+      if __name__ == "__main__":
+          game_loop()
+    tests:
+      visible:
+        - call: "game_loop(secret='RGBY')['guesses']"
+          stdin: ["rrbb", "R G B Y"]
+          expected: "['RRBB', 'RGBY']"
+      hidden:
+        - call: "game_loop(secret='RGBY')['guesses']"
+          stdin: ["RGB", "XXXX", "rgby"]
+          expected: "['RGBY']"
+          label: "saisies invalides ignorées"
+        - call: "(lambda s: (s['won'], s['over']))(game_loop(secret='RGBY', max_attempts=2))"
+          stdin: ["OOOO", "PPPP"]
+          expected: "(False, True)"
+          label: "défaite"
+    hints:
+      - "Même squelette que le `game_loop` du Wordle."
+      - "Valide avec `is_valid_code(guess, COLORS, len(secret))` (tuple à déballer)."
+      - "Affiche `render_row(guess, result)` après chaque coup valide."
+    points: 2

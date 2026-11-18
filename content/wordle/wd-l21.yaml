@@ -1,0 +1,79 @@
+id: wd-l21
+world: wordle
+type: code_fill
+title: "Bonus : le solveur"
+concepts: [wordle, listes, filtrage, max]
+difficulty: 5
+estimated_minutes: 8
+xp: 80
+story: "Et si l'ordinateur jouait ? Ton solveur proposera des mots dans le jeu en direct."
+statement_md: |
+  1. `filter_candidates(words, guess, feedback)` garde les mots `w` de `words` **compatibles** : ceux pour lesquels
+     `evaluate_guess(guess, w)` donnerait exactement `feedback`. (`evaluate_guess` est fourni.)
+  2. `best_guess(candidates)` renvoie le candidat qui a le **plus de lettres différentes** (il teste plus de lettres) ;
+     en cas d'égalité, le premier dans l'ordre alphabétique. Liste vide → `None`.
+given_code: |
+  def evaluate_guess(guess, secret):
+      result = ["grey"] * len(guess)
+      left = {}
+      for i in range(len(secret)):
+          if guess[i] == secret[i]:
+              result[i] = "green"
+          else:
+              left[secret[i]] = left.get(secret[i], 0) + 1
+      for i in range(len(guess)):
+          if result[i] != "green" and left.get(guess[i], 0) > 0:
+              result[i] = "yellow"
+              left[guess[i]] -= 1
+      return result
+starter_code: |
+  def filter_candidates(words, guess, feedback):
+      """Return the words compatible with feedback for this guess."""
+      pass
+
+
+  def best_guess(candidates):
+      """Return the candidate with the most distinct letters (alphabetical on ties), or None."""
+      pass
+solution: |
+  def filter_candidates(words, guess, feedback):
+      """Return the words compatible with feedback for this guess."""
+      kept = []
+      for word in words:
+          if evaluate_guess(guess, word) == feedback:
+              kept.append(word)
+      return kept
+
+
+  def best_guess(candidates):
+      """Return the candidate with the most distinct letters (alphabetical on ties), or None."""
+      best = None
+      for word in sorted(candidates):
+          if best is None or len(set(word)) > len(set(best)):
+              best = word
+      return best
+tests:
+  visible:
+    - call: "filter_candidates(['crane', 'crate', 'slate', 'plant'], 'slate', ['grey', 'grey', 'green', 'grey', 'green'])"
+      expected: "['crane']"
+    - call: "best_guess(['eerie', 'crane', 'llama'])"
+      expected: "'crane'"
+  hidden:
+    - call: "filter_candidates([], 'slate', ['grey'] * 5)"
+      expected: "[]"
+    - call: "filter_candidates(['crane', 'crate'], 'crane', ['green'] * 5)"
+      expected: "['crane']"
+    - call: "best_guess([])"
+      expected: "None"
+      label: "liste vide"
+    - call: "best_guess(['slate', 'crane'])"
+      expected: "'crane'"
+      label: "égalité : ordre alphabétique"
+    - call: "filter_candidates(['crane', 'slate'], 'crane', ['green'] * 5)"
+      pure: true
+      label: "la liste n'est pas modifiée"
+hints:
+  - "Un mot est compatible si, en le prenant comme secret, `guess` aurait reçu les mêmes couleurs."
+  - "`len(set(word))` = nombre de lettres différentes. Parcourir `sorted(candidates)` règle les égalités."
+  - "Garde le meilleur dans une variable `best`, remplacée seulement si strictement meilleur."
+explanation_md: "C'est la base des vrais solveurs : réduire l'ensemble des secrets possibles à chaque coup. Les meilleurs choisissent le mot qui coupe cet ensemble le plus équitablement (entropie)."

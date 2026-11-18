@@ -1,0 +1,45 @@
+id: wd-l19
+world: wordle
+type: quiz
+title: "QCM éclair : les pièges du Wordle"
+concepts: [wordle, str, fichiers, pieges]
+difficulty: 3
+estimated_minutes: 2
+xp: 40
+story: "Dernière révision avant le boss. Chaque piège ici a déjà coûté des points à quelqu'un."
+statement_md: "10 questions, 75 secondes."
+time_limit: 75
+questions:
+  - q: "Un mot lu dans un fichier vaut `\"crane\\n\"`. Que vaut `\"crane\\n\" == \"crane\"` ?"
+    choices: ["True", "False"]
+    answer: 1
+    explain: "Il faut `line.strip()` avant de comparer."
+  - q: "Secret `crane`, proposition `eerie`. Combien de cases jaunes ?"
+    choices: ["0", "1", "2", "3"]
+    answer: 1
+    explain: "Le dernier e est vert et consomme le seul e. Le r est jaune. Total : 1 jaune."
+  - q: "Que vaut `\"Crane\" == \"crane\"` ?"
+    choices: ["True", "False"]
+    answer: 1
+  - q: "Quelle boucle s'arrête bien après une victoire ou 6 essais ?"
+    choices: ["while not won or attempts < 6:", "while not won and attempts < 6:", "while won and attempts <= 6:", "while attempts != 6:"]
+    answer: 1
+  - q: "`feedback = [\"grey\"] * 5` puis `feedback[0] = \"green\"`. Que vaut `feedback[1]` ?"
+    choices: ["\"green\"", "\"grey\"", "Erreur", "None"]
+    answer: 1
+    explain: "Une liste de chaînes répétées ne pose pas de problème (les chaînes sont immuables) ; c'est `[[0]*n]*n` qui piège."
+  - q: "Que renvoie `random.choice([\"a\"])` ?"
+    choices: ["\"a\"", "None", "Erreur", "0"]
+    answer: 0
+  - q: "`state = {\"guesses\": []}` puis `state[\"guesses\"].append(\"crane\")`. Que vaut `len(state[\"guesses\"])` ?"
+    choices: ["0", "1", "5", "Erreur"]
+    answer: 1
+  - q: "Que vaut `\"crane\".count(\"e\") == 1 and \"e\" in \"crane\"` ?"
+    choices: ["True", "False"]
+    answer: 0
+  - q: "Pourquoi `is_won([])` doit-il renvoyer `False` ?"
+    choices: ["Parce que `all([])` vaut `True` : une liste vide n'est pas une victoire", "Parce que [] est une erreur", "Ce n'est pas nécessaire", "Parce que `len([]) == 5`"]
+    answer: 0
+  - q: "Un joueur propose 2 fois `slate`. Que doit faire la boucle de jeu ?"
+    choices: ["Compter un essai de plus", "Refuser sans compter l'essai", "Planter", "Gagner"]
+    answer: 1

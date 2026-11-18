@@ -120,7 +120,7 @@ export function ParsonsGame({ session }: { session: Session }) {
   return (
     <div className="mx-auto max-w-5xl space-y-4">
       <div className="card p-4">{session.statement}</div>
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div className="card p-3" onDragOver={(e) => e.preventDefault()} onDrop={() => drag?.from === 'sol' && toPool(sol.find((p) => p.id === drag.id)!)}>
           <div className="mb-2 text-xs uppercase tracking-wider text-muted">🧱 {tr('Lignes mélangées (clique ou glisse)', 'Shuffled lines (click or drag)')}</div>
           <div className="space-y-1.5">
@@ -449,8 +449,8 @@ export function RobotGame({ session }: { session: Session }) {
   const picked = new Set(current?.actions.slice(0, frame + 1).filter((a) => a[3] === 'coin').map((a) => `${a[0]},${a[1]}`))
 
   return (
-    <div className="grid gap-4 lg:grid-cols-2">
-      <section className="space-y-3">
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+      <section className="min-w-0 space-y-3">
         <div className="card space-y-2 p-4">
           {session.statement}
           <div className="text-sm text-muted">
@@ -511,7 +511,7 @@ export function RobotGame({ session }: { session: Session }) {
         </div>
         {session.hintPanel && <div className="card p-4">{session.hintPanel}</div>}
       </section>
-      <section className="space-y-3">
+      <section className="min-w-0 space-y-3">
         <div className="h-[340px]">
           <CodeEditor value={code} onChange={setCode} onRun={run} theme={profile.equipped.editorTheme as EditorThemeName} fontSize={settings.fontSize} />
         </div>
@@ -564,8 +564,8 @@ export function WriteTestGame({ session }: { session: Session }) {
   }
 
   return (
-    <div className="grid gap-4 lg:grid-cols-2">
-      <section className="space-y-3">
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+      <section className="min-w-0 space-y-3">
         <div className="card space-y-3 p-4">
           {session.statement}
           <CodeBlock code={level.signature} />
@@ -601,7 +601,7 @@ export function WriteTestGame({ session }: { session: Session }) {
         </div>
         <div className="card p-4">{session.hintPanel}</div>
       </section>
-      <section className="space-y-3">
+      <section className="min-w-0 space-y-3">
         <div className="h-[340px]">
           <CodeEditor value={code} onChange={setCode} onRun={run} theme={profile.equipped.editorTheme as EditorThemeName} fontSize={settings.fontSize} />
         </div>

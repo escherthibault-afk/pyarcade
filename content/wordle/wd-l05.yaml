@@ -1,0 +1,36 @@
+id: wd-l05
+world: wordle
+type: code_fill
+title: "Nettoyer une saisie"
+concepts: [str, strip, lower, return]
+difficulty: 1
+estimated_minutes: 3
+xp: 20
+story: "Le joueur tape `  CRANE ` avec des espaces et des majuscules. Le jeu doit comprendre `crane`."
+statement_md: "Renvoie `text` sans espaces autour et en minuscules."
+starter_code: |
+  def clean(text):
+      """Return text without surrounding spaces, in lowercase."""
+      pass
+solution: |
+  def clean(text):
+      """Return text without surrounding spaces, in lowercase."""
+      return text.strip().lower()
+tests:
+  visible:
+    - call: clean("  CRANE ")
+      expected: "'crane'"
+  hidden:
+    - call: clean("slate\n")
+      expected: "'slate'"
+      label: "retour à la ligne"
+    - call: clean("")
+      expected: "''"
+    - call: clean("Hello World")
+      expected: "'hello world'"
+      label: "espace au milieu conservé"
+hints:
+  - "Deux méthodes de chaîne suffisent."
+  - "On peut les enchaîner : `text.strip().lower()`."
+  - "`return text.strip().lower()`"
+exam_tip: "Normalise **toujours** une saisie (et chaque ligne d'un fichier) avant de la comparer : c'est un test caché classique."
