@@ -188,7 +188,19 @@ export function explainError(err: PyError, lang: Lang = 'fr'): Explanation {
       const shim: Record<string, string> = { rich: 'rich_lite', readchar: 'readchar_lite', folium: 'folium_lite', pygame: 'canvas' }
       if (shim[mod.split('.')[0]])
         return { title: T(`📦 Module ${mod} absent du site`, `📦 Module ${mod} not on the site`), body: T(`Sur le site, utilise \`${shim[mod.split('.')[0]]}\` (même idée, API simplifiée). Le jour de l’examen, sur ton ordinateur, tu écriras \`${mod}\`.`, `On the site use \`${shim[mod.split('.')[0]]}\`. On your own computer you will write \`${mod}\`.`) }
-      return { title: T(`📦 Module introuvable : ${mod}`, `📦 Module not found: ${mod}`), body: T('Vérifie l’orthographe de l’import.', 'Check the import spelling.') }
+      if (mod.includes('.')) {
+        // `import random.int`: importing a function as if it were a module
+        const [pkg, ...rest] = mod.split('.')
+        const name = rest.join('.')
+        return {
+          title: T(`📦 ${mod} n’est pas un module`, `📦 ${mod} is not a module`),
+          body: T(
+            `\`import\` sert à charger un **module** entier (\`${pkg}\`), pas une fonction. Écris \`import ${pkg}\` puis utilise \`${pkg}.nom_de_la_fonction(...)\`, ou bien \`from ${pkg} import ${name}\`. Vérifie aussi le nom exact de la fonction (pour un entier au hasard : \`random.randint(a, b)\`).`,
+            `\`import\` loads a whole **module** (\`${pkg}\`), not a function. Write \`import ${pkg}\` then \`${pkg}.function(...)\`, or \`from ${pkg} import ${name}\`.`,
+          ),
+        }
+      }
+      return { title: T(`📦 Module introuvable : ${mod}`, `📦 Module not found: ${mod}`), body: T('Vérifie l’orthographe de l’import. Les modules du cours : `random`, `math`, `csv`, `matplotlib.pyplot`.', 'Check the import spelling.') }
     }
     case 'EOFError':
       return { title: T('⌨️ input() sans entrée', '⌨️ input() without input'), body: T('Ton code demande une saisie (`input`) alors que ce test n’en fournit pas. Une fonction testée doit recevoir ses données en paramètres, pas avec `input()`.', 'Your code asks for input while this test provides none. A tested function should get its data as parameters, not with `input()`.') }

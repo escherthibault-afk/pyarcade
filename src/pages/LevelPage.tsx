@@ -11,6 +11,8 @@ import { celebrate } from '../lib/confetti'
 import { awardBadges } from '../lib/badges'
 import { Markdown } from '../components/Markdown'
 import { HintPanel } from '../components/HintPanel'
+import { SolutionReveal, referenceOf } from '../components/SolutionReveal'
+import { addDays, dayKey } from '../lib/dates'
 import { CompletionModal, type CompletionInfo } from '../components/CompletionModal'
 import { Stars } from '../components/Stars'
 import { GameFor } from '../games'
@@ -67,6 +69,7 @@ function LevelRunner({ level }: { level: Level }) {
   const [replayKey, setReplayKey] = useState(0)
   const [hints, setHints] = useState(0)
   const [mistakes, setMistakes] = useState(0)
+  const [solutionShown, setSolutionShown] = useState(false)
   const [info, setInfo] = useState<CompletionInfo | null>(null)
   const startedAt = useRef(Date.now())
   const lastErrors = useRef<string[]>([])
@@ -106,7 +109,9 @@ function LevelRunner({ level }: { level: Level }) {
   const complete = useCallback(
     (o: CompleteOpts = {}) => {
       const noHint = hints === 0
-      const stars = o.stars ?? 1 + (noHint ? 1 : 0) + (noHint && (o.bonus3 ?? mistakes === 0) ? 1 : 0)
+      // looking at the correction caps the level at one star
+      const stars = solutionShown ? 1 : (o.stars ?? 1 + (noHint ? 1 : 0) + (noHint && (o.bonus3 ?? mistakes === 0) ? 1 : 0))
+      if (solutionShown) o = { ...o, extra: [o.extra, tr('📗 Correction consultée : 1 étoile au maximum. Rejoue le niveau plus tard pour les autres !', '📗 Solution viewed: one star max. Replay later for the others!')].filter(Boolean).join(' ') }
       const xp = xpFor(level.xp, stars, { copy: level.type === 'copy', daily })
       recordAttempt(level.id, true, [], [])
       if (lastErrors.current.includes('print_not_return')) bump('print_return_fixed')
@@ -134,8 +139,19 @@ function LevelRunner({ level }: { level: Level }) {
       setInfo({ stars, outcome, code: o.code, timeMs: o.timeMs, chars: o.chars, extra: o.extra })
       awardBadges()
     },
-    [hints, mistakes, level, daily, review, heal, recordAttempt, completeLevel, bump],
+    [hints, mistakes, solutionShown, level, daily, review, heal, recordAttempt, completeLevel, bump, tr],
   )
+
+  const showSolution = useCallback(() => {
+    setSolutionShown(true)
+    useStore.getState().update((p) => {
+      p.counters.solutions_seen = (p.counters.solutions_seen ?? 0) + 1
+      // the concept comes back tomorrow in the spaced reviews
+      if (!p.reviews.some((r) => r.levelId === level.id)) {
+        p.reviews.push({ levelId: level.id, concept: level.concepts[0] ?? level.title, due: addDays(dayKey(), 1), stage: 0 })
+      }
+    })
+  }, [level])
 
   const statement = useMemo(
     () => (
@@ -147,7 +163,33 @@ function LevelRunner({ level }: { level: Level }) {
     [level],
   )
 
-  const hintPanel = <HintPanel levelId={level.id} hints={level.hints} revealed={hints} onReveal={setHints} disabled={level.type === 'copy'} />
+  const reference = level.type === 'copy' ? null : referenceOf(level)
+  // last resort: after every hint, or after a few failed attempts (or on a level already cleared)
+  const solutionUnlocked =
+    !!best?.completed || (level.hints.length > 0 ? hints >= level.hints.length || mistakes >= 3 : mistakes >= 2)
+  const hintPanel = (
+    <div className="space-y-2">
+      <HintPanel levelId={level.id} hints={level.hints} revealed={hints} onReveal={setHints} disabled={level.type === 'copy'} />
+      {reference && (
+        <SolutionReveal
+          reference={reference}
+          explanation={level.explanation_md}
+          unlocked={solutionUnlocked}
+          shown={solutionShown}
+          onShow={showSolution}
+          lockedText={
+            level.hints.length > 0
+              ? tr('Bloqué ? La correction se débloque après les indices ou 3 essais ratés.', 'Stuck? The solution unlocks after the hints or 3 failed attempts.')
+              : tr('Bloqué ? La correction se débloque après 2 essais ratés.', 'Stuck? The solution unlocks after 2 failed attempts.')
+          }
+          warning={tr(
+            'Tu ne pourras gagner qu’1 étoile sur ce niveau, et la notion reviendra en révision demain. On ne perd rien à regarder la correction : on apprend aussi comme ça.',
+            'You will get at most one star on this level and the concept will come back in tomorrow’s reviews.',
+          )}
+        />
+      )}
+    </div>
+  )
 
   if (!unlocked) {
     return (

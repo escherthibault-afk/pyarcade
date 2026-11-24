@@ -12,6 +12,7 @@ import { CodeBlock, Markdown } from '../components/Markdown'
 import { TestPanel } from '../components/TestPanel'
 import { RunConsole, useInteractiveRun } from '../components/RunConsole'
 import { HintPanel } from '../components/HintPanel'
+import { SolutionReveal } from '../components/SolutionReveal'
 import { examplesBlock, errorTypesOf, firstErrorLine } from '../games/CodeGame'
 import { LiveGame } from '../live'
 import { sfx } from '../lib/sound'
@@ -127,6 +128,7 @@ function BossFight({ level, copyMode, onPhase, phase, final }: { level: BossLeve
   const [running, setRunning] = useState(false)
   const [hit, setHit] = useState(false)
   const [hints, setHints] = useState<Record<string, number>>({})
+  const [revealed, setRevealed] = useState<Record<string, boolean>>({})
   const [grade, setGrade] = useState<ExamGrade | null>(null)
   const [now, setNow] = useState(Date.now())
   const files = useRef<Record<string, string>>({})
@@ -246,7 +248,9 @@ function BossFight({ level, copyMode, onPhase, phase, final }: { level: BossLeve
         p.xp += level.xp
         p.coins += 50
       })
-      useStore.getState().completeLevel({ levelId: level.id, stars: (bp?.errors ?? 0) === 0 && !brokenAttempt ? 3 : 2, xp: 0, coins: 0, concepts: level.concepts, usedHints: 0, firstTry: false, type: 'boss' })
+      const sawSolution = Object.values(revealed).some(Boolean)
+      const bossStars = sawSolution ? 1 : (bp?.errors ?? 0) === 0 && !brokenAttempt ? 3 : 2
+      useStore.getState().completeLevel({ levelId: level.id, stars: bossStars, xp: 0, coins: 0, concepts: level.concepts, usedHints: 0, firstTry: false, type: 'boss' })
       sfx.win()
       celebrate(true)
       awardBadges()
@@ -354,6 +358,21 @@ function BossFight({ level, copyMode, onPhase, phase, final }: { level: BossLeve
                 hints={step.hints}
                 revealed={hints[step.fn] ?? 0}
                 onReveal={(n) => setHints({ ...hints, [step.fn]: n })}
+              />
+            )}
+            {level.variant === 'guided' && (
+              <SolutionReveal
+                key={step.fn}
+                reference={{ code: step.solution }}
+                unlocked={(hints[step.fn] ?? 0) >= step.hints.length || validated.has(step.fn) || (bp?.errors ?? 0) >= 3}
+                shown={!!revealed[step.fn]}
+                onShow={() => setRevealed({ ...revealed, [step.fn]: true })}
+                label={tr(`Voir la solution de ${step.fn}`, `Show the solution of ${step.fn}`)}
+                lockedText={tr('Bloqué sur cette fonction ? Sa solution se débloque après ses 3 indices ou 3 attaques ratées.', 'Stuck on this function? Its solution unlocks after its 3 hints or 3 failed attacks.')}
+                warning={tr(
+                  'Le boss sera quand même battu, mais avec 1 étoile seulement. Les autres fonctions restent à écrire toi-même.',
+                  'You can still beat the boss, but with one star only. The other functions are still yours to write.',
+                )}
               />
             )}
             <div className="flex justify-between">
